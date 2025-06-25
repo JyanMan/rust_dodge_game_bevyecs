@@ -3,6 +3,7 @@ use std::rc::Rc;
 use crate::config::*;
 use crate::systems::tile::*;
 use crate::math_helper::*;
+use crate::components::sprite::*;
 use fastnoise_lite::*;
 
 pub struct Chunk <'a> {
@@ -12,17 +13,26 @@ pub struct Chunk <'a> {
     max_height: i32,
     base_y: i32,
     pub is_active: bool,
+    noise: FastNoiseLite,
 }
 
 impl <'a> Chunk <'a> {
-    pub fn new(world_pos: Vector2, tile_atlas_t: Rc<Texture>) -> Chunk {
+    pub fn new(world_pos: Vector2, sprite: Rc<Sprite<'a>>) -> Chunk {
         // init tiles_array all empty
-        let tiles_arr: Vec<Tile> = std::iter::repeat_with(|| {Tile::new(tile_atlas_t.clone())}).
+        let tiles_arr: Vec<Tile> = std::iter::repeat_with(|| {Tile::new(sprite.clone())}).
             take((CHUNK_SIZE * CHUNK_SIZE) as usize).
             collect();
 
         let max_height = 200;
         let base_y = -(max_height / 2);
+
+        let mut noise = FastNoiseLite::new();
+        noise.set_noise_type(Some(NoiseType::Perlin));
+        noise.set_seed(Some(1337));
+        noise.set_frequency(Some(0.005));
+        noise.set_fractal_type(Some(FractalType::FBm));
+        noise.set_fractal_octaves(Some(6));
+        noise.set_fractal_gain(Some(0.4));
 
         let mut chunk = Chunk {
             chunk_pos: world_to_chunk(&world_pos),
@@ -31,26 +41,20 @@ impl <'a> Chunk <'a> {
             base_y: base_y,
             max_height: max_height,
             is_active: true,
+            noise: noise,
         };
 
-        chunk.set(chunk.world_pos.clone(), tile_atlas_t);
+        chunk.set(chunk.world_pos.clone());
 
         chunk
     }
 
-    pub fn set(&mut self, world_pos: Vector2, tile_atlas_t: Rc<Texture>) {
+    pub fn set(&mut self, world_pos: Vector2) {
 
         self.chunk_pos = world_to_chunk(&world_pos);
         self.world_pos = world_pos;
 
         // set values for tile_array
-        let mut noise = FastNoiseLite::new();
-        noise.set_noise_type(Some(NoiseType::Perlin));
-        noise.set_seed(Some(1337));
-        noise.set_frequency(Some(0.005));
-        noise.set_fractal_type(Some(FractalType::FBm));
-        noise.set_fractal_octaves(Some(6));
-        noise.set_fractal_gain(Some(0.4));
         // noise.octaves = 6;
         // noise.lacunarity = 2.0f;
         // noise.gain = 0.4f;
@@ -68,7 +72,7 @@ impl <'a> Chunk <'a> {
                 let global_x = (self.world_pos.x.floor() / TILE_SIZE as f32) + x as f32;
                 let global_y = (self.world_pos.y.floor() / TILE_SIZE as f32) + y as f32;
 
-                let noise_val = noise.get_noise_2d(global_x, 0.0);
+                let noise_val = self.noise.get_noise_2d(global_x, 0.0);
                 let surface_y = -(noise_val * self.max_height as f32) + self.base_y as f32;
 
                 let mut tile_type = TileType::Grass;

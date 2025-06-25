@@ -17,14 +17,14 @@ pub enum TileType {
 pub struct Tile <'a> {
     tile_pos: Point,
     world_pos: Vector2,
-    sprite: Sprite <'a>,
+    sprite: Rc<Sprite<'a>> ,
     tile_type: TileType,
 }
 
 impl <'a> Tile <'a> {
-    pub fn new(tile_atlas_t: Rc<Texture>) -> Tile {
-        let mut sprite = Sprite::new(tile_atlas_t);
-        sprite.set_sprite_sheet(4, 2);
+    pub fn new(sprite: Rc<Sprite<'a>>) -> Tile {
+        // let mut sprite = Sprite::new(tile_atlas_t);
+        // sprite.set_sprite_sheet(4, 2);
         let world_pos = Vector2::new(0.0, 0.0);
 
         Tile {
@@ -38,11 +38,11 @@ impl <'a> Tile <'a> {
     pub fn set(&mut self, tile_pos: Point, tile_type: TileType) {
         self.tile_pos = tile_pos.clone();
         self.world_pos = tile_to_world(tile_pos);
-        self.sprite.frame = tile_type as i32;
+        // self.sprite.borrow_mut().frame = tile_type as i32;
         // println!("x: {}, y: {}", self.tile_pos.x, self.tile_pos.y);
     }
 
     pub fn draw(&self, canvas: &mut WindowCanvas) {
-        self.sprite.draw(canvas, &self.world_pos);
+        self.sprite.draw(canvas, &self.world_pos, self.tile_type as i32);
     }
 }

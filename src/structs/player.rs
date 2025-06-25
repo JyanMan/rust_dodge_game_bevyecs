@@ -46,7 +46,7 @@ impl <'a> Player <'a> {
     }
 
     pub fn draw(&self, canvas: &mut WindowCanvas) {
-        self.sprite.draw(canvas, &self.physics.pos);
+        self.sprite.draw(canvas, &self.physics.pos, 0);
     }
 
     pub fn input(&mut self, event: &Event) {

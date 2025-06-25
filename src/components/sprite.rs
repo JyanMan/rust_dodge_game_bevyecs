@@ -6,20 +6,24 @@ use crate::math_helper::*;
 
 pub struct Sprite <'a> {
     texture: Rc<Texture<'a>>,
-    pub frame: i32,
     pub scale: f32,
     hor: i32,
     vert: i32,
+    height: i32,
+    width: i32,
 }
 
 impl <'a> Sprite <'a> {
     pub fn new(texture: Rc<Texture <'a>>) -> Self {
+        let width = texture.query().width;
+        let height = texture.query().height;
         Self {
            texture: texture,
-           frame: 0,
            scale: 1.0,
            hor: 1,
            vert: 1,
+           width: width as i32,
+           height: height as i32,
         }
     }
 
@@ -28,7 +32,7 @@ impl <'a> Sprite <'a> {
         self.vert = vert;
     }
 
-    pub fn draw(&self, canvas: &mut WindowCanvas, pos: &Vector2) {
+    pub fn draw(&self, canvas: &mut WindowCanvas, pos: &Vector2, frame: i32) {
             // set the width of each frame
     // int cell_width = s->px_w / s->hor;
     // int cell_height = s->px_h / s->vert;
@@ -45,14 +49,14 @@ impl <'a> Sprite <'a> {
     //     s->height * scale
     // };
 
-        let px_w = self.texture.query().width as i32;
-        let px_h = self.texture.query().height as i32;
+        let px_w = self.width as i32;
+        let px_h = self.height as i32;
 
         let cell_w = px_w / self.hor;
         let cell_h = px_h / self.vert;
 
-        let frame_x: i32 = cell_w * (self.frame % self.hor);
-        let frame_y: i32 = cell_h * (self.frame / self.hor);
+        let frame_x: i32 = cell_w * (frame % self.hor);
+        let frame_y: i32 = cell_h * (frame / self.hor);
         let src_rect = Rect::new(
              frame_x, frame_y, cell_w as u32, cell_h as u32 
         );
@@ -71,7 +75,7 @@ impl <'a> Sprite <'a> {
         // };
 
         canvas.set_draw_color(Color::WHITE);
-        canvas.copy_ex(
+        let _ =canvas.copy_ex(
             &*self.texture,
             src_rect,
             dest_rect,

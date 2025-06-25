@@ -4,16 +4,21 @@ use std::rc::Rc;
 use std::cell::RefCell;
 use crate::managers::chunk::*; 
 use crate::math_helper::*;
+use crate::components::sprite::*;
 use crate::config::*;
 
 pub struct ChunkManager <'a> {
     chunks_map: HashMap<Point, Rc<RefCell<Chunk<'a>>>>,
     chunks_arr: Vec<Rc<RefCell<Chunk<'a>>>>,
     world_pos: Vector2,
+    sprite: Rc<Sprite<'a>>
 }
 
 impl <'a> ChunkManager <'a> {
     pub fn new(world_pos: Vector2, tile_atlas_t: Rc<Texture>, render_dist: i32) -> ChunkManager {
+        let mut sprite = Sprite::new(tile_atlas_t.clone());
+        sprite.set_sprite_sheet(4, 2);
+        let sprite_rc = Rc::new(sprite);
 
         // init default values of chunk manager
         let mut cm = ChunkManager {
@@ -22,7 +27,7 @@ impl <'a> ChunkManager <'a> {
             chunks_arr: std::iter::repeat_with(|| {
                 Rc::new(
                     RefCell::new(
-                        Chunk::new(world_pos.clone(), tile_atlas_t.clone()) 
+                        Chunk::new(world_pos.clone(), sprite_rc.clone()) 
                     )
                 ) 
             })
@@ -31,6 +36,7 @@ impl <'a> ChunkManager <'a> {
             .take(((render_dist * 2) * (render_dist * 2)) as usize)
             .collect(),
             world_pos: world_pos.clone(),
+            sprite: sprite_rc,
         };
 
         // init values of hashmap chunks
@@ -93,7 +99,7 @@ impl <'a> ChunkManager <'a> {
                 // note that once you set, the chunk automatically changes its tile frames based
                 // on that pos
                 let c_world_pos = chunk_to_world(&c_chunk_pos);
-                chunk.set(c_world_pos, tile_atlas_t.clone());
+                chunk.set(c_world_pos);
             }
         }
         // println!("chunks len: {}, chunks arr len: {}", self.chunks_map.len(), self.chunks_arr.len());

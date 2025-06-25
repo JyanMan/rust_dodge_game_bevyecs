@@ -16,13 +16,11 @@ impl <'a> World <'a> {
         let cm = ChunkManager::new(
             Vector2::new(0.0, 0.0),
             am.get_tile_atlas_t(),
-            4,
+            2,
         );
-        // let cm = ChunkManager::new(Vector2::new(0.0, 0.0), am.get_tile_atlas_t(), 4);
         Self {
             am: am,
             cm: cm,
-            // cm: cm,
         }
     }
 }

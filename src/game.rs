@@ -12,7 +12,7 @@ use crate::world::*;
 pub struct Game <'a> {
     player: Player <'a>, 
     world: World<'a>,
-    test_chunk: Chunk <'a>,
+    // test_chunk: Chunk <'a>,
     // entities: Vec<Entity>,
 }
 
@@ -25,24 +25,31 @@ impl <'a> Game <'a> {
         //     zoom: 2.0,
         // };
 
-        let world = World::new(t_creator);
-        let player = Player::new(world.am.get_player_t());
+        let mut world = World::new(t_creator);
+        let mut player = Player::new(world.am.get_player_t());
+
+        // let tile_atlas_t = world.am.get_tile_atlas_t(); 
+        // world.cm.generate(player.get_pos().clone(), 
+        //     tile_atlas_t,
+        //     4
+        // );
 
         Self {
-            test_chunk: Chunk::new(Vector2::new(0.0,0.0), world.am.get_tile_atlas_t()),
+            // test_chunk: Chunk::new(Vector2::new(0.0,0.0), world.am.get_tile_atlas_t()),
             world: world,
             player: player,
             // entities: Vec::new(),
         }
+
     }   
 
     pub fn update(&mut self, delta_time: f32) {
         self.player.update(delta_time);
-        // let tile_atlas_t = self.world.am.get_tile_atlas_t(); 
-        // self.world.cm.generate(self.player.get_pos().clone(), 
-        //     tile_atlas_t,
-        //     4
-        // );
+        let tile_atlas_t = self.world.am.get_tile_atlas_t(); 
+        self.world.cm.generate(self.player.get_pos().clone(), 
+            tile_atlas_t,
+            2
+        );
     }
 
     pub fn fixed_update(&mut self, _time_step: f32) {
@@ -52,9 +59,9 @@ impl <'a> Game <'a> {
     pub fn draw(&mut self, canvas: &mut WindowCanvas) {
         // drawn relative to camera
         // let mut d2 = d.begin_mode2D(self.camera);
-        // self.world.cm.draw(canvas);
+        self.world.cm.draw(canvas);
         self.player.draw(canvas);
-        self.test_chunk.draw(canvas);
+        // self.test_chunk.draw(canvas);
     }
 
     pub fn input(&mut self, event: &Event) {
