@@ -2,11 +2,7 @@ use sdl2::event::Event;
 use sdl2::video::WindowContext;
 use sdl2::render::*;
 use crate::structs::player::*;
-use crate::managers::chunk::*;
-use crate::math_helper::*;
-// use crate::structs::entity::*;
-// use crate::config::SCREEN_WIDTH;
-// use crate::config::SCREEN_HEIGHT;
+use crate::components::camera::*;
 use crate::world::*;
 
 pub struct Game <'a> {
@@ -24,9 +20,10 @@ impl <'a> Game <'a> {
         //     rotation: 0.0,
         //     zoom: 2.0,
         // };
+        //
 
-        let mut world = World::new(t_creator);
-        let mut player = Player::new(world.am.get_player_t());
+        let world = World::new(t_creator);
+        let player = Player::new(world.am.get_player_t());
 
         // let tile_atlas_t = world.am.get_tile_atlas_t(); 
         // world.cm.generate(player.get_pos().clone(), 
@@ -45,11 +42,8 @@ impl <'a> Game <'a> {
 
     pub fn update(&mut self, delta_time: f32) {
         self.player.update(delta_time);
-        let tile_atlas_t = self.world.am.get_tile_atlas_t(); 
-        self.world.cm.generate(self.player.get_pos().clone(), 
-            tile_atlas_t,
-            2
-        );
+        self.world.cm.generate(self.player.get_pos().clone());
+        self.world.sm.camera.set_target(self.player.get_pos());
     }
 
     pub fn fixed_update(&mut self, _time_step: f32) {

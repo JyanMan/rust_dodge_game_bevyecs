@@ -12,6 +12,50 @@ pub struct Vector2 {
     pub y: f32
 }
 
+impl ops::Sub<Vector2> for Vector2 {
+    type Output = Vector2;
+
+    fn sub(self, other: Vector2) -> Vector2 {
+        Vector2 {
+            x: self.x - other.x,
+            y: self.y - other.y
+        }
+    }
+} 
+
+impl<'a> ops::Sub<&'a Vector2> for Vector2 {
+    type Output = Vector2;
+
+    fn sub(self, rhs: &'a Vector2) -> Vector2 {
+        Vector2 {
+            x: self.x - rhs.x,
+            y: self.y - rhs.y,
+        }
+    }
+}
+
+impl<'a> ops::Sub<Vector2> for &'a Vector2 {
+    type Output = Vector2;
+
+    fn sub(self, rhs: Vector2) -> Vector2 {
+        Vector2 {
+            x: self.x - rhs.x,
+            y: self.y - rhs.y,
+        }
+    }
+}
+
+impl<'a, 'b> ops::Sub<&'b Vector2> for &'a Vector2 {
+    type Output = Vector2;
+
+    fn sub(self, rhs: &'b Vector2) -> Vector2 {
+        Vector2 {
+            x: self.x - rhs.x,
+            y: self.y - rhs.y,
+        }
+    }
+}
+
 impl Vector2 {
     pub fn new(x: f32, y:f32) -> Self {
         Self {

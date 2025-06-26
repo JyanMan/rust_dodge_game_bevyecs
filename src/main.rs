@@ -1,8 +1,6 @@
 use sdl2::pixels::Color;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
-use std::time::{Instant, Duration};
-use sdl2::hint;
 
 mod game;
 mod config;
@@ -12,6 +10,7 @@ mod managers;
 mod components;
 mod math_helper;
 mod world;
+mod ecs;
 
 pub fn main() {
     sdl2::hint::set("SDL_RENDER_DRIVER", "opengl");
@@ -30,6 +29,8 @@ pub fn main() {
         unwrap();
 
     let t_creator = canvas.texture_creator();
+    sdl2::hint::set("SDL_RENDER_SCALE_QUALITY", "0");
+
     let mut game = game::Game::new(&t_creator);
 
     let mut dt_accumulator = 0.0;
@@ -41,14 +42,11 @@ pub fn main() {
     // canvas.present();
     let mut event_pump = sdl_context.event_pump().unwrap();
 
-    let mut delta_time = 0.0;
+    let mut delta_time;
     let mut last_time = timer_subsystem.performance_counter() as f32;
-    let mut curr_time: f32 = 0.0;
-    // let target_frametime = Duration::from_micros(16_666);
-    //let mut i = 0;
+    let mut curr_time;
+
     'running: loop {
-        // let frame_start = Instant::now();
-        // i = (i + 1) % 255;
         canvas.set_draw_color(Color::RGB(100, 100, 100));
         canvas.clear();
 
@@ -76,10 +74,6 @@ pub fn main() {
         game.draw(&mut canvas);
         // The rest of the game loop goes here...
         canvas.present();
-        // let elapsed = frame_start.elapsed();
-        // if elapsed < target_frametime {
-        //     std::thread::sleep(target_frametime - elapsed);
-        // }
         // ::std::thread::sleep(Duration::new(0, 1_000_000_000u32 / 60));
     }
 }
