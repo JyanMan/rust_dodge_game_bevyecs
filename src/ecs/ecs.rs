@@ -1,25 +1,33 @@
 use std::rc::Rc;
 use std::cell::RefCell;
+use std::collections::HashSet;
+use std::any::TypeId;
+use crate::core::renderer::*;
 use crate::ecs::entity::*;
 use crate::ecs::component::*;
 use crate::ecs::system::*;
 use crate::ecs::component_manager::*;
-use crate::ecs::system_manager::*;
 use crate::ecs::entity_manager::*;
 
 #[derive(Default)]
 pub struct ECS {
     component_m: ComponentManager,
-    system_m: SystemManager,
     entity_m: EntityManager,
+    startup_systems: Vec<StartFn>,
+    draw_systems: Vec<DrawFn>,
+    update_systems: Vec<UpdateFn>,
+    fixed_update_systems: Vec<FixedUpdateFn>,
 }
 
 impl ECS {
     pub fn new() -> Self {
         Self {
             component_m: ComponentManager::default(),
-            system_m: SystemManager::default(),
             entity_m: EntityManager::new(),
+            startup_systems: vec![],
+            draw_systems: vec![],
+            update_systems: vec![],
+            fixed_update_systems: vec![],
         }
     }
 
@@ -30,7 +38,7 @@ impl ECS {
     pub fn destroy_entity(&mut self, entity: Entity) {
         self.entity_m.destroy_entity(entity);
         self.component_m.entity_destroyed(entity);
-        self.system_m.entity_destroyed(entity);
+        // self.system_m.entity_destroyed(entity);
     }
 
     pub fn register_component<T: 'static + Default>(&mut self) {
@@ -44,7 +52,6 @@ impl ECS {
         signature |= 1 << self.component_m.get_component_type::<T>().unwrap();
         
         self.entity_m.set_signature(entity, signature);
-        self.system_m.entity_signature_changed(entity, signature);
     }
 
     pub fn remove_component<T: 'static>(&mut self, entity: Entity) {
@@ -54,7 +61,7 @@ impl ECS {
         signature &= !(1 << self.component_m.get_component_type::<T>().unwrap());
         
         self.entity_m.set_signature(entity, signature);
-        self.system_m.entity_signature_changed(entity, signature);
+        // self.system_m.entity_signature_changed(entity, signature);
     }
 
     pub fn get_component<T: 'static>(&self, entity: Entity) -> Option<&T> {
@@ -69,12 +76,68 @@ impl ECS {
         self.component_m.get_component_type::<T>()
     }
 
-    pub fn register_system<T: 'static + System + Default>(&mut self) -> Rc<RefCell<T>> {
-        self.system_m.register_system::<T>()
+    // pub fn register_system_startup<T: 'static + FnMut(&mut ECS, &mut Renderer)>(&mut self, system: T) {
+    //     self.system_m.register_system_startup::<T>(system);
+    // }
+    pub fn call_startup_systems(&mut self, renderer: &mut Renderer) {
+        // Take the list out to avoid mutable borrow overlap
+        let mut systems = std::mem::take(&mut self.startup_systems);
+
+        for system in systems.iter_mut() {
+            system(self, renderer); // Now we can safely borrow `self` mutably
+        }
+        // Put them back after running
+        self.startup_systems = systems;
+    }
+    pub fn call_draw_systems(&mut self, renderer: &mut Renderer) {
+        // Take the list out to avoid mutable borrow overlap
+        // println!("size of systems draw: {}", self.draw_systems.len());
+        let mut systems = std::mem::take(&mut self.draw_systems);
+
+
+        for system in systems.iter_mut() {
+            system(self, renderer); // Now we can safely borrow `self` mutably
+        }
+        // Put them back after running
+        self.draw_systems = systems;
+        // println!("AFTER SIZE: {}", self.startup_systems.len());
+    }
+    pub fn call_update_systems(&mut self, delta_time: f32) {
+        let mut systems = std::mem::take(&mut self.update_systems);
+
+
+        for system in systems.iter_mut() {
+            system(self, delta_time); // Now we can safely borrow `self` mutably
+        }
+        // Put them back after running
+        self.update_systems = systems;
+    }
+    pub fn call_fixed_update_systems(&mut self, time_step: f32) {
+        let mut systems = std::mem::take(&mut self.fixed_update_systems);
+
+        for system in systems.iter_mut() {
+            system(self, time_step); // Now we can safely borrow `self` mutably
+        }
+        // Put them back after running
+        self.fixed_update_systems = systems;
     }
 
-    pub fn set_system_signature<T: 'static>(&mut self, signature: Signature) {
-        self.system_m.set_signature::<T>(signature);
+    pub fn register_system_startup(&mut self, system: StartFn) {
+        self.startup_systems.push(Box::new(system));
+    }
+
+    pub fn register_system_draw(&mut self, system: DrawFn) {
+        self.draw_systems.push(Box::new(system));
+    }
+    pub fn register_system_update(&mut self, system: UpdateFn) {
+        self.update_systems.push(Box::new(system));
+    }
+    pub fn register_system_fixed_update(&mut self, system: FixedUpdateFn) {
+        self.fixed_update_systems.push(Box::new(system));
+    }
+
+    pub fn query_entities(&self, component_types: &[TypeId]) -> HashSet<Entity> {
+        self.component_m.query_entities(component_types)
     }
 }
 

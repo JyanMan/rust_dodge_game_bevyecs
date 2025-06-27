@@ -6,4 +6,3 @@ pub mod system;
 pub mod system_manager;
 // pub mod coordinator;
 pub mod ecs;
-pub mod query;

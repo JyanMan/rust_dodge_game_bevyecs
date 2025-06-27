@@ -40,7 +40,7 @@ pub fn main() {
 
     sdl2::hint::set("SDL_RENDER_SCALE_QUALITY", "0");
 
-    let mut game = game::Game::new(&t_creator, &mut renderer.asset_m);
+    let mut game = game::Game::new(&t_creator, &mut renderer);
 
     let mut dt_accumulator = 0.0;
     let fps: f32 = 60.0;
