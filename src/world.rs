@@ -1,5 +1,5 @@
 use sdl2::render::*;
-use crate::systems::asset_manager::*;
+use crate::managers::asset_manager::*;
 use sdl2::video::WindowContext;
 use crate::components::camera::*;
 // use crate::managers::chunk_manager::*;

@@ -2,8 +2,8 @@ use sdl2::render::*;
 use sdl2::rect::*;
 use sdl2::pixels::Color;
 use std::rc::Rc;
-use crate::managers::renderer::*;
-use crate::systems::asset_manager::*;
+use crate::core::renderer::*;
+use crate::managers::asset_manager::*;
 use crate::math_helper::*;
 
 #[derive(Default, Clone)]
@@ -15,6 +15,7 @@ pub struct Sprite {
     vert: i32,
     height: i32,
     width: i32,
+    frame: i32,
 }
 
 impl <'a> Sprite {
@@ -29,6 +30,7 @@ impl <'a> Sprite {
            vert: 1,
            width: width as i32,
            height: height as i32,
+           frame: 0,
         }
     }
 
@@ -45,8 +47,11 @@ impl <'a> Sprite {
         self.hor = hor;
         self.vert = vert;
     }
+    pub fn draw(&self, renderer: &mut Renderer, pos: &Vector2) {
+        self.draw_frame(renderer, pos, self.frame);
+    }
 
-    pub fn draw(&self, renderer: &mut Renderer, pos: &Vector2, frame: i32) {
+    pub fn draw_frame(&self, renderer: &mut Renderer, pos: &Vector2, frame: i32) {
 
         let px_w = self.width as i32;
         let px_h = self.height as i32;

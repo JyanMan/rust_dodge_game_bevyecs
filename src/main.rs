@@ -5,6 +5,7 @@ use sdl2::keyboard::Keycode;
 mod game;
 mod config;
 // mod structs;
+mod core;
 mod systems;
 mod managers;
 mod components;
@@ -12,8 +13,8 @@ mod math_helper;
 mod world;
 mod ecs;
 
-use crate::managers::renderer::*;
-use crate::systems::asset_manager::*;
+use crate::core::renderer::*;
+use crate::managers::asset_manager::*;
 
 pub fn main() {
     sdl2::hint::set("SDL_RENDER_DRIVER", "opengl");

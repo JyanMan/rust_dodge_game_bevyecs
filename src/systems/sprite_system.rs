@@ -1,13 +1,13 @@
 use std::collections::HashSet;
 use std::any::Any;
 use crate::components::position::*;
-use crate::systems::asset_manager::*;
-use crate::managers::renderer::*;
-use crate::math_helper::*;
+use crate::core::renderer::*;
 use crate::components::sprite::*;
 use crate::ecs::system::*;
 use crate::ecs::entity::*;
 use crate::ecs::ecs::*;
+use crate::math_helper::*;
+use crate::managers::asset_manager::*;
 
 #[derive(Default)]
 pub struct SpriteSystem {
@@ -17,12 +17,6 @@ pub struct SpriteSystem {
 impl System for SpriteSystem {
     fn entities(&mut self) -> &mut HashSet<Entity> {
         &mut self.entities 
-    }
-    fn as_any(&self) -> &dyn Any {
-        self
-    }
-    fn as_any_mut(&mut self) -> &mut dyn Any {
-        self
     }
 }
 
@@ -43,7 +37,6 @@ impl SpriteSystem {
                 sprite.draw(
                     renderer, 
                     &Vector2::new(position.x, position.y),
-                    0
                 );
             }
         }
