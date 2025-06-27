@@ -1,15 +1,10 @@
-use raylib::prelude::{ RaylibDrawHandle };
 use crate::structs::player::*;
 
-pub enum Entity {
-    Player(Player),
+pub enum Entity <'a> {
+    Player(Player <'a> ),
 }
 
-impl Entity {
-    // pub fn new(&mut self) {
-    //     Entity::Player(p)
-    // }
-
+impl <'a> Entity <'a> {
     pub fn update(&mut self, delta_time: f32) {
         match self {
             Entity::Player(p) => p.update(delta_time),

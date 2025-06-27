@@ -4,19 +4,19 @@ use crate::components::camera::*;
 use crate::components::sprite::*;
 use crate::math_helper::*;
 
-pub struct SpriteManager <'a> {
+pub struct SpriteManager {
     pub camera: Camera,
-    sprites_vec: Vec<Sprite<'a>>
+    sprites_vec: Vec<Sprite>
 }
 
-impl <'a> SpriteManager <'a> {
+impl SpriteManager {
     pub fn new() -> Self {
         Self {
             camera: Camera::new(),
             sprites_vec: vec![],
         }
     }
-    pub fn create_sprite(texture: Rc<Texture<'a>>) {
+    pub fn create_sprite(texture: Rc<Texture<'static>>) {
     }
 
     pub fn draw(&mut self, canvas: &mut WindowCanvas, sprite: Sprite, pos: &Vector2, frame: i32)  {

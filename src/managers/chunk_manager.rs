@@ -7,17 +7,17 @@ use crate::math_helper::*;
 use crate::components::sprite::*;
 use crate::config::*;
 
-pub struct ChunkManager <'a> {
-    chunks_map: HashMap<Point, Rc<RefCell<Chunk<'a>>>>,
-    chunks_arr: Vec<Rc<RefCell<Chunk<'a>>>>,
+pub struct ChunkManager  {
+    chunks_map: HashMap<Point, Rc<RefCell<Chunk>>>,
+    chunks_arr: Vec<Rc<RefCell<Chunk>>>,
     new_chunk_points: Vec<Point>,
     render_dist: i32,
     world_pos: Vector2,
-    sprite: Rc<Sprite<'a>>
+    sprite: Rc<Sprite>
 }
 
-impl <'a> ChunkManager <'a> {
-    pub fn new(world_pos: Vector2, tile_atlas_t: Rc<Texture>, render_dist: i32) -> ChunkManager {
+impl  ChunkManager  {
+    pub fn new(world_pos: Vector2, tile_atlas_t: Rc<Texture<'static>>, render_dist: i32) -> ChunkManager {
         // init sprite here, all reused by chunks
         let mut sprite = Sprite::new(tile_atlas_t.clone());
         sprite.set_sprite_sheet(4, 2);

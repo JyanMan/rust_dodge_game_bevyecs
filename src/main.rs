@@ -4,13 +4,16 @@ use sdl2::keyboard::Keycode;
 
 mod game;
 mod config;
-mod structs;
+// mod structs;
 mod systems;
 mod managers;
 mod components;
 mod math_helper;
 mod world;
 mod ecs;
+
+use crate::managers::renderer::*;
+use crate::systems::asset_manager::*;
 
 pub fn main() {
     sdl2::hint::set("SDL_RENDER_DRIVER", "opengl");
@@ -29,9 +32,14 @@ pub fn main() {
         unwrap();
 
     let t_creator = canvas.texture_creator();
+    let mut renderer = Renderer {
+        canvas: canvas,
+        asset_m: AssetManager::new(&t_creator),
+    };
+
     sdl2::hint::set("SDL_RENDER_SCALE_QUALITY", "0");
 
-    let mut game = game::Game::new(&t_creator);
+    let mut game = game::Game::new(&t_creator, &mut renderer.asset_m);
 
     let mut dt_accumulator = 0.0;
     let fps: f32 = 60.0;
@@ -47,8 +55,8 @@ pub fn main() {
     let mut curr_time;
 
     'running: loop {
-        canvas.set_draw_color(Color::RGB(100, 100, 100));
-        canvas.clear();
+        renderer.canvas.set_draw_color(Color::RGB(100, 100, 100));
+        renderer.canvas.clear();
 
         curr_time = timer_subsystem.performance_counter() as f32;
         delta_time = (curr_time - last_time) / timer_subsystem.performance_frequency() as f32;
@@ -71,9 +79,9 @@ pub fn main() {
             }
         }
         game.update(delta_time);
-        game.draw(&mut canvas);
+        game.draw(&mut renderer);
         // The rest of the game loop goes here...
-        canvas.present();
+        renderer.canvas.present();
         // ::std::thread::sleep(Duration::new(0, 1_000_000_000u32 / 60));
     }
 }

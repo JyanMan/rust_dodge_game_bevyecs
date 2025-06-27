@@ -3,6 +3,12 @@ use sdl2::image::*;
 use sdl2::video::WindowContext;
 use std::rc::Rc;
 
+#[derive(Clone, Default)]
+pub enum TextureId {
+    #[default]
+    Player
+}
+
 pub struct AssetManager <'a> {
     player_t: Rc<Texture<'a>>,
     tile_atlas_t: Rc<Texture<'a>>,
@@ -18,6 +24,12 @@ impl <'a> AssetManager <'a> {
         Self {
             player_t: player_t,
             tile_atlas_t: tile_atlas_t,
+        }
+    }
+
+    pub fn get_texture(&self, t_id: TextureId) -> Rc<Texture<'a>> {
+        match t_id {
+            TextureId::Player => self.player_t.clone() 
         }
     }
 

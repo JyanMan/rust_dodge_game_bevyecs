@@ -6,18 +6,18 @@ use crate::math_helper::*;
 use crate::components::sprite::*;
 use fastnoise_lite::*;
 
-pub struct Chunk <'a> {
+pub struct Chunk {
     world_pos: Vector2,
     pub chunk_pos: Point,
-    tiles_arr: Vec<Tile <'a>>,
+    tiles_arr: Vec<Tile>,
     max_height: i32,
     base_y: i32,
     pub is_active: bool,
     noise: FastNoiseLite,
 }
 
-impl <'a> Chunk <'a> {
-    pub fn new(world_pos: Vector2, sprite: Rc<Sprite<'a>>) -> Chunk {
+impl Chunk {
+    pub fn new(world_pos: Vector2, sprite: Rc<Sprite>) -> Chunk {
         // init tiles_array all empty
         let tiles_arr: Vec<Tile> = std::iter::repeat_with(|| {Tile::new(sprite.clone())}).
             take((CHUNK_SIZE * CHUNK_SIZE) as usize).

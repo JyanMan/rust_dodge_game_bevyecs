@@ -2,10 +2,14 @@ use sdl2::render::*;
 use sdl2::rect::*;
 use sdl2::pixels::Color;
 use std::rc::Rc;
+use crate::managers::renderer::*;
+use crate::systems::asset_manager::*;
 use crate::math_helper::*;
 
-pub struct Sprite <'a> {
-    texture: Rc<Texture<'a>>,
+#[derive(Default, Clone)]
+pub struct Sprite {
+    // texture: Option<Rc<Texture<'static>>>,
+    texture_id: TextureId,
     pub scale: f32,
     hor: i32,
     vert: i32,
@@ -13,12 +17,13 @@ pub struct Sprite <'a> {
     width: i32,
 }
 
-impl <'a> Sprite <'a> {
-    pub fn new(texture: Rc<Texture <'a>>) -> Self {
+impl <'a> Sprite {
+    pub fn new(texture: Rc<Texture<'a>>, t_id: TextureId) -> Self {
         let width = texture.query().width;
         let height = texture.query().height;
         Self {
-           texture: texture,
+            texture_id: t_id,
+           // texture: Some(texture),
            scale: 1.0,
            hor: 1,
            vert: 1,
@@ -27,27 +32,21 @@ impl <'a> Sprite <'a> {
         }
     }
 
+    pub fn init(&mut self, texture: Rc<Texture <'a>>, t_id: TextureId) {
+        let width = texture.query().width;
+        let height = texture.query().height;
+        self.width = width as i32;
+        self.height = height as i32;
+        self.texture_id = t_id;
+        // self.texture = Some(texture);
+    }
+
     pub fn set_sprite_sheet(&mut self, hor: i32, vert: i32) {
         self.hor = hor;
         self.vert = vert;
     }
 
-    pub fn draw(&self, canvas: &mut WindowCanvas, pos: &Vector2, frame: i32) {
-            // set the width of each frame
-    // int cell_width = s->px_w / s->hor;
-    // int cell_height = s->px_h / s->vert;
-
-    // // determine which cell a frame corresponds to
-    // int frame_x = (s->is_spritesheet) ? cell_width * (frame % s->hor) : 0;
-    // int frame_y = (s->is_spritesheet) ? cell_height * SDL_floorf((float)frame / s->hor) : 0;
-
-    // const SDL_Rect src_rect = (SDL_Rect) { frame_x, frame_y, cell_width, cell_height };
-    // const SDL_Rect dest_rect = (SDL_Rect) { 
-    //     f_roundtoint(pos.x), 
-    //     f_roundtoint(pos.y), 
-    //     s->width * scale,
-    //     s->height * scale
-    // };
+    pub fn draw(&self, renderer: &mut Renderer, pos: &Vector2, frame: i32) {
 
         let px_w = self.width as i32;
         let px_h = self.height as i32;
@@ -67,16 +66,12 @@ impl <'a> Sprite <'a> {
             cell_w as u32 * 1, // scale
             cell_h as u32 * 1 // scale
         );
-        // const SDL_Rect dest_rect = (SDL_Rect) { 
-        //     f_roundtoint(pos.x), 
-        //     f_roundtoint(pos.y), 
-        //     s->width * scale,
-        //     s->height * scale
-        // };
 
-        canvas.set_draw_color(Color::WHITE);
-        let _ =canvas.copy_ex(
-            &*self.texture,
+        renderer.canvas.set_draw_color(Color::WHITE);
+        let texture = renderer.asset_m.get_texture(self.texture_id.clone());
+        // let texture = self.texture.clone().unwrap();
+        let _ = renderer.canvas.copy_ex(
+            &*texture,
             src_rect,
             dest_rect,
             0.0,

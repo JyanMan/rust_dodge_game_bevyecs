@@ -3,6 +3,7 @@ use crate::ecs::entity::*;
 
 pub const MAX_ENTITIES: usize = 10;
 
+#[derive(Default)]
 pub struct EntityManager {
     unused_entities: VecDeque<Entity>,
     entity_signatures: [Signature; MAX_ENTITIES],
@@ -32,7 +33,7 @@ impl EntityManager {
         id
     }
 
-    pub fn delete_entity(&mut self, entity: Entity) {
+    pub fn destroy_entity(&mut self, entity: Entity) {
         assert!(self.used_entities_count < MAX_ENTITIES as i32);
 
         // set the entity signature at index to be empty sign
@@ -47,7 +48,7 @@ impl EntityManager {
         assert!(self.used_entities_count < MAX_ENTITIES as i32);
         self.entity_signatures[entity] = sign;
     }
-    pub fn get_signature(&self, entity: Entity) {
-        self.entity_signatures[entity];
+    pub fn get_signature(&self, entity: Entity) -> Signature {
+        self.entity_signatures[entity]
     }
 }

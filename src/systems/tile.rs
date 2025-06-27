@@ -14,15 +14,15 @@ pub enum TileType {
     Air = 5,
 }
 
-pub struct Tile <'a> {
+pub struct Tile {
     tile_pos: Point,
     world_pos: Vector2,
-    sprite: Rc<Sprite<'a>> ,
+    sprite: Rc<Sprite> ,
     tile_type: TileType,
 }
 
-impl <'a> Tile <'a> {
-    pub fn new(sprite: Rc<Sprite<'a>>) -> Tile {
+impl Tile {
+    pub fn new(sprite: Rc<Sprite>) -> Tile {
         // let mut sprite = Sprite::new(tile_atlas_t);
         // sprite.set_sprite_sheet(4, 2);
         let world_pos = Vector2::new(0.0, 0.0);

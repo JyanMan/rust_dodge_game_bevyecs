@@ -3,6 +3,7 @@ use crate::ecs::entity::*;
 use std::any::TypeId;
 use std::collections::HashMap;
 
+#[derive(Default)]
 pub struct ComponentManager {
     component_types: HashMap<TypeId, ComponentType>,
     component_arrays: HashMap<TypeId, Box<dyn IComponentArray>>,
@@ -16,7 +17,7 @@ impl ComponentManager {
         .get_mut(&type_id)
         .and_then(|array| array.as_any_mut().downcast_mut::<ComponentArray<T>>())
     }
-    fn get_component_array<T: 'static>(&mut self) -> Option<&ComponentArray<T>> {
+    fn get_component_array<T: 'static>(&self) -> Option<&ComponentArray<T>> {
         let type_id = TypeId::of::<T>();
         self.component_arrays
         .get(&type_id)
@@ -55,6 +56,14 @@ impl ComponentManager {
         else {
             panic!("Component type not registered!");
         }
+    }
+
+    pub fn get_component<T: 'static>(&self, entity: Entity) -> Option<&T> {
+        self.get_component_array::<T>().unwrap().get(entity)
+    }
+
+    pub fn get_component_mut<T: 'static>(&mut self, entity: Entity) -> Option<&mut T> {
+        self.get_component_array_mut::<T>().unwrap().get_mut(entity)
     }
 
     pub fn entity_destroyed(&mut self, entity: Entity) {
