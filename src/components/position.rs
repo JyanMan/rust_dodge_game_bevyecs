@@ -32,6 +32,28 @@ impl ops::Mul<Position> for Position {
     }
 }
 
+impl ops::Div<Position> for Position {
+    type Output = Position;
+
+    fn div(self, other: Position) -> Position {
+        Position {
+            x: self.x / other.x,
+            y: self.y / other.y
+        }
+    }
+}
+
+impl ops::Div<f32> for Position {
+    type Output = Position;
+
+    fn div(self, other: f32) -> Position {
+        Position {
+            x: self.x / other,
+            y: self.y / other
+        }
+    }
+}
+
 impl ops::Add<Position> for Position {
     type Output = Position;
 

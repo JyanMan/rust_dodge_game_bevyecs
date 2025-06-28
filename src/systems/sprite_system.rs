@@ -19,13 +19,13 @@ pub fn sprite_draw_system() -> DrawFn {
                 ecs.get_component::<Position>(e),
                 ecs.get_component::<Sprite>(e),
             ) {
-                if let Some(_p_tag) = ecs.get_component::<PlayerTag>(e) {
-                    let p_pos = pos - renderer.camera.get_pos();
-                    renderer.draw(sprite, &p_pos, 1.0);
-                }
-                else {
-                    renderer.draw_to_cam(sprite, pos, 1.0);
-                }
+                // if let Some(_p_tag) = ecs.get_component::<PlayerTag>(e) {
+                //     let p_pos = pos - renderer.camera.get_pos();
+                //     renderer.draw(sprite, &p_pos, 1.0);
+                // }
+                // else {
+                // }
+                renderer.draw_to_cam(sprite, pos, 1.0);
 
                 if let Some(_p_tag) = ecs.get_component::<PlayerTag>(e) {
                     renderer.camera.set_target(&pos);

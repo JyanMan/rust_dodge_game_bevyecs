@@ -94,6 +94,9 @@ impl ChunkManager {
                     x: chunk_pos.x + x - self.render_dist / 2, 
                     y: chunk_pos.y + y - self.render_dist / 2 
                 };
+                // println!("chunk pos source: x: {}, y: {} ------ chunk_pos: x: {}, y: {}",
+                //     chunk_pos.x, chunk_pos.y, n_chunk_pos.x, n_chunk_pos.y
+                //     );
                 // set active if on chunk_map
                 if let Some(index) = self.chunks_map.get(&n_chunk_pos) {
                     let chunk = self.chunks_arr.get_mut(*index).expect("invalid index");
@@ -115,6 +118,7 @@ impl ChunkManager {
                     // refer to new_points for new points to generate
                     let c_chunk_pos = self.new_chunk_points.pop().expect("invalid index"); 
                                                                  // rendered chunks
+                    println!("n_chunk_pos: {}, {}", chunk.chunk_pos.x, chunk.chunk_pos.y);
                     // move chunk reference with the new point key
                     self.chunks_map.remove(&chunk.chunk_pos);
                     self.chunks_map.insert(c_chunk_pos.clone(), index);

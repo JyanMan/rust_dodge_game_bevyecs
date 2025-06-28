@@ -69,8 +69,8 @@ impl Sprite {
         let dest_rect = Rect::new(
             pos.x.round() as i32,         
             pos.y.round() as i32,
-            cell_w as u32 * scale as u32, // scale
-            cell_h as u32 * scale as u32 // scale
+            (cell_w as f32 * scale).round() as u32, // scale
+            (cell_h as f32 * scale).round() as u32 // scale
         );
 
         let texture = renderer.asset_m.get_texture(self.texture_id.clone());

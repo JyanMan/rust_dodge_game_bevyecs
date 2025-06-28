@@ -14,7 +14,7 @@ pub fn chunk_startup_system() -> StartFn {
         ecs.add_component::<ChunkManager>(chunk_m, ChunkManager::new(
             Position::new(0.0, 0.0),
             &renderer.asset_m,
-            3,
+            2,
         ));
     })
 }

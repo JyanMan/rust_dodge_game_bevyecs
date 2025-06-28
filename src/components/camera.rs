@@ -21,7 +21,7 @@ impl Camera {
     }
 
     pub fn set_target(&mut self, target_pos: &Position) {
-        let screen_center = Position::new(SCREEN_WIDTH as f32 / 2.0, SCREEN_HEIGHT as f32 / 2.0);
+        let screen_center = Position::new(HALF_WIDTH_F, HALF_HEIGHT_F) / self.scale;
         self.target_pos = target_pos.clone() - screen_center;
     }
 
