@@ -1,6 +1,4 @@
 use std::collections::HashMap;
-use std::rc::Rc;
-use std::cell::RefCell;
 use crate::components::position::*;
 use crate::core::renderer::*;
 use crate::components::sprite::*;
@@ -10,8 +8,8 @@ use crate::math_helper::*;
 
 #[derive(Clone, Default)]
 pub struct ChunkManager  {
-    chunks_map: HashMap<Point, Rc<RefCell<Chunk>>>,
-    chunks_arr: Vec<Rc<RefCell<Chunk>>>,
+    chunks_map: HashMap<Point, usize>,
+    chunks_arr: Vec<Chunk>,
     new_chunk_points: Vec<Point>,
     render_dist: i32,
     world_pos: Position,
@@ -19,47 +17,56 @@ pub struct ChunkManager  {
 }
 
 impl ChunkManager {
-    pub fn new(world_pos: Position, asset_m: &AssetManager, render_dist: i32) -> ChunkManager {
-        // init sprite here, all reused by chunks
+    pub fn new(world_pos: Position, asset_m: &AssetManager, h_render_dist: i32) -> ChunkManager {
+
+        // init sprite here so chunks and tiles don't create one for themselves
         let mut sprite = Sprite::new(asset_m, TextureId::TileAtlas);
         sprite.set_sprite_sheet(4, 2);
-        // let sprite_rc = Rc::new(sprite);
 
-        // notice mul by 2, you see, the render dist is only for one side
-        // meaning you mul by 2 to give space for both right, left, bottom, and top
-        let size = render_dist * 2 * render_dist * 2;
+
+        // notice mul by 2, the h_render_dist is only for one side
+        // meaning you mul by 2 to give space for both right and top
+        // this also disallows odd number rendering
+        let render_dist: i32 = h_render_dist * 2; 
+        let size = render_dist * render_dist;
 
         let mut new_chunk_points = Vec::new();
         new_chunk_points.reserve_exact(size as usize);
 
-        // reserve chunks with default value
-        let chunks_arr = std::iter::repeat_with(|| {
-                Rc::new(
-                    RefCell::new(
-                        Chunk::new(world_pos.clone()) 
-                    )
-                ) 
-            })
-            .take(size as usize)
-            .collect();
+        // init chunks array with default value and size
+        let mut chunks_arr = vec![Chunk::new(Position::new(0.0, 0.0)); size as usize];
+        let mut chunks_map = HashMap::new();
+
+        for y in 0..render_dist {
+            for x in 0..render_dist {
+                // index is contiguous flat array
+                let index = (y * render_dist + x) as usize;
+
+                // subtract by render dist / 2 to center the chunks on target: Player
+                let new_chunk_pos = world_to_chunk(&world_pos) + Point{
+                    x: x - render_dist / 2, 
+                    y: y - render_dist / 2
+                };
+                let new_world_pos = chunk_to_world(&(new_chunk_pos));
+
+                chunks_arr.get_mut(index).expect("invalid index")
+                    .set(new_world_pos);
+
+                chunks_map.insert(new_chunk_pos, index);
+            }
+        }
 
 
         // init default values of chunk manager
         let mut cm = ChunkManager {
             render_dist: render_dist,
-            chunks_map:  HashMap::new(),
+            chunks_map: chunks_map,
             // init values of chunks within array
-            chunks_arr: chunks_arr,             world_pos: world_pos.clone(),
+            chunks_arr: chunks_arr,             
+            world_pos: world_pos.clone(),
             new_chunk_points: new_chunk_points,
             sprite: sprite,
         };
-
-        // store pointer of chunks to hashmap
-        for chunk_rc in cm.chunks_arr.iter_mut() {
-            let chunk_pos = chunk_rc.borrow().chunk_pos();
-            chunk_rc.borrow_mut().is_active = true;
-            cm.chunks_map.insert(chunk_pos, chunk_rc.clone());
-        }
 
         cm.generate(world_pos.clone());
 
@@ -67,51 +74,64 @@ impl ChunkManager {
     }
 
     pub fn generate(&mut self, world_pos: Position) {
-        // let mut new_points: Vec<Point> = vec![];
+
         self.world_pos = world_pos;
+
+        // new chunk points to save unrendered new chunk positions
+        self.new_chunk_points.clear();
 
         let chunk_pos: Point = world_to_chunk(&self.world_pos);
 
         // default all to inactive
         for chunk_rc in self.chunks_arr.iter_mut() {
-            chunk_rc.borrow_mut().is_active = false;
+            chunk_rc.is_active = false;
         }
 
-        for y in -self.render_dist..self.render_dist {
-            for x in -self.render_dist..self.render_dist {
-                let n_chunk_pos = Point { x: chunk_pos.x + x, y: chunk_pos.y + y };
-                // set active if on chunk_pos
-                if let Some(chunk_rc) = self.chunks_map.get(&n_chunk_pos) {
-                    chunk_rc.borrow_mut().is_active = true;
+        for y in 0..self.render_dist {
+            for x in 0..self.render_dist {
+                // calc chunk position ---> key to chunks_map
+                let n_chunk_pos = Point {
+                    x: chunk_pos.x + x - self.render_dist / 2, 
+                    y: chunk_pos.y + y - self.render_dist / 2 
+                };
+                // set active if on chunk_map
+                if let Some(index) = self.chunks_map.get(&n_chunk_pos) {
+                    let chunk = self.chunks_arr.get_mut(*index).expect("invalid index");
+                    chunk.is_active = true;
                 } 
                 else {
+                // set all unsaved chunks to new_chunk_points
                     self.new_chunk_points.push(n_chunk_pos);
                 }
             }
         }
 
-        // println!("size of arr: {}, size of map: {}", self.chunks_arr.len(), self.chunks_map.len());
-        for chunk_rc in self.chunks_arr.iter_mut() {
-            let mut chunk = chunk_rc.borrow_mut();
-            if !chunk.is_active {
-                let c_chunk_pos = self.new_chunk_points.pop().unwrap(); // refer to new_points for new
-                                                             // rendered chunks
-                // move chunk reference with the new point key
-                self.chunks_map.remove(&chunk.chunk_pos);
-                self.chunks_map.insert(c_chunk_pos.clone(), chunk_rc.clone());
+        for y in 0..self.render_dist {
+            for x in 0..self.render_dist {
+                let index = (y * self.render_dist + x) as usize;
+                let chunk = self.chunks_arr.get_mut(index).expect("invalid index");
 
-                // set new value based on pos
-                // note that once you set, the chunk automatically changes its tile frames based
-                // on that pos, draw function will adjust it, no need of new tile alloc
-                let c_world_pos = chunk_to_world(&c_chunk_pos);
-                chunk.set(c_world_pos);
+                if !chunk.is_active {
+                    // refer to new_points for new points to generate
+                    let c_chunk_pos = self.new_chunk_points.pop().expect("invalid index"); 
+                                                                 // rendered chunks
+                    // move chunk reference with the new point key
+                    self.chunks_map.remove(&chunk.chunk_pos);
+                    self.chunks_map.insert(c_chunk_pos.clone(), index);
+
+                    /* set new value based on pos
+                    *  note that once you set, the chunk automatically changes its tile frames based
+                    *  on that pos, no need of new tile alloc RECYCLING */
+                    let c_world_pos = chunk_to_world(&c_chunk_pos);
+                    chunk.set(c_world_pos);
+                }
             }
         }
     }
 
     pub fn draw(&mut self, renderer: &mut Renderer) {
-        for chunk_rc in self.chunks_arr.iter_mut() {
-            chunk_rc.borrow_mut().draw(renderer, &self.sprite);
+        for chunk in self.chunks_arr.iter_mut() {
+            chunk.draw(renderer, &self.sprite);
         }
     }
 }

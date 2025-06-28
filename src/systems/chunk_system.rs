@@ -14,7 +14,7 @@ pub fn chunk_startup_system() -> StartFn {
         ecs.add_component::<ChunkManager>(chunk_m, ChunkManager::new(
             Position::new(0.0, 0.0),
             &renderer.asset_m,
-            4,
+            3,
         ));
     })
 }
@@ -33,7 +33,6 @@ pub fn chunk_update_system() -> UpdateFn {
                 ecs.get_component::<PlayerTag>(e)
             ) {
                 let player_pos = p_pos.clone();
-
                 for cm in chunk_managers.iter() {
                     if let Some(chunk_m) = ecs.get_component_mut::<ChunkManager>(*cm) {
                         chunk_m.generate(player_pos);

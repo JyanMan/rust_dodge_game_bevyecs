@@ -13,11 +13,21 @@ pub fn lerp_pos(a: &Position, b: &Position, t: f32) -> Position {
     }
 }
 
-#[derive(Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Hash, PartialEq, Eq, Default)]
 pub struct Point {
     pub x: i32, pub y: i32
 }
 
+impl ops::Add<Point> for Point {
+    type Output = Point;
+
+    fn add(self, other: Point) -> Point {
+        Point {
+            x: self.x + other.x,
+            y: self.y + other.y
+        }
+    }
+}
 
 impl ops::Mul<f32> for Point {
     type Output = Point;
@@ -55,7 +65,7 @@ pub fn world_to_tile(world_pos: &Position) -> Point {
 }
 
 #[inline(always)]
-pub fn tile_to_world(tile_pos: Point) -> Position {
+pub fn tile_to_world(tile_pos: &Point) -> Position {
     return Position {
         x: (tile_pos.x * TILE_SIZE) as f32,
         y: (tile_pos.y * TILE_SIZE) as f32,
