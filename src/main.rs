@@ -10,11 +10,11 @@ mod systems;
 mod managers;
 mod components;
 mod math_helper;
-mod world;
 mod ecs;
 
 use crate::core::renderer::*;
 use crate::managers::asset_manager::*;
+use crate::components::camera::Camera;
 
 pub fn main() {
     sdl2::hint::set("SDL_RENDER_DRIVER", "opengl");
@@ -27,28 +27,26 @@ pub fn main() {
         .build()
         .unwrap();
 
-    let mut canvas = window.into_canvas().
+    let canvas = window.into_canvas().
         present_vsync().
         build().
         unwrap();
 
     let t_creator = canvas.texture_creator();
-    let mut renderer = Renderer {
-        canvas: canvas,
-        asset_m: AssetManager::new(&t_creator),
-    };
+    let mut renderer = Renderer::new(
+        canvas,
+        AssetManager::new(&t_creator),
+        Camera::new(),
+    );
 
     sdl2::hint::set("SDL_RENDER_SCALE_QUALITY", "0");
 
-    let mut game = game::Game::new(&t_creator, &mut renderer);
+    let mut game = game::Game::new(&mut renderer);
 
     let mut dt_accumulator = 0.0;
     let fps: f32 = 60.0;
     let time_step = 1.0 / fps;
 
-    // canvas.set_draw_color(Color::RGB(0, 255, 255));
-    // canvas.clear();
-    // canvas.present();
     let mut event_pump = sdl_context.event_pump().unwrap();
 
     let mut delta_time;
@@ -79,7 +77,8 @@ pub fn main() {
                 _ => {}
             }
         }
-        game.update(delta_time);
+        renderer.alpha = dt_accumulator / time_step;
+        game.update(delta_time, &mut renderer);
         game.draw(&mut renderer);
         // The rest of the game loop goes here...
         renderer.canvas.present();

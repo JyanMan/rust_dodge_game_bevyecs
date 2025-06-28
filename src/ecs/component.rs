@@ -24,12 +24,23 @@ impl <T: 'static> IComponentArray for ComponentArray<T> {
     }
 }
 
-#[derive(Default)]
+// #[derive(Default)]
 pub struct ComponentArray<T> {
-    data: [Option<T>; MAX_ENTITIES],
+    data: Vec<Option<T>>,
     entity_to_index: HashMap<Entity, i32>,
     index_to_entity: HashMap<i32, Entity>,
     size: i32,
+}
+
+impl <T: Clone> Default for ComponentArray<T> {
+    fn default() -> Self {
+        Self {
+            data: vec![None; MAX_ENTITIES],
+            entity_to_index: HashMap::new(),
+            index_to_entity: HashMap::new(),
+            size: 0,
+        }
+    }
 }
 
 impl <T> ComponentArray <T> {

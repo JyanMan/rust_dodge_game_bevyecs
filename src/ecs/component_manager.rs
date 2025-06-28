@@ -16,8 +16,14 @@ impl ComponentManager {
     pub fn query_entities(&self, component_types: &[TypeId]) -> HashSet<Entity> {
         let mut result: Option<HashSet<Entity>> = None;
 
-        for type_id in component_types {
-            if let Some(entities_with_type) = self.component_entities.get(type_id) {
+        // Sort by number of entities with that component (rarer types first)
+        let mut sorted_types = component_types.to_vec();
+        sorted_types.sort_by_key(|type_id| {
+            self.component_entities.get(type_id).map(|set| set.len()).unwrap_or(0)
+        });
+
+        for type_id in sorted_types {
+            if let Some(entities_with_type) = self.component_entities.get(&type_id) {
                 result = match result {
                     None => Some(entities_with_type.clone()),
                     Some(r) => Some(&r & entities_with_type), // set intersection
@@ -43,7 +49,7 @@ impl ComponentManager {
         .and_then(|array| array.as_any().downcast_ref::<ComponentArray<T>>())
     }
 
-    pub fn register_component<T: 'static + Default>(&mut self) {
+    pub fn register_component<T: 'static + Default + Clone>(&mut self) {
         let type_id = TypeId::of::<T>();
         self.component_types.insert(type_id, self.next_component_type);
         self.component_arrays.insert(type_id, Box::new(ComponentArray::<T>::default()));

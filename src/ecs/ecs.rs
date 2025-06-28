@@ -1,5 +1,4 @@
-use std::rc::Rc;
-use std::cell::RefCell;
+use sdl2::event::Event;
 use std::collections::HashSet;
 use std::any::TypeId;
 use crate::core::renderer::*;
@@ -9,6 +8,7 @@ use crate::ecs::system::*;
 use crate::ecs::component_manager::*;
 use crate::ecs::entity_manager::*;
 
+
 #[derive(Default)]
 pub struct ECS {
     component_m: ComponentManager,
@@ -17,8 +17,10 @@ pub struct ECS {
     draw_systems: Vec<DrawFn>,
     update_systems: Vec<UpdateFn>,
     fixed_update_systems: Vec<FixedUpdateFn>,
+    input_systems: Vec<InputFn>,
 }
 
+#[allow(warnings)]
 impl ECS {
     pub fn new() -> Self {
         Self {
@@ -28,6 +30,7 @@ impl ECS {
             draw_systems: vec![],
             update_systems: vec![],
             fixed_update_systems: vec![],
+            input_systems: vec![],
         }
     }
 
@@ -41,7 +44,7 @@ impl ECS {
         // self.system_m.entity_destroyed(entity);
     }
 
-    pub fn register_component<T: 'static + Default>(&mut self) {
+    pub fn register_component<T: 'static + Default + Clone>(&mut self) {
         self.component_m.register_component::<T>();
     }
 
@@ -76,9 +79,6 @@ impl ECS {
         self.component_m.get_component_type::<T>()
     }
 
-    // pub fn register_system_startup<T: 'static + FnMut(&mut ECS, &mut Renderer)>(&mut self, system: T) {
-    //     self.system_m.register_system_startup::<T>(system);
-    // }
     pub fn call_startup_systems(&mut self, renderer: &mut Renderer) {
         // Take the list out to avoid mutable borrow overlap
         let mut systems = std::mem::take(&mut self.startup_systems);
@@ -90,17 +90,12 @@ impl ECS {
         self.startup_systems = systems;
     }
     pub fn call_draw_systems(&mut self, renderer: &mut Renderer) {
-        // Take the list out to avoid mutable borrow overlap
-        // println!("size of systems draw: {}", self.draw_systems.len());
         let mut systems = std::mem::take(&mut self.draw_systems);
-
 
         for system in systems.iter_mut() {
             system(self, renderer); // Now we can safely borrow `self` mutably
         }
-        // Put them back after running
         self.draw_systems = systems;
-        // println!("AFTER SIZE: {}", self.startup_systems.len());
     }
     pub fn call_update_systems(&mut self, delta_time: f32) {
         let mut systems = std::mem::take(&mut self.update_systems);
@@ -121,6 +116,15 @@ impl ECS {
         // Put them back after running
         self.fixed_update_systems = systems;
     }
+    pub fn call_input_systems(&mut self, event: &Event) {
+        let mut systems = std::mem::take(&mut self.input_systems);
+
+        for system in systems.iter_mut() {
+            system(self, event); // Now we can safely borrow `self` mutably
+        }
+        // Put them back after running
+        self.input_systems = systems;
+    }
 
     pub fn register_system_startup(&mut self, system: StartFn) {
         self.startup_systems.push(Box::new(system));
@@ -134,6 +138,9 @@ impl ECS {
     }
     pub fn register_system_fixed_update(&mut self, system: FixedUpdateFn) {
         self.fixed_update_systems.push(Box::new(system));
+    }
+    pub fn register_system_input(&mut self, system: InputFn) {
+        self.input_systems.push(Box::new(system));
     }
 
     pub fn query_entities(&self, component_types: &[TypeId]) -> HashSet<Entity> {

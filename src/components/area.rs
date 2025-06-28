@@ -1,8 +1,6 @@
-use crate::math_helper::*;
-
+#[derive(Debug, Copy, Clone, Default)]
 pub struct Area {
     pub width: f32,
     pub height: f32,
-    pub pos: Vector2,
+    pub pos: Position,
 }
-

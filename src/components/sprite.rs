@@ -3,8 +3,8 @@ use sdl2::rect::*;
 use sdl2::pixels::Color;
 use std::rc::Rc;
 use crate::core::renderer::*;
+use crate::components::position::*;
 use crate::managers::asset_manager::*;
-use crate::math_helper::*;
 
 #[derive(Default, Clone)]
 pub struct Sprite {
@@ -18,8 +18,9 @@ pub struct Sprite {
     frame: i32,
 }
 
-impl <'a> Sprite {
-    pub fn new(texture: Rc<Texture<'a>>, t_id: TextureId) -> Self {
+impl Sprite {
+    pub fn new(asset_m: &AssetManager, t_id: TextureId) -> Self {
+        let texture = asset_m.get_texture(t_id.clone());
         let width = texture.query().width;
         let height = texture.query().height;
         Self {
@@ -34,24 +35,24 @@ impl <'a> Sprite {
         }
     }
 
-    pub fn init(&mut self, texture: Rc<Texture <'a>>, t_id: TextureId) {
+    pub fn init(&mut self, asset_m: &AssetManager, t_id: TextureId) {
+        let texture = asset_m.get_texture(t_id.clone());
         let width = texture.query().width;
         let height = texture.query().height;
         self.width = width as i32;
         self.height = height as i32;
         self.texture_id = t_id;
-        // self.texture = Some(texture);
     }
 
     pub fn set_sprite_sheet(&mut self, hor: i32, vert: i32) {
         self.hor = hor;
         self.vert = vert;
     }
-    pub fn draw(&self, renderer: &mut Renderer, pos: &Vector2) {
-        self.draw_frame(renderer, pos, self.frame);
+    pub fn draw(&self, renderer: &mut Renderer, pos: &Position, scale: f32) {
+        self.draw_frame(renderer, pos, scale, self.frame);
     }
 
-    pub fn draw_frame(&self, renderer: &mut Renderer, pos: &Vector2, frame: i32) {
+    pub fn draw_frame(&self, renderer: &mut Renderer, pos: &Position, scale: f32, frame: i32) {
 
         let px_w = self.width as i32;
         let px_h = self.height as i32;
@@ -68,13 +69,13 @@ impl <'a> Sprite {
         let dest_rect = Rect::new(
             pos.x.round() as i32,         
             pos.y.round() as i32,
-            cell_w as u32 * 1, // scale
-            cell_h as u32 * 1 // scale
+            cell_w as u32 * scale as u32, // scale
+            cell_h as u32 * scale as u32 // scale
         );
 
-        renderer.canvas.set_draw_color(Color::WHITE);
         let texture = renderer.asset_m.get_texture(self.texture_id.clone());
-        // let texture = self.texture.clone().unwrap();
+
+        renderer.canvas.set_draw_color(Color::WHITE);
         let _ = renderer.canvas.copy_ex(
             &*texture,
             src_rect,
@@ -84,7 +85,6 @@ impl <'a> Sprite {
             false,
             false,
         );
-        // d.draw_texture_rec(&*self.texture, src_rect, pos, Color::WHITE);
     }
 }
 

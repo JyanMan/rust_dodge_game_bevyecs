@@ -6,7 +6,8 @@ use std::rc::Rc;
 #[derive(Clone, Default)]
 pub enum TextureId {
     #[default]
-    Player
+    Player,
+    TileAtlas
 }
 
 pub struct AssetManager <'a> {
@@ -29,16 +30,9 @@ impl <'a> AssetManager <'a> {
 
     pub fn get_texture(&self, t_id: TextureId) -> Rc<Texture<'a>> {
         match t_id {
-            TextureId::Player => self.player_t.clone() 
+            TextureId::Player => self.player_t.clone(),
+            TextureId::TileAtlas => self.tile_atlas_t.clone() 
         }
-    }
-
-    pub fn get_player_t(&self) -> Rc<Texture<'a>> {
-        self.player_t.clone() 
-    }
-
-    pub fn get_tile_atlas_t(&self) -> Rc<Texture<'a>> {
-        self.tile_atlas_t.clone() 
     }
 }
 

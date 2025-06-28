@@ -1,72 +1,183 @@
-// use std::collections::HashSet; use std::any::Any;
-// use crate::core::renderer::*;
-// use crate::components::position::*;
-// use crate::components::sprite::*;
-// use crate::ecs::system::*;
-// use crate::ecs::entity::*;
-// use crate::ecs::ecs::*;
-// use crate::managers::asset_manager::*;
-// use crate::math_helper::*;
-// 
-// #[derive(Default)]
-// pub struct PlayerTag {}
-// 
-// #[derive(Default)]
-// pub struct PlayerSystem {
-//     entities: HashSet<Entity>,
-// }
-// 
-// impl System for PlayerSystem {
-//     fn entities(&mut self) -> &mut HashSet<Entity> {
-//         &mut self.entities 
-//     }
-// }
-// 
-// impl PlayerSystem {
-//     pub fn init(&mut self, ecs: &mut ECS, asset_m: &AssetManager) {
-//         let player = ecs.create_entity();
-//         let mut sprite = Sprite::new(
-//             asset_m.get_texture(TextureId::Player),
-//             TextureId::Player
-//         );
-//         sprite.set_sprite_sheet(6, 6);
-//         // ecs.register_component::<PlayerTag>();
-// 
-//         println!("pos");
-//         ecs.add_component::<Position>(player, Position { x: 10.0, y: 10.0 });
-//         println!("sprite");
-//         ecs.add_component::<Sprite>(player, sprite);
-//         println!("player");
-//         ecs.add_component::<PlayerTag>(player, PlayerTag{});
-//         println!("none");
-//     }
-//     pub fn update(&mut self, ecs: &mut ECS, delta_time: f32) {
-//     //     for entity in self.entities.iter() {
-//     //         if let (Some(position), Some(sprite), Some(_player_tag)) = (
-//     //             ecs.get_component::<Position>(*entity),
-//     //             ecs.get_component::<Sprite>(*entity),
-//     //             ecs.get_component::<PlayerTag>(*entity),
-//     //         ) {
-//     //             sprite.draw(
-//     //                 renderer, 
-//     //                 &Vector2::new(position.x, position.y),
-//     //             );
-//     //         }
-//     //     }
-//     }
-// 
-//     // pub fn draw(&self, ecs: &mut ECS, renderer: &mut Renderer) {
-//     //     for entity in self.entities.iter() {
-//     //         if let (Some(position), Some(sprite), Some(_player_tag)) = (
-//     //             ecs.get_component::<Position>(*entity),
-//     //             ecs.get_component::<Sprite>(*entity),
-//     //             ecs.get_component::<PlayerTag>(*entity),
-//     //         ) {
-//     //             sprite.draw(
-//     //                 renderer, 
-//     //                 &Vector2::new(position.x, position.y),
-//     //             );
-//     //         }
-//     //     }
-//     // }
-// }
+use sdl2::event::Event;
+use sdl2::keyboard::Keycode;
+use std::any::TypeId;
+use crate::core::renderer::*;
+use crate::components::sprite::*;
+use crate::components::position::*;
+use crate::components::velocity::*;
+use crate::ecs::system::*;
+use crate::ecs::ecs::*;
+use crate::managers::asset_manager::*;
+
+#[derive(Default, Clone)]
+pub struct PlayerTag {}
+
+#[derive(Clone)]
+pub struct PlayerInput {
+    running: bool,
+    run_dir: i32,
+    jumping: bool,
+    can_jump: bool,
+    down: bool,
+    up: bool
+}
+
+impl Default for PlayerInput {
+    fn default() -> Self {
+        Self {
+            running: false,
+            run_dir: 0,
+            jumping: false,
+            can_jump: true,
+            //TEMP
+            down: false,
+            up: false,
+        }
+    }
+}
+
+#[derive(Clone)]
+pub struct PlayerData {
+    run_speed: f32,
+    accel: f32,
+    jump_force: f32,
+}
+
+impl Default for PlayerData {
+    fn default() -> Self {
+        Self {
+            run_speed: 500.0,
+            accel: 20.0,
+            jump_force: 300.0,
+        }
+    }
+}
+
+pub fn player_startup_system() -> StartFn {
+    Box::new(|ecs: &mut ECS, renderer: &mut Renderer| {
+
+        let player = ecs.create_entity();
+        let mut sprite = Sprite::new(&renderer.asset_m, TextureId::Player);
+        sprite.set_sprite_sheet(6, 6);
+
+        ecs.register_component::<PlayerTag>();
+        ecs.register_component::<PlayerInput>();
+        ecs.register_component::<PlayerData>();
+
+        ecs.add_component::<Sprite>(player, sprite);
+        ecs.add_component::<Position>(player, Position { x: 10.0, y: -500.0 });
+        ecs.add_component::<Velocity>(player, Velocity { x: 0.0, y: 0.0 });
+
+        ecs.add_component::<PlayerTag>(player, PlayerTag {});
+        ecs.add_component::<PlayerInput>(player, PlayerInput::default());
+        ecs.add_component::<PlayerData>(player, PlayerData::default());
+    })
+}
+
+pub fn player_update_system() -> UpdateFn {
+    Box::new(|ecs: &mut ECS, _delta_time: f32| {
+        let entities = ecs.query_entities(&[
+            TypeId::of::<PlayerTag>(),
+            TypeId::of::<PlayerInput>(),
+            TypeId::of::<PlayerData>(),
+        ]);
+
+        for e in entities {
+            if let (Some(_p_tag), Some(p_input), Some(p_data)) = (
+                ecs.get_component::<PlayerTag>(e),
+                ecs.get_component::<PlayerInput>(e),
+                ecs.get_component::<PlayerData>(e),
+            ) {
+                let mut run_dir: f32 = 0.0;
+                let mut vert_dir: f32 = 0.0;
+                if p_input.run_dir == 1 {
+                    run_dir += 1.0;
+                }
+                if p_input.run_dir == -1 {
+                    run_dir -= 1.0;
+                }
+                if p_input.up { vert_dir -= 1.0 }
+                if p_input.down { vert_dir += 1.0 }
+                let run_speed = p_data.run_speed;
+                if let Some(vel) = ecs.get_component_mut::<Velocity>(e) {
+                    vel.x = run_dir * run_speed;
+                    vel.y = vert_dir * run_speed;
+                }
+            }
+        }
+    })
+}
+
+pub fn player_fixed_update_system() -> FixedUpdateFn {
+    Box::new(|ecs: &mut ECS, time_step: f32| {
+        let entities = ecs.query_entities(&[
+            TypeId::of::<PlayerTag>(),
+            TypeId::of::<Velocity>(),
+            TypeId::of::<Position>(),
+        ]);
+
+        for e in entities {
+            if let Some(vel) = ecs.get_component::<Velocity>(e) {
+                let vel_x = vel.x;
+                let vel_y = vel.y;
+                if let Some(pos) = ecs.get_component_mut::<Position>(e) {
+                    pos.x += vel_x * time_step;
+                    pos.y += vel_y * time_step;
+                }
+            }
+        }
+    })
+}
+
+pub fn player_input_system() -> InputFn {
+    Box::new(|ecs: &mut ECS, event: &Event| {
+        let entities = ecs.query_entities(&[
+            TypeId::of::<PlayerInput>(),
+        ]);
+
+        for e in entities {
+            if let Some(player_input) = ecs.get_component_mut::<PlayerInput>(e)
+            {
+                player_input_sys(player_input, event);
+            }
+        }
+    })
+}
+
+fn player_input_sys(pi: &mut PlayerInput, event: &Event) {
+    match event {
+        Event::KeyDown { keycode: Some(Keycode::A), .. } => {
+            pi.running = true; 
+            pi.run_dir = -1;
+        },
+        Event::KeyDown { keycode: Some(Keycode::W), .. } => {
+            pi.running = true; 
+            pi.up = true;
+        },
+        Event::KeyDown { keycode: Some(Keycode::S), .. } => {
+            pi.running = true; 
+            pi.down = true;
+        },
+        Event::KeyDown { keycode: Some(Keycode::D), .. } => {
+            pi.running = true; 
+            pi.run_dir = 1;
+        },
+        Event::KeyUp { keycode: Some(Keycode::A), .. } => {
+            pi.running = false; 
+            pi.run_dir = 0;
+        },
+        Event::KeyUp { keycode: Some(Keycode::D), .. } => {
+            pi.running = false; 
+            pi.run_dir = 0;
+        },
+        Event::KeyUp { keycode: Some(Keycode::W), .. } => {
+            pi.running = true; 
+            pi.up = false;
+        },
+        Event::KeyUp { keycode: Some(Keycode::S), .. } => {
+            pi.running = true; 
+            pi.down = false;
+        },
+        _ => {}
+    }
+}

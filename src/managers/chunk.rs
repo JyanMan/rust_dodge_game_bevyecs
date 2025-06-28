@@ -1,13 +1,15 @@
 use sdl2::render::*;
 use std::rc::Rc;
 use crate::config::*;
-use crate::systems::tile::*;
-use crate::math_helper::*;
+use crate::components::position::*;
 use crate::components::sprite::*;
+use crate::components::tile::*;
+use crate::core::renderer::*;
+use crate::math_helper::*;
 use fastnoise_lite::*;
 
 pub struct Chunk {
-    world_pos: Vector2,
+    world_pos: Position,
     pub chunk_pos: Point,
     tiles_arr: Vec<Tile>,
     max_height: i32,
@@ -17,9 +19,9 @@ pub struct Chunk {
 }
 
 impl Chunk {
-    pub fn new(world_pos: Vector2, sprite: Rc<Sprite>) -> Chunk {
+    pub fn new(world_pos: Position) -> Chunk {
         // init tiles_array all empty
-        let tiles_arr: Vec<Tile> = std::iter::repeat_with(|| {Tile::new(sprite.clone())}).
+        let tiles_arr: Vec<Tile> = std::iter::repeat_with(|| Tile::new()).
             take((CHUNK_SIZE * CHUNK_SIZE) as usize).
             collect();
 
@@ -49,24 +51,11 @@ impl Chunk {
         chunk
     }
 
-    pub fn set(&mut self, world_pos: Vector2) {
+    pub fn set(&mut self, world_pos: Position) {
 
         self.chunk_pos = world_to_chunk(&world_pos);
         self.world_pos = world_pos;
 
-        // set values for tile_array
-        // noise.octaves = 6;
-        // noise.lacunarity = 2.0f;
-        // noise.gain = 0.4f;
-
-        // fnl_state cave_noise = fnlCreateState();
-        // noise.seed = 9007;
-        // cave_noise.noise_type = FNL_NOISE_PERLIN;
-        // cave_noise.frequency = 0.02f;
-        // cave_noise.octaves = 6;
-        // cave_noise.lacunarity = 2.5f;
-        // cave_noise.gain = 0.1f;
-        // float cave_threshold = 0.2f;
         for y in 0..(CHUNK_SIZE) {
             for x in 0..(CHUNK_SIZE) {
                 let global_x = (self.world_pos.x.floor() / TILE_SIZE as f32) + x as f32;
@@ -97,11 +86,11 @@ impl Chunk {
         }
     }
 
-    pub fn draw(&mut self, canvas: &mut WindowCanvas) {
+    pub fn draw(&mut self, renderer: &mut Renderer, sprite: &Sprite) {
         for y in 0..(CHUNK_SIZE) {
             for x in 0..(CHUNK_SIZE) {
                 if let Some(tile) = self.tiles_arr.get_mut((y * CHUNK_SIZE + x) as usize) {
-                    tile.draw(canvas);
+                    tile.draw(renderer, sprite);
                 }
             }
         }

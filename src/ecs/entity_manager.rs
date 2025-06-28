@@ -1,12 +1,12 @@
 use std::collections::VecDeque;
 use crate::ecs::entity::*;
 
-pub const MAX_ENTITIES: usize = 10;
+pub const MAX_ENTITIES: usize = 1000;
 
 #[derive(Default)]
 pub struct EntityManager {
     unused_entities: VecDeque<Entity>,
-    entity_signatures: [Signature; MAX_ENTITIES],
+    entity_signatures: Vec<Signature>,
     used_entities_count: i32,
 }
 
@@ -18,7 +18,7 @@ impl EntityManager {
         }
         Self {
             unused_entities: unused_entities,
-            entity_signatures: [Signature::default(); MAX_ENTITIES],
+            entity_signatures: vec![Signature::default(); MAX_ENTITIES],
             used_entities_count: 0,
         }
     }

@@ -1,74 +1,23 @@
 use crate::config::*;
+use crate::components::position::*;
 use std::ops;
+
+pub fn lerp(a: f32, b: f32, t: f32) -> f32 {
+    a + (b - a) * t
+}
+
+pub fn lerp_pos(a: &Position, b: &Position, t: f32) -> Position {
+    Position {
+        x: lerp(a.x, b.x, t),
+        y: lerp(a.y, b.y, t),
+    }
+}
 
 #[derive(Clone, Hash, PartialEq, Eq)]
 pub struct Point {
     pub x: i32, pub y: i32
 }
 
-#[derive(Clone)]
-pub struct Vector2 {
-    pub x: f32, 
-    pub y: f32
-}
-
-impl ops::Sub<Vector2> for Vector2 {
-    type Output = Vector2;
-
-    fn sub(self, other: Vector2) -> Vector2 {
-        Vector2 {
-            x: self.x - other.x,
-            y: self.y - other.y
-        }
-    }
-} 
-
-impl<'a> ops::Sub<&'a Vector2> for Vector2 {
-    type Output = Vector2;
-
-    fn sub(self, rhs: &'a Vector2) -> Vector2 {
-        Vector2 {
-            x: self.x - rhs.x,
-            y: self.y - rhs.y,
-        }
-    }
-}
-
-impl<'a> ops::Sub<Vector2> for &'a Vector2 {
-    type Output = Vector2;
-
-    fn sub(self, rhs: Vector2) -> Vector2 {
-        Vector2 {
-            x: self.x - rhs.x,
-            y: self.y - rhs.y,
-        }
-    }
-}
-
-impl<'a, 'b> ops::Sub<&'b Vector2> for &'a Vector2 {
-    type Output = Vector2;
-
-    fn sub(self, rhs: &'b Vector2) -> Vector2 {
-        Vector2 {
-            x: self.x - rhs.x,
-            y: self.y - rhs.y,
-        }
-    }
-}
-
-impl Vector2 {
-    pub fn new(x: f32, y:f32) -> Self {
-        Self {
-            x: x, y: y
-        } 
-    }
-}
-
-impl PartialEq for Vector2 {
-    fn eq(&self, other: &Self) -> bool {
-        self.x == other.x && self.y == other.y
-    }
-}
 
 impl ops::Mul<f32> for Point {
     type Output = Point;
@@ -82,7 +31,7 @@ impl ops::Mul<f32> for Point {
 }
 
 #[inline(always)]
-pub fn world_to_chunk(world_pos: &Vector2) -> Point {
+pub fn world_to_chunk(world_pos: &Position) -> Point {
     return Point {
         x: (world_pos.x / ((CHUNK_SIZE * TILE_SIZE) as f32)).floor() as i32,
         y: (world_pos.y / ((CHUNK_SIZE * TILE_SIZE) as f32)).floor() as i32
@@ -90,15 +39,15 @@ pub fn world_to_chunk(world_pos: &Vector2) -> Point {
 }
 
 #[inline(always)]
-pub fn chunk_to_world(chunk_pos: &Point) -> Vector2 {
-    return Vector2 {
+pub fn chunk_to_world(chunk_pos: &Point) -> Position {
+    return Position {
         x: (chunk_pos.x * CHUNK_SIZE * TILE_SIZE) as f32,
         y: (chunk_pos.y * CHUNK_SIZE * TILE_SIZE) as f32,
     };
 }
 
 #[inline(always)]
-pub fn world_to_tile(world_pos: &Vector2) -> Point {
+pub fn world_to_tile(world_pos: &Position) -> Point {
     return Point {
         x: (world_pos.x / ((TILE_SIZE) as f32)).floor() as i32,
         y: (world_pos.y / ((TILE_SIZE) as f32)).floor() as i32
@@ -106,13 +55,13 @@ pub fn world_to_tile(world_pos: &Vector2) -> Point {
 }
 
 #[inline(always)]
-pub fn tile_to_world(tile_pos: Point) -> Vector2 {
-    return Vector2 {
+pub fn tile_to_world(tile_pos: Point) -> Position {
+    return Position {
         x: (tile_pos.x * TILE_SIZE) as f32,
         y: (tile_pos.y * TILE_SIZE) as f32,
     };
 }
 
-pub fn vec_to_point(vec: Vector2) -> Point {
+pub fn pos_to_point(vec: Position) -> Point {
     return Point { x: vec.x as i32, y: vec.y as i32 };
 }
