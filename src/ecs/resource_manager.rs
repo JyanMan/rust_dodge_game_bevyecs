@@ -19,24 +19,24 @@ impl ResourceManager {
         self.resource_map.insert(type_id, RefCell::new(Box::new(resource)));
     }
 
-    pub fn get_resource<T: 'static + Any + Default>(&self) -> Option<Ref<T>> {
+    pub fn get_resource<T: 'static + Any + Default>(&self) -> Ref<T> {
         let type_id = TypeId::of::<T>();
         let unsafe_val = self.resource_map.get(&type_id).expect("failed to fetch res from map");
         let borrowed = unsafe_val.borrow();
         let typed_ref = 
             Ref::filter_map(borrowed, |t| {t.downcast_ref::<T>()})
             .ok();
-        typed_ref
+
+        typed_ref.expect("failed get ref of resource")
     }
 
-    pub fn get_resource_mut<'a, T: 'static + Any + Default>(&'a self) -> Option<RefMut<'a, T>> {
+    pub fn get_resource_mut<'a, T: 'static + Any + Default>(&'a self) -> RefMut<'a, T> {
         let type_id = TypeId::of::<T>();
         let unsafe_val = self.resource_map.get(&type_id).expect("failed to fetch res from map");
         let borrowed_mut = unsafe_val.borrow_mut();
         let typed_ref_mut = 
             RefMut::map(borrowed_mut, |t| {t.downcast_mut::<T>().expect("mismatched type")});
-        Some(typed_ref_mut)
-        // unsafe_val.borrow_mut()
-        //     .downcast_mut::<T>()
+
+        typed_ref_mut
     } 
 }

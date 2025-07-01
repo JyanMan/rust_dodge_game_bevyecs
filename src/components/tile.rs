@@ -1,7 +1,10 @@
+use std::rc::Rc;
 use crate::core::renderer::*;
 use crate::math_helper::*;
+use crate::components::area::*;
 use crate::components::position::*;
 use crate::components::sprite::*;
+use crate::managers::area_manager::*;
 
 #[repr(i32)]
 #[derive(Copy, Clone, Debug, Default)]
@@ -20,6 +23,7 @@ pub struct Tile {
     tile_pos: Point,
     world_pos: Position,
     tile_type: TileType,
+
 }
 
 impl Tile {
@@ -29,15 +33,21 @@ impl Tile {
         Tile {
             tile_pos: world_to_tile(&world_pos),
             world_pos: world_pos,
+
             // sprite: sprite,
             tile_type: TileType::Grass,
         }
     }
 
-    pub fn set(&mut self, tile_pos: Point, tile_type: TileType) {
+    pub fn set(&mut self, tile_pos: Point, tile_type: TileType, area_m: &mut AreaManager) {
+        area_m.set_tile_area(&self.tile_pos, &tile_pos);
+
         self.tile_pos = tile_pos.clone();
         self.world_pos = tile_to_world(&tile_pos);
         self.tile_type = tile_type;
+
+        // self.area.x = self.world_pos.x;
+        // self.area.y = self.world_pos.y;
     }
 
     pub fn draw(&self, renderer: &mut Renderer, sprite: &Sprite) {

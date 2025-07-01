@@ -164,11 +164,11 @@ impl ECS {
         self.resource_m.add_resource::<T>(resource);
     }
 
-    pub fn get_resource_mut<'a, T: 'static + Any + Default>(&'a self) -> Option<RefMut<'a, T>> {
+    pub fn get_resource_mut<'a, T: 'static + Any + Default>(&'a self) -> RefMut<'a, T> {
         self.resource_m.get_resource_mut::<T>()
     }
 
-    pub fn get_resource<T: 'static + Any + Default>(&self) -> Option<Ref<T>> {
+    pub fn get_resource<T: 'static + Any + Default>(&self) -> Ref<T> {
         self.resource_m.get_resource::<T>()
     }
 

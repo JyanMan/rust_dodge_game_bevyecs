@@ -4,6 +4,7 @@ use crate::components::sprite::*;
 use crate::components::tile::*;
 use crate::core::renderer::*;
 use crate::math_helper::*;
+use crate::managers::area_manager::*;
 use fastnoise_lite::*;
 
 #[derive(Default)]
@@ -62,12 +63,12 @@ impl Chunk {
             noise: get_perlin_noise(),
         };
 
-        chunk.set(chunk.world_pos.clone());
+        // chunk.set(chunk.world_pos.clone());
 
         chunk
     }
 
-    pub fn set(&mut self, world_pos: Position) {
+    pub fn set(&mut self, world_pos: Position, area_m: &mut AreaManager) {
 
         self.chunk_pos = world_to_chunk(&world_pos);
         self.world_pos = world_pos;
@@ -100,7 +101,7 @@ impl Chunk {
 
                 let index = (y * CHUNK_SIZE + x) as usize;
                 if let Some(tile) = self.tiles_arr.get_mut(index) {
-                    tile.set(Point { x: tile_x as i32, y: tile_y as i32 }, tile_type);
+                    tile.set(Point { x: tile_x as i32, y: tile_y as i32 }, tile_type, area_m);
                 }
             }
         }

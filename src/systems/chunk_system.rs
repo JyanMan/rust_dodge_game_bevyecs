@@ -23,31 +23,22 @@ pub fn chunk_update_system() -> UpdateFn {
             TypeId::of::<PlayerTag>(),
             TypeId::of::<Position>(),
         ]);
-        let mut chunk_m = ecs.get_resource_mut::<ChunkManager>().expect("failed resource");
+        let mut chunk_m = ecs.get_resource_mut::<ChunkManager>();
+        let mut area_m = ecs.get_resource_mut::<AreaManager>();
         for e in players {
             if let (Some(p_pos), Some(_p_tab)) = (
                 ecs.get_component::<Position>(e),
                 ecs.get_component::<PlayerTag>(e)
             ) {
-                chunk_m.generate(*p_pos);
+                chunk_m.generate(*p_pos, &mut *area_m);
             }
-                   
         }
     }) 
 }
 
 pub fn chunk_draw_system() -> DrawFn {
     Box::new(|ecs: &mut ECS, renderer: &mut Renderer| {
-        let mut chunk_m = ecs.get_resource_mut::<ChunkManager>().expect("failed to get resource");
+        let mut chunk_m = ecs.get_resource_mut::<ChunkManager>();
         chunk_m.draw(renderer);
-        // let entities = ecs.query_entities(&[
-        //     TypeId::of::<ChunkManager>(),
-        // ]);
-
-        // for e in entities {
-        //     if let Some(chunk_m) = ecs.get_component_mut::<ChunkManager>(e) {
-        //         chunk_m.draw(renderer);
-        //     }
-        // }
     }) 
 }

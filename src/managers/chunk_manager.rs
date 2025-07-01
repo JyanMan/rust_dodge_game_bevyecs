@@ -4,6 +4,7 @@ use crate::core::renderer::*;
 use crate::components::sprite::*;
 use crate::managers::chunk::*; 
 use crate::managers::asset_manager::*;
+use crate::managers::area_manager::*;
 use crate::math_helper::*;
 
 #[derive(Clone, Default)]
@@ -34,7 +35,7 @@ impl ChunkManager {
         new_chunk_points.reserve_exact(size as usize);
 
         // init chunks array with default value and size
-        let mut chunks_arr = vec![Chunk::new(Position::new(0.0, 0.0)); size as usize];
+        let chunks_arr = vec![Chunk::new(Position::new(0.0, 0.0)); size as usize];
         let mut chunks_map = HashMap::new();
 
         for y in 0..render_dist {
@@ -49,8 +50,8 @@ impl ChunkManager {
                 };
                 let new_world_pos = chunk_to_world(&(new_chunk_pos));
 
-                chunks_arr.get_mut(index).expect("invalid index")
-                    .set(new_world_pos);
+                // chunks_arr.get_mut(index).expect("invalid index")
+                //     .set(new_world_pos);
 
                 chunks_map.insert(new_chunk_pos, index);
             }
@@ -58,7 +59,7 @@ impl ChunkManager {
 
 
         // init default values of chunk manager
-        let mut cm = ChunkManager {
+        let cm = ChunkManager {
             render_dist: render_dist,
             chunks_map: chunks_map,
             // init values of chunks within array
@@ -68,12 +69,12 @@ impl ChunkManager {
             sprite: sprite,
         };
 
-        cm.generate(world_pos.clone());
+        //cm.generate(world_pos.clone());
 
         cm
     }
 
-    pub fn generate(&mut self, world_pos: Position) {
+    pub fn generate(&mut self, world_pos: Position, area_m: &mut AreaManager) {
 
         self.world_pos = world_pos;
 
@@ -94,9 +95,7 @@ impl ChunkManager {
                     x: chunk_pos.x + x - self.render_dist / 2, 
                     y: chunk_pos.y + y - self.render_dist / 2 
                 };
-                // println!("chunk pos source: x: {}, y: {} ------ chunk_pos: x: {}, y: {}",
-                //     chunk_pos.x, chunk_pos.y, n_chunk_pos.x, n_chunk_pos.y
-                //     );
+
                 // set active if on chunk_map
                 if let Some(index) = self.chunks_map.get(&n_chunk_pos) {
                     let chunk = self.chunks_arr.get_mut(*index).expect("invalid index");
@@ -118,7 +117,6 @@ impl ChunkManager {
                     // refer to new_points for new points to generate
                     let c_chunk_pos = self.new_chunk_points.pop().expect("invalid index"); 
                                                                  // rendered chunks
-                    println!("n_chunk_pos: {}, {}", chunk.chunk_pos.x, chunk.chunk_pos.y);
                     // move chunk reference with the new point key
                     self.chunks_map.remove(&chunk.chunk_pos);
                     self.chunks_map.insert(c_chunk_pos.clone(), index);
@@ -127,7 +125,8 @@ impl ChunkManager {
                     *  note that once you set, the chunk automatically changes its tile frames based
                     *  on that pos, no need of new tile alloc RECYCLING */
                     let c_world_pos = chunk_to_world(&c_chunk_pos);
-                    chunk.set(c_world_pos);
+                    // println!("aream size: {}", area_m.tile_areas.len());
+                    chunk.set(c_world_pos, area_m);
                 }
             }
         }
