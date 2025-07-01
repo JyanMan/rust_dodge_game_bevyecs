@@ -1,14 +1,11 @@
 use sdl2::event::Event;
-use sdl2::keyboard::Keycode;
-use sdl2::video::WindowContext;
-use sdl2::render::*;
-use crate::managers::asset_manager::*;
 use crate::components::position::*;
 use crate::components::sprite::*;
 use crate::components::velocity::*;
 use crate::systems::sprite_system::*;
 use crate::systems::player_system::*;
 use crate::systems::chunk_system::*;
+use crate::systems::area_system::*;
 use crate::core::renderer::*;
 use crate::ecs::ecs::*;
 
@@ -30,6 +27,7 @@ impl Game {
         // STARTUP
         ecs.register_system_startup(player_startup_system());
         ecs.register_system_startup(chunk_startup_system());
+        ecs.register_system_startup(area_manager_start());
 
         // UPDATE
         ecs.register_system_update(player_update_system());

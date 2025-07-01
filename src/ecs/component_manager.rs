@@ -40,7 +40,8 @@ impl ComponentManager {
         let type_id = TypeId::of::<T>();
         self.component_arrays
         .get_mut(&type_id)
-        .and_then(|array| array.as_any_mut().downcast_mut::<ComponentArray<T>>())
+        .and_then(|array| array.as_any_mut()
+            .downcast_mut::<ComponentArray<T>>())
     }
     fn get_component_array<T: 'static>(&self) -> Option<&ComponentArray<T>> {
         let type_id = TypeId::of::<T>();

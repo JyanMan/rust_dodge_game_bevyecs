@@ -1,3 +1,4 @@
+pub mod area;
 pub mod tags;
 pub mod sprite;
 pub mod position;

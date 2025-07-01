@@ -1,18 +1,23 @@
 use sdl2::event::Event;
 use std::collections::HashSet;
-use std::any::TypeId;
+use std::cell::*;
+use std::any::*;
 use crate::core::renderer::*;
 use crate::ecs::entity::*;
 use crate::ecs::component::*;
 use crate::ecs::system::*;
 use crate::ecs::component_manager::*;
 use crate::ecs::entity_manager::*;
-
+use crate::ecs::resource_manager::*;
 
 #[derive(Default)]
 pub struct ECS {
+    // managers
     component_m: ComponentManager,
     entity_m: EntityManager,
+    resource_m: ResourceManager,
+
+    //systems
     startup_systems: Vec<StartFn>,
     draw_systems: Vec<DrawFn>,
     update_systems: Vec<UpdateFn>,
@@ -26,6 +31,8 @@ impl ECS {
         Self {
             component_m: ComponentManager::default(),
             entity_m: EntityManager::new(),
+            resource_m: ResourceManager::new(),
+
             startup_systems: vec![],
             draw_systems: vec![],
             update_systems: vec![],
@@ -146,5 +153,36 @@ impl ECS {
     pub fn query_entities(&self, component_types: &[TypeId]) -> HashSet<Entity> {
         self.component_m.query_entities(component_types)
     }
+
+    pub fn query_entities_2(&self, a_comps: &[TypeId], b_comps: &[TypeId]) 
+        -> (HashSet<Entity>, HashSet<Entity>) {
+        (self.component_m.query_entities(a_comps),
+        self.component_m.query_entities(b_comps))
+    }
+
+    pub fn add_resource<T: 'static + Any + Default>(&mut self, resource: T) {
+        self.resource_m.add_resource::<T>(resource);
+    }
+
+    pub fn get_resource_mut<'a, T: 'static + Any + Default>(&'a self) -> Option<RefMut<'a, T>> {
+        self.resource_m.get_resource_mut::<T>()
+    }
+
+    pub fn get_resource<T: 'static + Any + Default>(&self) -> Option<Ref<T>> {
+        self.resource_m.get_resource::<T>()
+    }
+
+
+    // pub fn query_entities_test(&self, comp_a: &[TypeId], comp_b: &[TypeId]) 
+    //     -> (HashSet<Entity>, HashSet<Entity>) {
+    //     (
+    //     self.component_m.query_entities(comp_a),
+    //     self.component_m.query_entities(comp_b),
+    //     )
+    // }
+
+    // pub fn query_entities(&self, types_a: &[TypeId], types_b: &[TypeId]) -> HashSet<Entity> {
+    //     self.component_m.query_entities(component_types)
+    // }
 }
 
