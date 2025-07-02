@@ -6,3 +6,4 @@ pub mod camera;
 pub mod velocity;
 pub mod tile;
 pub mod rigidbody;
+pub mod entity_state;

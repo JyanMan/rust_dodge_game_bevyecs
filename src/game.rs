@@ -1,4 +1,5 @@
 use sdl2::event::Event;
+use sdl2::keyboard::*;
 use crate::components::area::*;
 use crate::components::position::*;
 use crate::components::rigidbody::*;
@@ -84,8 +85,8 @@ impl Game {
         // }
     }
 
-    pub fn input(&mut self, event: &Event) {
-        self.ecs.call_input_systems(event);
+    pub fn input(&mut self, k_state: &mut KeyboardState) {
+        self.ecs.call_input_systems(k_state);
 
         // match event {
         //     Event::KeyDown { keycode: Some(Keycode::A), .. } => {

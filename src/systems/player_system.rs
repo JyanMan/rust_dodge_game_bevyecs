@@ -1,11 +1,12 @@
 use sdl2::event::Event;
-use sdl2::keyboard::Keycode; 
+use sdl2::keyboard::*; 
 use std::any::TypeId;
 use crate::core::renderer::*;
 use crate::components::sprite::*;
 use crate::components::position::*;
 use crate::components::velocity::*;
 use crate::components::area::*;
+use crate::components::entity_state::*;
 use crate::ecs::system::*;
 use crate::ecs::ecs::*;
 use crate::managers::asset_manager::*;
@@ -37,16 +38,15 @@ pub struct PlayerData {
     run_speed: f32,
     accel: f32,
     jump_force: f32,
-    //TEMP
     pub grounded: bool,
 }
 
 impl Default for PlayerData {
     fn default() -> Self {
         Self {
-            run_speed: 500.0,
-            accel: 20.0,
-            jump_force: 300.0,
+            run_speed: 300.0,
+            accel: 50.0,
+            jump_force: 400.0,
             grounded: false,
         }
     }
@@ -81,33 +81,31 @@ pub fn player_startup_system() -> StartFn {
 
 pub fn player_update_system() -> UpdateFn {
     Box::new(|ecs: &mut ECS, _delta_time: f32| {
-        let _entities = ecs.query_entities(&[
+        let entities = ecs.query_entities(&[
             TypeId::of::<PlayerTag>(),
             TypeId::of::<PlayerInput>(),
             TypeId::of::<PlayerData>(),
+            TypeId::of::<Velocity>(),
         ]);
 
-        // for e in entities {
-        //     if let (Some(_p_tag), Some(p_input), Some(p_data)) = (
-        //         ecs.get_component::<PlayerTag>(e),
-        //         ecs.get_component::<PlayerInput>(e),
-        //         ecs.get_component::<PlayerData>(e),
-        //     ) {
-        //         let mut run_dir: f32 = 0.0;
-        //         // let mut vert_dir: f32 = 0.0;
-        //         if p_input.run_dir == 1 {
-        //             run_dir += 1.0;
-        //         }
-        //         if p_input.run_dir == -1 {
-        //             run_dir -= 1.0;
-        //         }
-        //         let run_speed = p_data.run_speed;
-        //         if let Some(vel) = ecs.get_component_mut::<Velocity>(e) {
-        //             vel.x = run_dir * run_speed;
-        //             // vel.y = vert_dir * run_speed;
-        //         }
-        //     }
-        // }
+        for e in entities {
+            if let (Some(_p_tag), Some(p_input), Some(p_data), Some(vel)) = (
+                ecs.get_component::<PlayerTag>(e),
+                ecs.get_component_mut::<PlayerInput>(e),
+                ecs.get_component::<PlayerData>(e),
+                ecs.get_component_mut::<Velocity>(e),
+            ) {
+                if p_input.jumping && p_data.grounded {
+                    vel.y = -p_data.jump_force;
+                    p_input.jumping = false;
+                    p_input.can_jump = true;
+                }
+                else {
+                    p_input.jumping = false;
+                    p_input.can_jump = true;
+                }
+            }
+        }
     })
 }
 
@@ -117,13 +115,15 @@ pub fn player_fixed_update_system() -> FixedUpdateFn {
             TypeId::of::<PlayerTag>(),
             TypeId::of::<PlayerInput>(),
             TypeId::of::<PlayerData>(),
+            TypeId::of::<Velocity>(),
         ]);
 
         for e in entities {
-            if let (Some(_p_tag), Some(p_input), Some(p_data)) = (
+            if let (Some(_p_tag), Some(p_input), Some(p_data), Some(vel)) = (
                 ecs.get_component::<PlayerTag>(e),
                 ecs.get_component::<PlayerInput>(e),
                 ecs.get_component::<PlayerData>(e),
+                ecs.get_component_mut::<Velocity>(e),
             ) {
                 let mut run_dir: f32 = 0.0;
                 // let mut vert_dir: f32 = 0.0;
@@ -133,10 +133,20 @@ pub fn player_fixed_update_system() -> FixedUpdateFn {
                 if p_input.run_dir == -1 {
                     run_dir -= 1.0;
                 }
-                let run_speed = p_data.run_speed;
-                if let Some(vel) = ecs.get_component_mut::<Velocity>(e) {
-                    vel.x = run_dir * run_speed;
-                    // vel.y = vert_dir * run_speed;
+                // let run_speed = p_data.run_speed;
+                if run_dir != 0.0 {
+                    vel.x += run_dir * p_data.accel;
+                    if vel.x.abs() >= p_data.run_speed {
+                        vel.x = p_data.run_speed.copysign(run_dir);
+                    }
+                }
+                else {
+                    if vel.x.abs() > 0.001 {
+                        vel.x -= p_data.accel.copysign(vel.x);
+                    }
+                    else {
+                        vel.x = 0.0;
+                    }
                 }
             }
         }
@@ -144,7 +154,7 @@ pub fn player_fixed_update_system() -> FixedUpdateFn {
 }
 
 pub fn player_input_system() -> InputFn {
-    Box::new(|ecs: &mut ECS, event: &Event| {
+    Box::new(|ecs: &mut ECS, k_state: &mut KeyboardState| {
         let entities = ecs.query_entities(&[
             TypeId::of::<PlayerInput>(),
         ]);
@@ -152,30 +162,28 @@ pub fn player_input_system() -> InputFn {
         for e in entities {
             if let Some(player_input) = ecs.get_component_mut::<PlayerInput>(e)
             {
-                player_input_sys(player_input, event);
+                player_input_sys(player_input, k_state);
             }
         }
     })
 }
 
-fn player_input_sys(pi: &mut PlayerInput, event: &Event) {
-    match event {
-        Event::KeyDown { keycode: Some(Keycode::A), .. } => {
-            pi.running = true; 
-            pi.run_dir = -1;
-        },
-        Event::KeyDown { keycode: Some(Keycode::D), .. } => {
-            pi.running = true; 
-            pi.run_dir = 1;
-        },
-        Event::KeyUp { keycode: Some(Keycode::A), .. } => {
-            pi.running = false; 
-            pi.run_dir = 0;
-        },
-        Event::KeyUp { keycode: Some(Keycode::D), .. } => {
-            pi.running = false; 
-            pi.run_dir = 0;
-        },
-        _ => {}
+fn player_input_sys(pi: &mut PlayerInput, k_state: &mut KeyboardState) {
+    pi.running = false;
+    pi.run_dir = 0;
+
+    if k_state.is_scancode_pressed(Scancode::Space) && pi.can_jump {
+        pi.jumping = true;
+        pi.can_jump = false;
+    }
+
+    if k_state.is_scancode_pressed(Scancode::A) {
+        pi.running = true;
+        pi.run_dir = -1;
+    }
+
+    if k_state.is_scancode_pressed(Scancode::D) {
+        pi.running = true;
+        pi.run_dir = 1;
     }
 }

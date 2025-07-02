@@ -2,7 +2,6 @@ use std::f64;
 use crate::components::area::*;
 use crate::components::velocity::*;
 use crate::components::position::*;
-use crate::config::*;
 use crate::managers::area_manager::*;
 use crate::math_helper::*;
 
@@ -148,19 +147,20 @@ fn aabb_resolve(
         );
     //let end = start + motion;
 
-    let buffer = TILE_SIZE as f32;
+    // let buffer = TILE_SIZE as f32;
     let swept = Area::new(
-        start.x.min(end.x) - buffer,
-        start.y.min(end.y) - buffer,
-        area.w + (end.x - start.x).abs() + buffer * 2.0,
-        area.h + (end.y - start.y).abs() + buffer * 2.0
+        start.x.min(end.x),
+        start.y.min(end.y),
+        area.w + (end.x - start.x).abs(),
+        area.h + (end.y - start.y).abs()
     );
 
     let min_tile = world_to_tile(&Position::new(swept.x, swept.y));
     let max_tile = world_to_tile(&Position::new(swept.x + swept.w, swept.y + swept.h));
 
-    for y in min_tile.y..max_tile.y {
-        for x in min_tile.x..max_tile.x {
+    // two is buffer, meaning buffer by two tiles on all dimensions
+    for y in min_tile.y-2..max_tile.y+2 {
+        for x in min_tile.x-2..max_tile.x+2 {
             let tile_pos = Point::new(x, y);
 
             let tile_area = if let Some(t_area) = area_m.get_tile_area(&tile_pos) {
@@ -270,50 +270,3 @@ pub fn area_colliding_to_tile(
     let mut x_motion = Velocity::new(e_motion.x, 0.0);
     aabb_resolve(entity_area, entity_pos, vel, &mut x_motion, &mut e_motion, &mut dummy_grounded, area_m);
 }
-
-//             // area->debug = true;
-//             Vector2 normal;
-//             float collision_time = swept_aabb(e->area, vel, *area, &normal);
-// 
-//             if (collision_time == 1.0f) {
-//                 // swept_aabb has edge cases, static collision resolution helps solve its issues
-//                 if (abb_is_colliding(&e->area, area)) {
-// 
-//                     // entity update bounds comes first because the bounds is not the same as entity position
-//                     // requires an update, otherwise sprite is ahead, you resolve delayed bounds
-//                     entity_update_bounds(e);
-// 
-//                     Vector2 adjusted_pos = collision_overlap(&e->area, area);
-//                     e->pos.x += adjusted_pos.x;
-//                     e->pos.y += adjusted_pos.y;
-//                     if (fabsf(adjusted_pos.y) >= EPSILON) e->velocity.y = 0.0f;
-//                     if (fabsf(adjusted_pos.x) >= EPSILON) e->velocity.x = 0.0f;
-//                 }
-//                 continue;
-//             }
-//             
-//             // set only the closest area to be collided with to adjust player pos
-//             // closest is the one with shortest collising time
-//             if (collision_time < earliest_ct) {
-//                 earliest_ct = collision_time;
-//                 earliest_normal = normal;
-//                 hit_area = area;
-//             }
-//         }
-//     }
-// 
-//     // adjust based on earliest future collision
-//     if (hit_area != NULL && earliest_ct < 1.0f) {
-//         e->pos.x += vel.x * earliest_ct;
-//         e->pos.y += vel.y * earliest_ct;
-//         if (earliest_normal.y < 0) *grounded = true;
-//         // entity_update_bounds(e);
-//         float remaining_time = 1.0f - earliest_ct;
-//         // slide 
-//         if (vel.x != 0 && earliest_normal.x != 0) {
-//             e->velocity.x = 0;
-//         }
-//         if (vel.y != 0 && earliest_normal.y != 0) e->velocity.y = 0;
-//     }
-// }
-

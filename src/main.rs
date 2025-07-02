@@ -67,8 +67,8 @@ pub fn main() {
             game.fixed_update(time_step);
         }
 
+        game.input(&mut event_pump.keyboard_state());
         for event in event_pump.poll_iter() {
-            game.input(&event);
             match event {
                 Event::Quit {..} |
                 Event::KeyDown { keycode: Some(Keycode::Escape), .. } => {

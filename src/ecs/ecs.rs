@@ -1,4 +1,5 @@
 use sdl2::event::Event;
+use sdl2::keyboard::*;
 use std::collections::HashSet;
 use std::cell::*;
 use std::any::*;
@@ -141,11 +142,11 @@ impl ECS {
         // Put them back after running
         self.fixed_update_systems = systems;
     }
-    pub fn call_input_systems(&mut self, event: &Event) {
+    pub fn call_input_systems(&mut self, k_state: &mut KeyboardState) {
         let mut systems = std::mem::take(&mut self.input_systems);
 
         for system in systems.iter_mut() {
-            system(self, event); // Now we can safely borrow `self` mutably
+            system(self, k_state); // Now we can safely borrow `self` mutably
         }
         // Put them back after running
         self.input_systems = systems;

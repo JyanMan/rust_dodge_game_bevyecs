@@ -15,8 +15,8 @@ impl Camera {
         Self {
             pos: Position::new(0.0, 0.0),
             target_pos: Position::new(0.0, 0.0),
-            scale: 1.0,
-            interp: 0.2,
+            scale: 2.0,
+            interp: 0.4,
         }
     }
 
