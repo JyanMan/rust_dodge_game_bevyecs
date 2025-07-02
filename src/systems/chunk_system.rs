@@ -3,6 +3,7 @@ use crate::core::renderer::*;
 use crate::components::position::*;
 use crate::ecs::system::*;
 use crate::ecs::ecs::*;
+use crate::ecs::ecs_query::*;
 use crate::managers::chunk_manager::*;
 use crate::managers::area_manager::*;
 use crate::systems::player_system::*;
@@ -19,17 +20,15 @@ pub fn chunk_startup_system() -> StartFn {
 
 pub fn chunk_update_system() -> UpdateFn {
     Box::new(|ecs: &mut ECS, _delta_time: f32| {
-        let players = ecs.query_entities(&[
-            TypeId::of::<PlayerTag>(),
-            TypeId::of::<Position>(),
-        ]);
         let mut chunk_m = ecs.get_resource_mut::<ChunkManager>();
         let mut area_m = ecs.get_resource_mut::<AreaManager>();
+
+        let players = query_entities!(ecs, PlayerTag, Position);
+
         for e in players {
-            if let (Some(p_pos), Some(_p_tab)) = (
-                ecs.get_component::<Position>(e),
-                ecs.get_component::<PlayerTag>(e)
-            ) {
+            if let (Some(p_pos), Some(_p_tab)) 
+                = ecs.query_tuple::<(&Position, &PlayerTag)>(e)
+            {
                 chunk_m.generate(*p_pos, &mut *area_m);
             }
         }

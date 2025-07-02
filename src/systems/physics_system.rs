@@ -6,6 +6,7 @@ use crate::core::collision::*;
 use crate::systems::player_system::*;
 use crate::ecs::system::*;
 use crate::ecs::ecs::*;
+use crate::ecs::ecs_query::*;
 use crate::managers::area_manager::*;
 
 const GRAVITY_ACCEL: f32 = 20.0;
@@ -13,12 +14,8 @@ const MAX_GRAVITY: f32 = 700.0;
 
 pub fn physics_fixed_update_system() -> FixedUpdateFn {
     Box::new(|ecs: &mut ECS, time_step: f32| {
-        let entities = ecs.query_entities(&[
-            TypeId::of::<PlayerData>(),
-            TypeId::of::<Velocity>(),
-            TypeId::of::<Position>(),
-            TypeId::of::<Area>(),
-        ]);
+
+        let entities = query_entities!(ecs, PlayerData, Velocity, Position, Area);
 
         let mut area_m = ecs.get_resource_mut::<AreaManager>();
 

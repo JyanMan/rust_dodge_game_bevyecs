@@ -11,7 +11,7 @@ pub struct ComponentManager {
     component_arrays: HashMap<TypeId, UnsafeCell<Box<dyn IComponentArray>>>,
     component_entities: HashMap<TypeId, HashSet<Entity>>,
     next_component_type: ComponentType,
-    borrowed_comps: HashSet<u64>
+    // borrowed_comps: HashSet<u64>
 }
 
 impl ComponentManager {
@@ -30,10 +30,11 @@ impl ComponentManager {
                     None => Some(entities_with_type.clone()),
                     Some(r) => Some(&r & entities_with_type), // set intersection
                 };
-            } else {
+            } 
+            else {
                 return HashSet::new(); // No entities have this type
+            }
         }
-    }
         result.unwrap_or_default()
     }
 
@@ -52,42 +53,20 @@ impl ComponentManager {
         }
     } 
 
-    // fn get_component_array_mut<T: 'static>(&mut self) -> Option<&mut ComponentArray<T>> {
-    //     let type_id = TypeId::of::<T>();
-    //     self.component_arrays
-    //     .get_mut(&type_id)
-    //     .and_then(|array| array.as_any_mut()
-    //         .downcast_mut::<ComponentArray<T>>())
-    // }
-
-    // fn get_component_array_mut<T: 'static>(&mut self) -> Option<&mut ComponentArray<T>> {
-    //     let type_id = TypeId::of::<T>();
-    //     self.component_arrays
-    //     .get_mut(&type_id)
-    //     .and_then(|array| array.as_any_mut()
-    //         .downcast_mut::<ComponentArray<T>>())
-    // }
-
-    // fn get_component_array_mut_2<A: 'static, B: 'static>(&mut self) 
-    //     -> (Option<&mut ComponentArray<A>>,Option<&mut ComponentArray<B>>) {
-    //     let type_id_a = TypeId::of::<A>();
-    //     let type_id_b = TypeId::of::<B>();
-
-    //     if type_id_a == type_id_b {
-    //         return (None, None)
-    //     }
-    //     let two_comps = 
-    //         self.component_arrays.get_disjoint_mut([&type_id_a, &type_id_b]);
-
-    //     if let [Some(a), Some(b)] = two_comps {
-    //         let casted_a = a.as_any_mut().downcast_mut::<ComponentArray<A>>();
-    //         let casted_b = b.as_any_mut().downcast_mut::<ComponentArray<B>>();
-    //         (casted_a, casted_b)
-    //     }
-    //     else {
-    //         (None, None)
-    //     }
-    // }
+    fn get_component_array<T: 'static>(&self) -> Option<&ComponentArray<T>> {
+        let type_id = TypeId::of::<T>();
+        if let Some(unsafe_cell) = self.component_arrays.get(&type_id) {
+            unsafe {
+                let val = unsafe_cell.get().as_ref();
+                val.and_then(|array| 
+                    array.as_any()
+                    .downcast_ref::<ComponentArray<T>>())
+            }
+        }
+        else {
+            None
+        }
+    } 
 
     // fn get_component_array_mut_3<A: 'static, B: 'static, C: 'static>(&mut self) 
     //     -> (Option<&mut ComponentArray<A>>,Option<&mut ComponentArray<B>>, Option<&mut ComponentArray<C>>) {
@@ -174,43 +153,12 @@ impl ComponentManager {
     }
 
     pub fn get_component<T: 'static>(&self, entity: Entity) -> Option<&T> {
-        self.get_component_array_mut::<T>()?.get(entity)
+        self.get_component_array::<T>()?.get(entity)
     }
 
     pub fn get_component_mut<T: 'static>(&self, entity: Entity) -> Option<&mut T> {
         self.get_component_array_mut::<T>()?.get_mut(entity)
     }
-
-    // pub fn get_component_mut<T: 'static>(&mut self, entity: Entity) -> Option<&mut T> {
-    //     self.get_component_array_mut::<T>()?.get_mut(entity)
-    // }
-
-    // pub fn get_component_mut_unchecked<T: 'static>(&self, entity: Entity) -> Option<&mut T> {
-    //     unsafe {
-    //         self.get_component_array_mut::<T>()?.get_mut(entity)
-    //     }
-    // }
-
-    // pub fn get_component_mut_2<A: 'static, B: 'static>(&mut self, entity: Entity) 
-    //     -> (Option<&mut A>, Option<&mut B>)
-    // {
-    //     let (a, b) = self.get_component_array_mut_2::<A, B>();
-    //     (
-    //         a.expect("failed to get entity component").get_mut(entity),
-    //         b.expect("failed to get entity component").get_mut(entity)
-    //     )
-    // }
-
-    // pub fn get_component_mut_3<A: 'static, B: 'static, C: 'static>(&mut self, entity: Entity) 
-    //     -> (Option<&mut A>, Option<&mut B>, Option<&mut C>)
-    // {
-    //     let (a, b, c) = self.get_component_array_mut_3::<A, B, C>();
-    //     (
-    //         a.expect("failed to get entity component").get_mut(entity),
-    //         b.expect("failed to get entity component").get_mut(entity),
-    //         c.expect("failed to get entity component").get_mut(entity)
-    //     )
-    // }
 
     pub fn entity_destroyed(&mut self, entity: Entity) {
         for (_type_id, array) in self.component_arrays.iter_mut() {

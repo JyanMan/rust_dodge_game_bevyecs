@@ -14,16 +14,16 @@ use crate::ecs::resource_manager::*;
 #[derive(Default)]
 pub struct ECS {
     // managers
-    component_m: ComponentManager,
-    entity_m: EntityManager,
-    resource_m: ResourceManager,
+    pub(super) component_m: ComponentManager,
+    pub(super) entity_m: EntityManager,
+    pub(super) resource_m: ResourceManager,
 
     //systems
-    startup_systems: Vec<StartFn>,
-    draw_systems: Vec<DrawFn>,
-    update_systems: Vec<UpdateFn>,
-    fixed_update_systems: Vec<FixedUpdateFn>,
-    input_systems: Vec<InputFn>,
+    pub(super) startup_systems: Vec<StartFn>,
+    pub(super) draw_systems: Vec<DrawFn>,
+    pub(super) update_systems: Vec<UpdateFn>,
+    pub(super) fixed_update_systems: Vec<FixedUpdateFn>,
+    pub(super) input_systems: Vec<InputFn>,
 }
 
 #[allow(warnings)]
@@ -51,6 +51,8 @@ impl ECS {
         self.component_m.entity_destroyed(entity);
         // self.system_m.entity_destroyed(entity);
     }
+
+    // COMPONENTS
 
     pub fn register_component<T: 'static + Default + Clone>(&mut self) {
         self.component_m.register_component::<T>();
@@ -83,28 +85,11 @@ impl ECS {
         self.component_m.get_component_mut::<T>(entity)
     }
 
-    // pub fn get_component_mut_2<A: 'static, B: 'static>(&mut self, entity: Entity) 
-    //     -> (Option<&mut A>, Option<&mut B>) 
-    // {
-    //     self.component_m.get_component_mut_2::<A, B>(entity)
-    // }
-
-    // pub fn get_component_mut_3<A: 'static, B: 'static, C:'static>(&mut self, entity: Entity) 
-    //     -> (Option<&mut A>, Option<&mut B>, Option<&mut C>) 
-    // {
-    //     self.component_m.get_component_mut_3::<A, B, C>(entity)
-    // }
-
-    // pub fn get_component_mut_4<A: 'static, B: 'static, C:'static>(&mut self, entity: Entity) 
-    //     -> (Option<&mut A>, Option<&mut B>, Option<&mut C>) 
-    // {
-    //     self.component_m.get_component_mut_3::<A, B, C>(entity)
-    // }
-
     pub fn get_component_type<T: 'static>(&mut self) -> Option<ComponentType> {
         self.component_m.get_component_type::<T>()
     }
 
+    // SYSTEM CALLS
     pub fn call_startup_systems(&mut self, renderer: &mut Renderer) {
         // Take the list out to avoid mutable borrow overlap
         let mut systems = std::mem::take(&mut self.startup_systems);
@@ -152,6 +137,8 @@ impl ECS {
         self.input_systems = systems;
     }
 
+    // SYSTEM REGISTERS
+
     pub fn register_system_startup(&mut self, system: StartFn) {
         self.startup_systems.push(Box::new(system));
     }
@@ -169,16 +156,11 @@ impl ECS {
         self.input_systems.push(Box::new(system));
     }
 
-    pub fn query_entities(&self, component_types: &[TypeId]) -> HashSet<Entity> {
-        self.component_m.query_entities(component_types)
-    }
+    // pub fn query_entities(&self, component_types: &[TypeId]) -> HashSet<Entity> {
+    //     self.component_m.query_entities(component_types)
+    // }
 
-    pub fn query_entities_2(&self, a_comps: &[TypeId], b_comps: &[TypeId]) 
-        -> (HashSet<Entity>, HashSet<Entity>) {
-        (self.component_m.query_entities(a_comps),
-        self.component_m.query_entities(b_comps))
-    }
-
+    // RESOURCE
     pub fn add_resource<T: 'static + Any + Default>(&mut self, resource: T) {
         self.resource_m.add_resource::<T>(resource);
     }
