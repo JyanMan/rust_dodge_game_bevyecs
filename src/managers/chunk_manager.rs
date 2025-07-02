@@ -36,27 +36,7 @@ impl ChunkManager {
 
         // init chunks array with default value and size
         let chunks_arr = vec![Chunk::new(Position::new(0.0, 0.0)); size as usize];
-        let mut chunks_map = HashMap::new();
-
-        for y in 0..render_dist {
-            for x in 0..render_dist {
-                // index is contiguous flat array
-                let index = (y * render_dist + x) as usize;
-
-                // subtract by render dist / 2 to center the chunks on target: Player
-                let new_chunk_pos = world_to_chunk(&world_pos) + Point{
-                    x: x - render_dist / 2, 
-                    y: y - render_dist / 2
-                };
-                let new_world_pos = chunk_to_world(&(new_chunk_pos));
-
-                // chunks_arr.get_mut(index).expect("invalid index")
-                //     .set(new_world_pos);
-
-                chunks_map.insert(new_chunk_pos, index);
-            }
-        }
-
+        let chunks_map = HashMap::new();
 
         // init default values of chunk manager
         let cm = ChunkManager {
@@ -102,7 +82,6 @@ impl ChunkManager {
                     chunk.is_active = true;
                 } 
                 else {
-                // set all unsaved chunks to new_chunk_points
                     self.new_chunk_points.push(n_chunk_pos);
                 }
             }

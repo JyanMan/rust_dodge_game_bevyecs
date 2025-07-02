@@ -1,11 +1,15 @@
 use sdl2::event::Event;
+use crate::components::area::*;
 use crate::components::position::*;
+use crate::components::rigidbody::*;
 use crate::components::sprite::*;
 use crate::components::velocity::*;
 use crate::systems::sprite_system::*;
 use crate::systems::player_system::*;
+use crate::systems::physics_system::*;
 use crate::systems::chunk_system::*;
 use crate::systems::area_system::*;
+use crate::systems::debug_system::*;
 use crate::core::renderer::*;
 use crate::ecs::ecs::*;
 
@@ -23,6 +27,8 @@ impl Game {
         ecs.register_component::<Position>();
         ecs.register_component::<Sprite>();
         ecs.register_component::<Velocity>();
+        ecs.register_component::<Area>();
+        ecs.register_component::<RigidBody>();
 
         // STARTUP
         ecs.register_system_startup(player_startup_system());
@@ -35,6 +41,7 @@ impl Game {
 
         // FIXED UPDATE 
         ecs.register_system_fixed_update(player_fixed_update_system());
+        ecs.register_system_fixed_update(physics_fixed_update_system());
 
         // INPUT
         ecs.register_system_input(player_input_system());
@@ -42,6 +49,7 @@ impl Game {
         // DRAW
         ecs.register_system_draw(chunk_draw_system());
         ecs.register_system_draw(sprite_draw_system());
+        // ecs.register_system_draw(debug_draw_areas_system());
         
         ecs.call_startup_systems(renderer);
         // let mut p_sprite = Sprite::new(&renderer.asset_m, TextureId::Player);

@@ -78,9 +78,27 @@ impl ECS {
         self.component_m.get_component::<T>(entity)
     }
 
-    pub fn get_component_mut<T: 'static>(&mut self, entity: Entity) -> Option<&mut T> {
+    pub fn get_component_mut<T: 'static>(&self, entity: Entity) -> Option<&mut T> {
         self.component_m.get_component_mut::<T>(entity)
     }
+
+    // pub fn get_component_mut_2<A: 'static, B: 'static>(&mut self, entity: Entity) 
+    //     -> (Option<&mut A>, Option<&mut B>) 
+    // {
+    //     self.component_m.get_component_mut_2::<A, B>(entity)
+    // }
+
+    // pub fn get_component_mut_3<A: 'static, B: 'static, C:'static>(&mut self, entity: Entity) 
+    //     -> (Option<&mut A>, Option<&mut B>, Option<&mut C>) 
+    // {
+    //     self.component_m.get_component_mut_3::<A, B, C>(entity)
+    // }
+
+    // pub fn get_component_mut_4<A: 'static, B: 'static, C:'static>(&mut self, entity: Entity) 
+    //     -> (Option<&mut A>, Option<&mut B>, Option<&mut C>) 
+    // {
+    //     self.component_m.get_component_mut_3::<A, B, C>(entity)
+    // }
 
     pub fn get_component_type<T: 'static>(&mut self) -> Option<ComponentType> {
         self.component_m.get_component_type::<T>()

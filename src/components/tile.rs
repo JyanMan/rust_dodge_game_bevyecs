@@ -8,6 +8,7 @@ use crate::managers::area_manager::*;
 
 #[repr(i32)]
 #[derive(Copy, Clone, Debug, Default)]
+#[derive(PartialEq)]
 pub enum TileType {
     #[default]
     Grass = 0,
@@ -40,7 +41,9 @@ impl Tile {
     }
 
     pub fn set(&mut self, tile_pos: Point, tile_type: TileType, area_m: &mut AreaManager) {
-        area_m.set_tile_area(&self.tile_pos, &tile_pos);
+        if tile_type != TileType::Air {
+            area_m.set_tile_area(&self.tile_pos, &tile_pos);
+        }
 
         self.tile_pos = tile_pos.clone();
         self.world_pos = tile_to_world(&tile_pos);

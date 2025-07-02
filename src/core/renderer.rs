@@ -28,13 +28,13 @@ impl <'a> Renderer <'a> {
 
     pub fn draw_frame_to_cam(&mut self, sprite: &Sprite, pos: &Position, scale: f32, frame: i32) {
         let cam_scale = self.camera.scale;
-        let adjusted_pos = (pos - self.camera.get_pos()) * cam_scale;
+        let adjusted_pos = (*pos - self.camera.get_pos()) * cam_scale;
         sprite.draw_frame(self, &adjusted_pos, scale * cam_scale, frame);
     }
 
     pub fn draw_to_cam(&mut self, sprite: &Sprite, pos: &Position, scale: f32) {
         let cam_scale = self.camera.scale;
-        let adjusted_pos = (pos - self.camera.get_pos()) * cam_scale;
+        let adjusted_pos = (*pos - self.camera.get_pos()) * cam_scale;
         sprite.draw(self, &adjusted_pos, scale * cam_scale);
     }
 }

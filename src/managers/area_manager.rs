@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use crate::core::renderer::*;
 use crate::components::area::*;
 use crate::math_helper::*;
 use crate::config::*;
@@ -26,6 +27,20 @@ impl AreaManager {
             self.tile_areas.insert(new_pos.clone(), Area::new(
                 new_world_pos.x, new_world_pos.y, TILE_SIZE as f32, TILE_SIZE as f32 
             ));
+        }
+    }
+
+    pub fn get_tile_area_mut(&mut self, point: &Point) -> Option<&mut Area> {
+        self.tile_areas.get_mut(point)    
+    }
+
+    pub fn get_tile_area(&self, point: &Point) -> Option<&Area> {
+        self.tile_areas.get(point) 
+    }
+
+    pub fn draw_tile_areas(&mut self, renderer: &mut Renderer) {
+        for (_pos, area) in self.tile_areas.iter_mut() {
+            area.draw(renderer);
         }
     }
 

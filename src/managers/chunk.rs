@@ -53,7 +53,7 @@ impl Chunk {
         let max_height = 200;
         let min_y = -(max_height / 2);
 
-        let mut chunk = Chunk {
+        let chunk = Chunk {
             chunk_pos: world_to_chunk(&world_pos),
             world_pos: world_pos,
             tiles_arr: tiles_arr,
