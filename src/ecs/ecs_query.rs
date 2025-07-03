@@ -1,16 +1,7 @@
-use sdl2::event::Event;
-use sdl2::keyboard::*;
 use std::collections::HashSet;
-use std::cell::*;
 use std::any::*;
-use crate::core::renderer::*;
 use crate::ecs::ecs::*;
 use crate::ecs::entity::*;
-use crate::ecs::component::*;
-use crate::ecs::system::*;
-use crate::ecs::component_manager::*;
-use crate::ecs::entity_manager::*;
-use crate::ecs::resource_manager::*;
 
 #[macro_export]
 macro_rules! query_entities {
@@ -22,20 +13,33 @@ macro_rules! query_entities {
 }
 
 macro_rules! create_query_impl {
-    ($($type: ident), +) => {
-        impl<'a, $($type),+> Query<'a> for ($(&$type),+)
+    ($($($mut:ident)? ($type: ident) ), + $(,)?) => {
+        impl<'a, $($type),+> Query<'a> for ($(&$($mut)? $type),+)
         where 
             $($type: 'static),+
         {
-            type Output = ($(Option<&'a $type>),+);
+            type Output = ($(Option<&'a $($mut)? $type>),+);
 
             fn fetch(ecs: &'a ECS, entity: Entity) -> Self::Output {
                 (
-                    $(ecs.get_component::<$type>(entity)),+
+                    $(
+                        create_query_impl!(@get $($mut)? ecs, $type, entity)
+                    ),+
                 )
             }
         }
-    }
+    };
+
+    // Mutable: expands to ecs.get_component_mut::<T>(entity)
+    (@get mut $ecs:ident, $type:ident, $entity:ident) => {
+        $ecs.get_component_mut::<$type>($entity)
+    };
+
+    // Immutable: expands to ecs.get_component::<T>(entity)
+    (@get $ecs:ident, $type:ident, $entity:ident) => {
+        $ecs.get_component::<$type>($entity)
+    };
+
 }
 
 pub trait Query <'a> {
@@ -43,7 +47,10 @@ pub trait Query <'a> {
     fn fetch(ecs: &'a ECS, entity: Entity) -> Self::Output;
 }
 
-create_query_impl!(A, B);
+create_query_impl!((A), (B));
+create_query_impl!(mut (A), (B));
+create_query_impl!((A), mut (B));
+create_query_impl!(mut (A), mut (B));
 
 // impl<'a, A, B> Query<'a> for (&A, &B)
 // where 
