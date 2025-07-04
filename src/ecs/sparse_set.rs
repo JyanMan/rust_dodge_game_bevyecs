@@ -8,6 +8,7 @@ pub trait ISparseSet: Any {
     fn entity_destroyed(&mut self, entity: Entity);
     fn as_any(&self) -> &dyn Any;
     fn as_any_mut(&mut self) -> &mut dyn Any;
+    fn as_slice(&self) -> &[T];
 }
 
 impl <T: 'static> ISparseSet for SparseSet<T> {
@@ -19,6 +20,9 @@ impl <T: 'static> ISparseSet for SparseSet<T> {
     }
     fn entity_destroyed(&mut self, entity: Entity) {
         self.remove(entity);
+    }
+    fn as_slice(&self) -> &[T] {
+        self.dense.as_slice()
     }
 }
 
@@ -33,7 +37,7 @@ pub struct SparseSet<T> {
     // size: i32,
 }
 
-impl <T: Clone> Default for SparseSet<T> {
+impl <T: 'static> Default for SparseSet<T> {
     fn default() -> Self {
         Self {
             dense: Vec::new(),
