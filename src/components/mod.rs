@@ -7,3 +7,5 @@ pub mod velocity;
 pub mod tile;
 pub mod rigidbody;
 pub mod entity_state;
+pub mod state_machine;
+pub mod animation;

@@ -6,3 +6,5 @@ pub mod system;
 pub mod ecs;
 pub mod ecs_query;
 pub mod resource_manager;
+pub mod archetype;
+pub mod sparse_set;

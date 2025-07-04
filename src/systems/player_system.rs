@@ -1,4 +1,3 @@
-use sdl2::event::Event;
 use sdl2::keyboard::*; 
 use std::any::TypeId;
 use crate::core::renderer::*;
@@ -6,7 +5,6 @@ use crate::components::sprite::*;
 use crate::components::position::*;
 use crate::components::velocity::*;
 use crate::components::area::*;
-use crate::components::entity_state::*;
 use crate::ecs::system::*;
 use crate::ecs::ecs::*;
 use crate::managers::asset_manager::*;

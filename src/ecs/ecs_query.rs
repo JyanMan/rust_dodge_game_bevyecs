@@ -52,20 +52,27 @@ create_query_impl!(mut (A), (B));
 create_query_impl!((A), mut (B));
 create_query_impl!(mut (A), mut (B));
 
-// impl<'a, A, B> Query<'a> for (&A, &B)
-// where 
-//     A: 'static,
-//     B: 'static,
-// {
-//     type Output = (Option<&'a A>, Option<&'a B>);
-// 
-//     fn fetch(ecs: &'a ECS, entity: Entity) -> Self::Output {
-//         (
-//             ecs.get_component::<A>(entity),
-//             ecs.get_component::<B>(entity)
-//         )
-//     }
-// }
+create_query_impl!((A), (B), (C));
+create_query_impl!(mut (A), (B), (C));
+create_query_impl!((A), mut (B), (C));
+create_query_impl!((A), (B), mut (C));
+create_query_impl!((A), mut (B), mut (C));
+create_query_impl!(mut (A), mut (B), (C));
+create_query_impl!(mut (A), mut (B), mut (C));
+
+create_query_impl!((A), (B), (C), (D));
+create_query_impl!(mut (A), (B), (C), (D));
+create_query_impl!((A), mut (B), (C), (D));
+create_query_impl!((A), (B), mut (C), (D));
+create_query_impl!((A), (B), (C), mut (D));
+create_query_impl!(mut (A), mut (B), (C), (D));
+create_query_impl!(mut (A), (B), mut (C), (D));
+create_query_impl!(mut (A), (B), (C), mut (D));
+create_query_impl!((A), mut (B), mut (C), (D));
+create_query_impl!((A), mut (B), (C), mut (D));
+create_query_impl!((A), (B), mut (C), mut (D));
+create_query_impl!(mut (A), mut (B), mut (C), (D));
+create_query_impl!(mut (A), mut (B), mut (C), mut (D));
 
 pub(crate) use query_entities;
 

@@ -1,5 +1,6 @@
 use crate::ecs::component::*;
 use crate::ecs::entity::*;
+use crate::ecs::sparse_set::*;
 use std::any::TypeId;
 use std::cell::*;
 use std::collections::HashMap;
@@ -8,7 +9,8 @@ use std::collections::HashSet;
 #[derive(Default)]
 pub struct ComponentManager {
     component_types: HashMap<TypeId, ComponentType>,
-    component_arrays: HashMap<TypeId, UnsafeCell<Box<dyn IComponentArray>>>,
+    component_arrays: HashMap<TypeId, UnsafeCell<Box<dyn ISparseSet>>>,
+    // archetype_map: HashMap<Signature, UnsafeCell<Box<dyn ISparseSet>>>,
     component_entities: HashMap<TypeId, HashSet<Entity>>,
     next_component_type: ComponentType,
     // borrowed_comps: HashSet<u64>
@@ -38,14 +40,14 @@ impl ComponentManager {
         result.unwrap_or_default()
     }
 
-    fn get_component_array_mut<T: 'static>(&self) -> Option<&mut ComponentArray<T>> {
+    fn get_component_array_mut<T: 'static>(&self) -> Option<&mut SparseSet<T>> {
         let type_id = TypeId::of::<T>();
         if let Some(unsafe_cell) = self.component_arrays.get(&type_id) {
             unsafe {
                 let val = unsafe_cell.get().as_mut();
                 val.and_then(|array| 
                     array.as_any_mut()
-                    .downcast_mut::<ComponentArray<T>>())
+                    .downcast_mut::<SparseSet<T>>())
             }
         }
         else {
@@ -53,14 +55,14 @@ impl ComponentManager {
         }
     } 
 
-    fn get_component_array<T: 'static>(&self) -> Option<&ComponentArray<T>> {
+    fn get_component_array<T: 'static>(&self) -> Option<&SparseSet<T>> {
         let type_id = TypeId::of::<T>();
         if let Some(unsafe_cell) = self.component_arrays.get(&type_id) {
             unsafe {
                 let val = unsafe_cell.get().as_ref();
                 val.and_then(|array| 
                     array.as_any()
-                    .downcast_ref::<ComponentArray<T>>())
+                    .downcast_ref::<SparseSet<T>>())
             }
         }
         else {
@@ -68,40 +70,10 @@ impl ComponentManager {
         }
     } 
 
-    // fn get_component_array_mut_3<A: 'static, B: 'static, C: 'static>(&mut self) 
-    //     -> (Option<&mut ComponentArray<A>>,Option<&mut ComponentArray<B>>, Option<&mut ComponentArray<C>>) {
-    //     let type_id_a = TypeId::of::<A>();
-    //     let type_id_b = TypeId::of::<B>();
-    //     let type_id_c = TypeId::of::<C>();
-
-    //     if type_id_a == type_id_b {
-    //         return (None, None, None)
-    //     }
-    //     let three_comps = 
-    //         self.component_arrays.get_disjoint_mut([&type_id_a, &type_id_b, &type_id_c]);
-
-    //     if let [Some(a), Some(b), Some(c)] = three_comps {
-    //         let casted_a = a.as_any_mut().downcast_mut::<ComponentArray<A>>();
-    //         let casted_b = b.as_any_mut().downcast_mut::<ComponentArray<B>>();
-    //         let casted_c = c.as_any_mut().downcast_mut::<ComponentArray<C>>();
-    //         (casted_a, casted_b, casted_c)
-    //     }
-    //     else {
-    //         (None, None, None)
-    //     }
-    // }
-
-    // fn get_component_array<T: 'static>(&self) -> Option<&ComponentArray<T>> {
-    //     let type_id = TypeId::of::<T>();
-    //     self.component_arrays
-    //     .get(&type_id).get()
-    //     .and_then(|array| array.as_any().downcast_ref::<ComponentArray<T>>())
-    // }
-
     pub fn register_component<T: 'static + Default + Clone>(&mut self) {
         let type_id = TypeId::of::<T>();
         self.component_types.insert(type_id, self.next_component_type);
-        self.component_arrays.insert(type_id, UnsafeCell::new(Box::new(ComponentArray::<T>::default())));
+        self.component_arrays.insert(type_id, UnsafeCell::new(Box::new(SparseSet::<T>::default())));
     }
 
     pub fn get_component_type<T: 'static>(&mut self) -> Option<ComponentType> {

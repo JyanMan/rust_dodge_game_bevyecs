@@ -53,8 +53,6 @@ impl Game {
         // ecs.register_system_draw(debug_draw_areas_system());
         
         ecs.call_startup_systems(renderer);
-        // let mut p_sprite = Sprite::new(&renderer.asset_m, TextureId::Player);
-        // p_sprite.set_sprite_sheet(6, 6);
 
         Self {
             ecs: ecs,

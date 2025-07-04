@@ -24,6 +24,9 @@ pub struct ECS {
     pub(super) update_systems: Vec<UpdateFn>,
     pub(super) fixed_update_systems: Vec<FixedUpdateFn>,
     pub(super) input_systems: Vec<InputFn>,
+
+    // ARCHETYPING
+    // pub(super) archetypes: Vec<Archetypes>
 }
 
 #[allow(warnings)]

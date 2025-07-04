@@ -4,27 +4,16 @@ use crate::components::position::*;
 use crate::components::sprite::*;
 use crate::ecs::system::*;
 use crate::ecs::ecs::*;
+use crate::ecs::ecs_query::*;
 use crate::systems::player_system::*;
 
 pub fn sprite_draw_system() -> DrawFn {
     Box::new(|ecs: &mut ECS, renderer: &mut Renderer| {
-        let entities = ecs.query_entities(&[
-            TypeId::of::<Position>(),
-            TypeId::of::<Sprite>(),
-            // TypeId::of::<PlayerTag>(),
-        ]);
-
+        let entities = query_entities!(ecs, Position, Sprite);
         for e in entities {
-            if let (Some(pos), Some(sprite)) = (
-                ecs.get_component::<Position>(e),
-                ecs.get_component::<Sprite>(e),
-            ) {
-                // if let Some(_p_tag) = ecs.get_component::<PlayerTag>(e) {
-                //     let p_pos = pos - renderer.camera.get_pos();
-                //     renderer.draw(sprite, &p_pos, 1.0);
-                // }
-                // else {
-                // }
+            if let (Some(pos), Some(sprite)) = 
+                ecs.query_tuple::<(&Position, &Sprite)>(e)
+             {
                 renderer.draw_to_cam(sprite, pos, 1.0);
 
                 if let Some(_p_tag) = ecs.get_component::<PlayerTag>(e) {

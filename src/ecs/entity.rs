@@ -1,2 +1,2 @@
 pub type Entity = usize;
-pub type Signature = u8;
+pub type Signature = u16;
