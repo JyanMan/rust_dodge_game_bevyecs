@@ -16,7 +16,7 @@ macro_rules! create_query_impl {
     ($($($mut:ident)? ($type: ident) ), + $(,)?) => {
         impl<'a, $($type),+> Query<'a> for ($(&$($mut)? $type),+)
         where 
-            $($type: 'static),+
+            $($type: 'static + Clone),+
         {
             type Output = ($(Option<&'a $($mut)? $type>),+);
 

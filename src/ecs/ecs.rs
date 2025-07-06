@@ -10,10 +10,12 @@ use crate::ecs::system::*;
 use crate::ecs::component_manager::*;
 use crate::ecs::entity_manager::*;
 use crate::ecs::resource_manager::*;
+use crate::ecs::archetype::*;
 
 #[derive(Default)]
 pub struct ECS {
     // managers
+    pub(super) archetype_m: ArchetypeManager,
     pub(super) component_m: ComponentManager,
     pub(super) entity_m: EntityManager,
     pub(super) resource_m: ResourceManager,
@@ -34,6 +36,7 @@ impl ECS {
     pub fn new() -> Self {
         Self {
             component_m: ComponentManager::default(),
+            archetype_m: ArchetypeManager::default(),
             entity_m: EntityManager::new(),
             resource_m: ResourceManager::new(),
 
@@ -58,19 +61,21 @@ impl ECS {
     // COMPONENTS
 
     pub fn register_component<T: 'static + Default + Clone>(&mut self) {
-        self.component_m.register_component::<T>();
+        // self.component_m.register_component::<T>();
+        self.archetype_m.register_component::<T>();
     }
 
-    pub fn add_component<T: 'static>(&mut self, entity: Entity, component: T) {
-        self.component_m.add_component::<T>(entity, component);
+    pub fn add_component<T: 'static + Clone>(&mut self, entity: Entity, component: T) {
+        self.archetype_m.add_component::<T>(entity, component);
+        //self.component_m.add_component::<T>(entity, component);
 
-        let mut signature = self.entity_m.get_signature(entity);
-        signature |= 1 << self.component_m.get_component_type::<T>().unwrap();
-        
-        self.entity_m.set_signature(entity, signature);
+        //let mut signature = self.entity_m.get_signature(entity);
+        //signature |= 1 << self.component_m.get_component_type::<T>().unwrap();
+        //
+        //self.entity_m.set_signature(entity, signature);
     }
 
-    pub fn remove_component<T: 'static>(&mut self, entity: Entity) {
+    pub fn remove_component<T: 'static + Clone>(&mut self, entity: Entity) {
         self.component_m.remove_component::<T>(entity);
 
         let mut signature = self.entity_m.get_signature(entity);
@@ -80,11 +85,16 @@ impl ECS {
         // self.system_m.entity_signature_changed(entity, signature);
     }
 
-    pub fn get_component<T: 'static>(&self, entity: Entity) -> Option<&T> {
+    //TEST ONLY
+    pub fn query_components_2<A: 'static + Clone, B: 'static + Clone>(&self) -> impl Iterator<Item = (&A, &B)> {
+        self.archetype_m.query_components_2::<A, B>()
+    }
+
+    pub fn get_component<T: 'static + Clone>(&self, entity: Entity) -> Option<&T> {
         self.component_m.get_component::<T>(entity)
     }
 
-    pub fn get_component_mut<T: 'static>(&self, entity: Entity) -> Option<&mut T> {
+    pub fn get_component_mut<T: 'static + Clone>(&self, entity: Entity) -> Option<&mut T> {
         self.component_m.get_component_mut::<T>(entity)
     }
 

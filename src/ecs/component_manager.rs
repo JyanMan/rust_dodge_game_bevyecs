@@ -86,7 +86,7 @@ impl ComponentManager {
         }
     }
 
-    pub fn add_component<T: 'static>(&mut self, entity: Entity, component: T) {
+    pub fn add_component<T: 'static + Clone>(&mut self, entity: Entity, component: T) {
         if let Some(array) = self.get_component_array_mut::<T>() {
             array.insert(entity, component);
         } 
@@ -106,7 +106,7 @@ impl ComponentManager {
         }
     }
 
-    pub fn remove_component<T: 'static>(&mut self, entity: Entity) {
+    pub fn remove_component<T: 'static + Clone>(&mut self, entity: Entity) {
         if let Some(array) = self.get_component_array_mut::<T>() {
             array.remove(entity);
         } 
@@ -124,11 +124,11 @@ impl ComponentManager {
         }
     }
 
-    pub fn get_component<T: 'static>(&self, entity: Entity) -> Option<&T> {
+    pub fn get_component<T: 'static + Clone>(&self, entity: Entity) -> Option<&T> {
         self.get_component_array::<T>()?.get(entity)
     }
 
-    pub fn get_component_mut<T: 'static>(&self, entity: Entity) -> Option<&mut T> {
+    pub fn get_component_mut<T: 'static + Clone>(&self, entity: Entity) -> Option<&mut T> {
         self.get_component_array_mut::<T>()?.get_mut(entity)
     }
 
