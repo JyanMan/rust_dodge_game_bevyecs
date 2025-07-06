@@ -7,36 +7,29 @@ use std::collections::HashSet;
 use std::any::*;
 use std::collections::HashMap;
 
-// type Type = Vec<TypeId>;
 type ArchetypeId = Signature;
-
-// type ComponentArray = Vec<ComponentType>;
 
 #[derive(Default)]
 pub struct Archetype {
-    // pub signature: Signature,
-    // pub ty: Type,
     pub id: ArchetypeId,
     pub components: Vec<UnsafeCell<Box<dyn ISparseSet>>>,
     pub component_types: Vec<TypeId>
 }
 
-struct ArchetypeRecord {
-    column: usize,
+pub(super) struct ArchetypeRecord {
+    pub(super) column: usize,
 }
 type ArchetypeMap = HashMap<ArchetypeId, ArchetypeRecord>;
 
 #[derive(Default)]
 pub struct ArchetypeManager {
-    empty_sets: HashMap<TypeId, Box<dyn ISparseSet>>,
-    signatures: HashMap<TypeId, Signature>, // signature is for archetype id's of one component
-                                            // type
-    new_sign_id: i32,
-    // new_arch_id: u16,
-    entity_index: HashMap<Entity, *mut Archetype>,
-    component_index: HashMap<TypeId, ArchetypeMap>,
-    archetype_map: HashMap<ArchetypeId, Archetype>
-    // component_array: HashMap<Signature, Box<dyn ISparseSet>>
+    pub(super) empty_sets: HashMap<TypeId, Box<dyn ISparseSet>>,
+    pub(super) signatures: HashMap<TypeId, Signature>, // signature is for archetype id's of one component
+                                                       //
+    pub(super) new_sign_id: i32,
+    pub(super) entity_index: HashMap<Entity, *mut Archetype>,
+    pub(super) component_index: HashMap<TypeId, ArchetypeMap>,
+    pub(super) archetype_map: HashMap<ArchetypeId, Archetype>
 }
 
 impl ArchetypeManager {

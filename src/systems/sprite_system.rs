@@ -9,7 +9,7 @@ use crate::systems::player_system::*;
 
 pub fn sprite_draw_system() -> DrawFn {
     Box::new(|ecs: &mut ECS, renderer: &mut Renderer| {
-        let query = ecs.query_components_2::<Position, Sprite>();
+        let query = ecs.query_comp::<(&Position, &Sprite)>();
         for (pos, sprite) in query {
             renderer.draw_to_cam(sprite, pos, 1.0);
             renderer.camera.set_target(&pos);

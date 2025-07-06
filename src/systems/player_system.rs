@@ -79,31 +79,43 @@ pub fn player_startup_system() -> StartFn {
 
 pub fn player_update_system() -> UpdateFn {
     Box::new(|ecs: &mut ECS, _delta_time: f32| {
-        let entities = ecs.query_entities(&[
-            TypeId::of::<PlayerTag>(),
-            TypeId::of::<PlayerInput>(),
-            TypeId::of::<PlayerData>(),
-            TypeId::of::<Velocity>(),
-        ]);
-
-        for e in entities {
-            if let (Some(_p_tag), Some(p_input), Some(p_data), Some(vel)) = (
-                ecs.get_component::<PlayerTag>(e),
-                ecs.get_component_mut::<PlayerInput>(e),
-                ecs.get_component::<PlayerData>(e),
-                ecs.get_component_mut::<Velocity>(e),
-            ) {
-                if p_input.jumping && p_data.grounded {
-                    vel.y = -p_data.jump_force;
-                    p_input.jumping = false;
-                    p_input.can_jump = true;
-                }
-                else {
-                    p_input.jumping = false;
-                    p_input.can_jump = true;
-                }
+        // let entities = ecs.query_entities(&[
+        //     TypeId::of::<PlayerTag>(),
+        //     TypeId::of::<PlayerInput>(),
+        //     TypeId::of::<PlayerData>(),
+        //     TypeId::of::<Velocity>(),
+        // ]);
+        for (_p_tag, p_input, p_data, vel) in 
+            ecs.query_comp::<(&PlayerTag, &mut PlayerInput, &PlayerData, &mut Velocity)>() {
+            if p_input.jumping && p_data.grounded {
+                vel.y = -p_data.jump_force;
+                p_input.jumping = false;
+                p_input.can_jump = true;
+            }
+            else {
+                p_input.jumping = false;
+                p_input.can_jump = true;
             }
         }
+
+        // for e in entities {
+        //     if let (Some(_p_tag), Some(p_input), Some(p_data), Some(vel)) = (
+        //         ecs.get_component::<PlayerTag>(e),
+        //         ecs.get_component_mut::<PlayerInput>(e),
+        //         ecs.get_component::<PlayerData>(e),
+        //         ecs.get_component_mut::<Velocity>(e),
+        //     ) {
+        //         if p_input.jumping && p_data.grounded {
+        //             vel.y = -p_data.jump_force;
+        //             p_input.jumping = false;
+        //             p_input.can_jump = true;
+        //         }
+        //         else {
+        //             p_input.jumping = false;
+        //             p_input.can_jump = true;
+        //         }
+        //     }
+        // }
     })
 }
 

@@ -142,5 +142,15 @@ impl <T: 'static + Clone> SparseSet <T> {
     pub fn get_by_index(&self, index: usize) -> Option<&T> {
         self.dense.get(index)
     }
+
+    pub fn get_by_index_mut(&self, index: usize) -> Option<&mut T> {
+        let ptr = self.dense.as_ptr();
+        if index >= self.dense.len() {
+            return None
+        }
+        unsafe {
+            Some(&mut *ptr.add(index).cast_mut())
+        }
+    }
 }
 

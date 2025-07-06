@@ -36,8 +36,8 @@ impl Game {
         // ecs.register_system_startup(chunk_startup_system());
         // ecs.register_system_startup(area_manager_start());
 
-        // // UPDATE
-        // ecs.register_system_update(player_update_system());
+        // UPDATE
+        ecs.register_system_update(player_update_system());
         // ecs.register_system_update(chunk_update_system());
 
         // // FIXED UPDATE 

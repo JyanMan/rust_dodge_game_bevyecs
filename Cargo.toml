@@ -5,6 +5,7 @@ edition = "2024"
 build = "build.rs"
 
 [dependencies]
+paste = "1.0"
 sdl2 =  { version = "0.37", features = [ "image" ] }
 fastnoise-lite = "1.1.1"
 
