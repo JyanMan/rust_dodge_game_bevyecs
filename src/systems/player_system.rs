@@ -79,12 +79,6 @@ pub fn player_startup_system() -> StartFn {
 
 pub fn player_update_system() -> UpdateFn {
     Box::new(|ecs: &mut ECS, _delta_time: f32| {
-        // let entities = ecs.query_entities(&[
-        //     TypeId::of::<PlayerTag>(),
-        //     TypeId::of::<PlayerInput>(),
-        //     TypeId::of::<PlayerData>(),
-        //     TypeId::of::<Velocity>(),
-        // ]);
         for (_p_tag, p_input, p_data, vel) in 
             ecs.query_comp::<(&PlayerTag, &mut PlayerInput, &PlayerData, &mut Velocity)>() {
             if p_input.jumping && p_data.grounded {
@@ -97,66 +91,35 @@ pub fn player_update_system() -> UpdateFn {
                 p_input.can_jump = true;
             }
         }
-
-        // for e in entities {
-        //     if let (Some(_p_tag), Some(p_input), Some(p_data), Some(vel)) = (
-        //         ecs.get_component::<PlayerTag>(e),
-        //         ecs.get_component_mut::<PlayerInput>(e),
-        //         ecs.get_component::<PlayerData>(e),
-        //         ecs.get_component_mut::<Velocity>(e),
-        //     ) {
-        //         if p_input.jumping && p_data.grounded {
-        //             vel.y = -p_data.jump_force;
-        //             p_input.jumping = false;
-        //             p_input.can_jump = true;
-        //         }
-        //         else {
-        //             p_input.jumping = false;
-        //             p_input.can_jump = true;
-        //         }
-        //     }
-        // }
     })
 }
 
 pub fn player_fixed_update_system() -> FixedUpdateFn {
     Box::new(|ecs: &mut ECS, _time_step: f32| {
-        let entities = ecs.query_entities(&[
-            TypeId::of::<PlayerTag>(),
-            TypeId::of::<PlayerInput>(),
-            TypeId::of::<PlayerData>(),
-            TypeId::of::<Velocity>(),
-        ]);
+        for (_p_tag, p_input, p_data, vel) in 
+            ecs.query_comp::<(&PlayerTag, &mut PlayerInput, &PlayerData, &mut Velocity)>() {
 
-        for e in entities {
-            if let (Some(_p_tag), Some(p_input), Some(p_data), Some(vel)) = (
-                ecs.get_component::<PlayerTag>(e),
-                ecs.get_component::<PlayerInput>(e),
-                ecs.get_component::<PlayerData>(e),
-                ecs.get_component_mut::<Velocity>(e),
-            ) {
-                let mut run_dir: f32 = 0.0;
-                // let mut vert_dir: f32 = 0.0;
-                if p_input.run_dir == 1 {
-                    run_dir += 1.0;
+            let mut run_dir: f32 = 0.0;
+            // let mut vert_dir: f32 = 0.0;
+            if p_input.run_dir == 1 {
+                run_dir += 1.0;
+            }
+            if p_input.run_dir == -1 {
+                run_dir -= 1.0;
+            }
+            // let run_speed = p_data.run_speed;
+            if run_dir != 0.0 {
+                vel.x += run_dir * p_data.accel;
+                if vel.x.abs() >= p_data.run_speed {
+                    vel.x = p_data.run_speed.copysign(run_dir);
                 }
-                if p_input.run_dir == -1 {
-                    run_dir -= 1.0;
-                }
-                // let run_speed = p_data.run_speed;
-                if run_dir != 0.0 {
-                    vel.x += run_dir * p_data.accel;
-                    if vel.x.abs() >= p_data.run_speed {
-                        vel.x = p_data.run_speed.copysign(run_dir);
-                    }
+            }
+            else {
+                if vel.x.abs() > 0.001 {
+                    vel.x -= p_data.accel.copysign(vel.x);
                 }
                 else {
-                    if vel.x.abs() > 0.001 {
-                        vel.x -= p_data.accel.copysign(vel.x);
-                    }
-                    else {
-                        vel.x = 0.0;
-                    }
+                    vel.x = 0.0;
                 }
             }
         }
@@ -165,15 +128,8 @@ pub fn player_fixed_update_system() -> FixedUpdateFn {
 
 pub fn player_input_system() -> InputFn {
     Box::new(|ecs: &mut ECS, k_state: &mut KeyboardState| {
-        let entities = ecs.query_entities(&[
-            TypeId::of::<PlayerInput>(),
-        ]);
-
-        for e in entities {
-            if let Some(player_input) = ecs.get_component_mut::<PlayerInput>(e)
-            {
-                player_input_sys(player_input, k_state);
-            }
+        for p_input in ecs.query_comp::<&mut PlayerInput>() {
+            player_input_sys(p_input, k_state);
         }
     })
 }

@@ -23,14 +23,9 @@ pub fn chunk_update_system() -> UpdateFn {
         let mut chunk_m = ecs.get_resource_mut::<ChunkManager>();
         let mut area_m = ecs.get_resource_mut::<AreaManager>();
 
-        let players = query_entities!(ecs, PlayerTag, Position);
-
-        for e in players {
-            if let (Some(p_pos), Some(_p_tab)) 
-                = ecs.query_tuple::<(&Position, &PlayerTag)>(e)
-            {
-                chunk_m.generate(*p_pos, &mut *area_m);
-            }
+        for (_p_tag, p_pos) in
+            ecs.query_comp::<(&PlayerTag, &Position)>() {
+            chunk_m.generate(*p_pos, &mut *area_m);
         }
     }) 
 }

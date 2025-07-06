@@ -33,22 +33,22 @@ impl Game {
 
         // STARTUP
         ecs.register_system_startup(player_startup_system());
-        // ecs.register_system_startup(chunk_startup_system());
-        // ecs.register_system_startup(area_manager_start());
+        ecs.register_system_startup(chunk_startup_system());
+        ecs.register_system_startup(area_manager_start());
 
         // UPDATE
         ecs.register_system_update(player_update_system());
-        // ecs.register_system_update(chunk_update_system());
+        ecs.register_system_update(chunk_update_system());
 
-        // // FIXED UPDATE 
-        // ecs.register_system_fixed_update(player_fixed_update_system());
-        // ecs.register_system_fixed_update(physics_fixed_update_system());
+        // FIXED UPDATE 
+        ecs.register_system_fixed_update(player_fixed_update_system());
+        ecs.register_system_fixed_update(physics_fixed_update_system());
 
-        // // INPUT
-        // ecs.register_system_input(player_input_system());
+        // INPUT
+        ecs.register_system_input(player_input_system());
 
-        // // DRAW
-        // ecs.register_system_draw(chunk_draw_system());
+        // DRAW
+        ecs.register_system_draw(chunk_draw_system());
         ecs.register_system_draw(sprite_draw_system());
         // ecs.register_system_draw(debug_draw_areas_system());
         

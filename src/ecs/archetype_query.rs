@@ -64,6 +64,9 @@ pub trait Query <'a> {
     fn fetch(ecs: &'a ArchetypeManager) -> Self::Output;
 }
 
+query_impl!((A));
+query_impl!(mut (A));
+
 query_impl!((A), (B));
 query_impl!(mut (A), (B));
 query_impl!((A), mut (B));
