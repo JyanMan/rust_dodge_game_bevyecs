@@ -1,10 +1,7 @@
-use crate::ecs::component::*;
 use crate::ecs::entity::*;
 use crate::ecs::sparse_set::*;
 use std::any::TypeId;
 use std::cell::*;
-use std::collections::HashSet;
-use std::any::*;
 use std::collections::HashMap;
 
 type ArchetypeId = Signature;
@@ -33,8 +30,7 @@ pub struct ArchetypeManager {
 }
 
 impl ArchetypeManager {
-
-    fn create_archetype(&mut self, signature: ArchetypeId) {
+    pub fn create_archetype(&mut self, signature: ArchetypeId) {
         let mut components: Vec<UnsafeCell<Box<dyn ISparseSet>>> = Vec::new();
         let mut component_types: Vec<TypeId> = Vec::new();
         // loop through signatures map
@@ -90,61 +86,13 @@ impl ArchetypeManager {
 
         self.empty_sets.insert(type_id, Box::new(SparseSet::<T>::default()));
 
-        self.create_archetype(new_id);
+        // self.create_archetype(new_id);
 
         //initialize a copy for the empty sets list
 
         // self.archetype_map.insert(new_id, new_arch);
         self.new_sign_id += 1;
         // self.new_arch_id += 1;
-    }
-
-    pub fn query_components_2<A: 'static + Clone, B: 'static + Clone>(&self) -> impl Iterator<Item = (&A, &B)> {
-        let a_id = TypeId::of::<A>();
-        let b_id = TypeId::of::<B>();
-
-        let a_sign = self.signatures[&a_id];
-        let b_sign = self.signatures[&b_id];
-        let sign_to_query = a_sign | b_sign;
-        // let arch_map = self.component_index.get(&type_id).expect("component not registered");
-        let mut components: Vec<(&A, &B)> = vec![];
-
-        for (arch_id, arch) in self.archetype_map.iter() {
-            if arch_id & sign_to_query == sign_to_query {
-                //archetype included
-                // get columns
-                let a_col = self.component_index[&a_id][&arch.id].column;
-                // let b_col = self.component_index[&b_id][&arch.id].column;
-                let b_col = self.component_index[&b_id][&arch.id].column;
-
-                unsafe {
-                    // get the sparseset 
-                    let a_set = arch.components[a_col]
-                        .get()
-                        .as_mut()
-                        .unwrap()
-                        .as_any_mut()
-                        .downcast_mut::<SparseSet<A>>()
-                        .unwrap();
-                    let b_set = arch.components[b_col]
-                        .get()
-                        .as_mut()
-                        .unwrap()
-                        .as_any_mut()
-                        .downcast_mut::<SparseSet<B>>()
-                        .unwrap();
-
-                    for i in 0..a_set.len() {
-                        let comp_a = a_set.get_by_index(i).unwrap();
-                        let comp_b = b_set.get_by_index(i).unwrap();
-                        components.push((comp_a, comp_b));
-                    }
-
-                }
-            }
-        }
-
-        components.into_iter()
     }
 
     pub fn get_component_mut<T: 'static + Clone>(&self, entity: Entity) -> Option<&mut T> {
@@ -221,9 +169,7 @@ impl ArchetypeManager {
 
                 // loop through previous arch
                 // move it's components to new arch
-                let mut num = 0;
                 for ty in prev_arch.component_types.iter() {
-                    num += 1;
                     let prev_arch_col = self.component_index[&ty]
                         .get(&prev_arch.id)
                         .expect("archetype is not registered")
@@ -242,27 +188,9 @@ impl ArchetypeManager {
                         .unwrap();
 
                     prev_set.move_entity(entity, new_arch_mut);
-                    // prev_set.remove
                 }
                 self.entity_index.remove(&entity);
                 self.entity_index.insert(entity, new_arch);
-                // for i in 0..prev_arch.components.len()-1 {
-                //     // get sparse set of prev arch at index
-                //     let unsafe_cell = prev_arch.components.get_mut(i);
-                //     let prev_set = unsafe_cell
-                //         .expect("invalid index")
-                //         .get_mut();
-
-                //     // get sparse set at new arch at index
-                //     let new_arch_mut = new_arch.components.get(i)
-                //         .expect("invalid index")
-                //         .get()
-                //         .as_mut()
-                //         .unwrap();
-
-                //     // move from prev arch to new arch sparse set
-                //     prev_set.move_entity(entity, new_arch_mut);
-                // }
             }
             return;
         };

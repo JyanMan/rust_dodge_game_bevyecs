@@ -85,11 +85,6 @@ impl ECS {
         // self.system_m.entity_signature_changed(entity, signature);
     }
 
-    //TEST ONLY
-    pub fn query_components_2<A: 'static + Clone, B: 'static + Clone>(&self) -> impl Iterator<Item = (&A, &B)> {
-        self.archetype_m.query_components_2::<A, B>()
-    }
-
     pub fn get_component<T: 'static + Clone>(&self, entity: Entity) -> Option<&T> {
         self.component_m.get_component::<T>(entity)
     }

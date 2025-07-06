@@ -66,14 +66,22 @@ pub fn player_startup_system() -> StartFn {
         ecs.register_component::<PlayerInput>();
         ecs.register_component::<PlayerData>();
 
-        ecs.add_component::<Sprite>(player, sprite);
-        ecs.add_component::<Position>(player, Position { x: 10.0, y: -1000.0 });
-        ecs.add_component::<Velocity>(player, Velocity { x: 0.0, y: 0.0 });
-        ecs.add_component::<Area>(player, area);
+        ecs.spawn::<(Sprite, Position, Velocity, Area, PlayerTag, PlayerInput, PlayerData)>(player, (
+            sprite,
+            Position { x: 10.0, y: -1000.0 },
+            Velocity { x: 0.0, y: 0.0 },
+            area,
+            PlayerTag {},
+            PlayerInput::default(),
+            PlayerData::default(),
+        ));
+        // ecs.add_component::<Position>(player, Position { x: 10.0, y: -1000.0 });
+        // ecs.add_component::<Velocity>(player, Velocity { x: 0.0, y: 0.0 });
+        // ecs.add_component::<Area>(player, area);
 
-        ecs.add_component::<PlayerTag>(player, PlayerTag {});
-        ecs.add_component::<PlayerInput>(player, PlayerInput::default());
-        ecs.add_component::<PlayerData>(player, PlayerData::default());
+        // ecs.add_component::<PlayerTag>(player, PlayerTag {});
+        // ecs.add_component::<PlayerInput>(player, PlayerInput::default());
+        // ecs.add_component::<PlayerData>(player, PlayerData::default());
     })
 }
 
