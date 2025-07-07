@@ -20,7 +20,7 @@ pub fn zombie_register_components(ecs: &mut ECS) {
 
 pub fn zombie_init(ecs: &mut ECS, renderer: &mut Renderer) {
     let mut rng = rand::thread_rng(); 
-    for _ in 0..800 {
+    for _ in 0..3000 {
         zombie_spawn(ecs, renderer, rng.gen_range(40..100) as f32);
     }
 }

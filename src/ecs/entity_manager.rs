@@ -1,7 +1,7 @@
 use std::collections::VecDeque;
 use crate::ecs::entity::*;
 
-pub const MAX_ENTITIES: usize = 2000;
+pub const MAX_ENTITIES: usize = 5000;
 
 #[derive(Default)]
 pub struct EntityManager {
