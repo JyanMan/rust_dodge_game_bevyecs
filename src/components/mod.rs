@@ -9,3 +9,4 @@ pub mod rigidbody;
 pub mod entity_state;
 pub mod state_machine;
 pub mod animation;
+pub mod animation_player;

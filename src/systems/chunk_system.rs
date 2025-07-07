@@ -13,7 +13,7 @@ pub fn chunk_startup_system() -> StartFn {
         ecs.add_resource::<ChunkManager>(ChunkManager::new(
              Position::new(0.0, 0.0),
              &renderer.asset_m,
-             2,
+             4,
         ));
     })
 }

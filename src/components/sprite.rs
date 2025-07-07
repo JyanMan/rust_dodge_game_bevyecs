@@ -15,7 +15,8 @@ pub struct Sprite {
     vert: i32,
     height: i32,
     width: i32,
-    frame: i32,
+    pub frame: i32,
+    pub flip_x: bool,
 }
 
 impl Sprite {
@@ -32,6 +33,7 @@ impl Sprite {
            width: width as i32,
            height: height as i32,
            frame: 0,
+           flip_x: false,
         }
     }
 
@@ -82,7 +84,7 @@ impl Sprite {
             dest_rect,
             0.0,
             None,
-            false,
+            self.flip_x,
             false,
         );
     }

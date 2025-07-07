@@ -1,16 +1,20 @@
 use sdl2::event::Event;
 use sdl2::keyboard::*;
 use crate::components::area::*;
+use crate::components::animation::*;
+use crate::components::animation_player::*;
 use crate::components::position::*;
 use crate::components::rigidbody::*;
 use crate::components::sprite::*;
 use crate::components::velocity::*;
 use crate::systems::sprite_system::*;
 use crate::systems::player_system::*;
+use crate::systems::player_animation_system::*;
 use crate::systems::physics_system::*;
 use crate::systems::chunk_system::*;
 use crate::systems::area_system::*;
 use crate::systems::debug_system::*;
+use crate::systems::animation_system::*;
 use crate::core::renderer::*;
 use crate::ecs::ecs::*;
 
@@ -25,20 +29,25 @@ impl Game {
     pub fn new(renderer: &mut Renderer) -> Self {
         let mut ecs = ECS::new();
 
+        ecs.register_component::<Area>();
+        ecs.register_component::<Animation>();
+        ecs.register_component::<AnimationPlayer>();
         ecs.register_component::<Position>();
         ecs.register_component::<Sprite>();
         ecs.register_component::<Velocity>();
-        ecs.register_component::<Area>();
         ecs.register_component::<RigidBody>();
 
         // STARTUP
         ecs.register_system_startup(player_startup_system());
+        ecs.register_system_startup(player_animation_init());
         ecs.register_system_startup(chunk_startup_system());
         ecs.register_system_startup(area_manager_start());
 
         // UPDATE
         ecs.register_system_update(player_update_system());
+        ecs.register_system_update(player_animation_update());
         ecs.register_system_update(chunk_update_system());
+        ecs.register_system_update(animation_player_update());
 
         // FIXED UPDATE 
         ecs.register_system_fixed_update(player_fixed_update_system());

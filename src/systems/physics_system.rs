@@ -24,12 +24,16 @@ pub fn physics_fixed_update_system() -> FixedUpdateFn {
             if vel.y >= MAX_GRAVITY {
                 vel.y = MAX_GRAVITY
             }
+
+            //COLLISION RESOLUTION
+            area_colliding_to_tile(area, pos, vel, &mut p_data.grounded, &mut *area_m, time_step);
+
+            // needs to happen last due to area colliding grounded trigger not reached due to
+            // zeroed velocity
             if p_data.grounded && vel.y > 0.0 {
                 vel.y = 0.0;
             }
-            area_colliding_to_tile(area, pos, vel, &mut p_data.grounded, &mut *area_m, time_step);
 
-            //COLLISION RESOLUTION
 
             //ADJUSTMENT
             pos.x += vel.x * time_step;

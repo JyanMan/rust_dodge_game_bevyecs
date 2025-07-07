@@ -59,6 +59,27 @@ macro_rules! query_impl {
     }
 }
 
+macro_rules! query_impls {
+    // Entry point
+    ($($ty:ident),*) => {
+        query_impls_inner!((); $($ty),*);
+    };
+}
+
+macro_rules! query_impls_inner {
+    // Base case: no more types to process
+    (($($args:tt)*);) => {
+        query_impl!($($args)*);
+    };
+
+    // Recursive case: add non-mut and mut variants for the head
+    (($($args:tt)*); $head:ident $(, $tail:ident)*) => {
+        query_impls_inner!(($($args)* ($head)); $($tail),*);
+        query_impls_inner!(($($args)* mut ($head)); $($tail),*);
+    };
+}
+
+
 pub trait Query <'a> {
     type Output;
     fn fetch(ecs: &'a ArchetypeManager) -> Self::Output;
@@ -93,6 +114,40 @@ query_impl!((A), mut (B), (C), mut (D));
 query_impl!((A), (B), mut (C), mut (D));
 query_impl!(mut (A), mut (B), mut (C), (D));
 query_impl!(mut (A), mut (B), mut (C), mut (D));
+
+
+query_impl!((A), (B), (C), (D), (E));
+query_impl!(mut (A), (B), (C), (D), (E));
+query_impl!((A), mut (B), (C), (D), (E));
+query_impl!((A), (B), mut (C), (D), (E));
+query_impl!((A), (B), (C), mut (D), (E));
+query_impl!((A), (B), (C), (D), mut (E));
+query_impl!(mut (A), mut (B), (C), (D), (E));
+query_impl!(mut (A), (B), mut (C), (D), (E));
+query_impl!(mut (A), (B), (C), mut (D), (E));
+query_impl!(mut (A), (B), (C), (D), mut (E));
+query_impl!((A), mut (B), mut (C), (D), (E));
+query_impl!((A), mut (B), (C), mut (D), (E));
+query_impl!((A), mut (B), (C), (D), mut (E));
+query_impl!((A), (B), mut (C), mut (D), (E));
+query_impl!((A), (B), mut (C), (D), mut (E));
+query_impl!((A), (B), (C), mut (D), mut (E));
+query_impl!(mut (A), mut (B), mut (C), (D), (E));
+query_impl!(mut (A), mut (B), (C), mut (D), (E));
+query_impl!(mut (A), mut (B), (C), (D), mut (E));
+query_impl!(mut (A), (B), mut (C), mut (D), (E));
+query_impl!(mut (A), (B), mut (C), (D), mut (E));
+query_impl!(mut (A), (B), (C), mut (D), mut (E));
+query_impl!((A), mut (B), mut (C), mut (D), (E));
+query_impl!((A), mut (B), mut (C), (D), mut (E));
+query_impl!((A), mut (B), (C), mut (D), mut (E));
+query_impl!((A), (B), mut (C), mut (D), mut (E));
+query_impl!(mut (A), mut (B), mut (C), mut (D), (E));
+query_impl!(mut (A), mut (B), mut (C), (D), mut (E));
+query_impl!(mut (A), mut (B), (C), mut (D), mut (E));
+query_impl!(mut (A), (B), mut (C), mut (D), mut (E));
+query_impl!((A), mut (B), mut (C), mut (D), mut (E));
+query_impl!(mut (A), mut (B), mut (C), mut (D), mut (E));
 
 //impl <'a, A, B> Query <'a> for (&A, &B) 
 //where

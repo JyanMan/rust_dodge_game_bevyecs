@@ -1,6 +1,8 @@
+use std::ptr::*;
 use sdl2::keyboard::*; 
-use std::any::TypeId;
 use crate::core::renderer::*;
+use crate::components::animation::*;
+use crate::components::animation_player::*;
 use crate::components::sprite::*;
 use crate::components::position::*;
 use crate::components::velocity::*;
@@ -8,6 +10,7 @@ use crate::components::area::*;
 use crate::ecs::system::*;
 use crate::ecs::ecs::*;
 use crate::managers::asset_manager::*;
+use crate::systems::player_animation_system::*;
 
 #[derive(Default, Clone)]
 pub struct PlayerTag {}
@@ -15,9 +18,11 @@ pub struct PlayerTag {}
 #[derive(Clone)]
 pub struct PlayerInput {
     running: bool,
-    run_dir: i32,
+    pub run_dir: i32,
     jumping: bool,
     can_jump: bool,
+    can_jump_timer: f32,
+    jump_delay: f32,
 }
 
 impl Default for PlayerInput {
@@ -26,7 +31,9 @@ impl Default for PlayerInput {
             running: false,
             run_dir: 0,
             jumping: false,
-            can_jump: true,
+            can_jump: false,
+            can_jump_timer: 0.0,
+            jump_delay: 0.05
         }
     }
 }
@@ -53,7 +60,10 @@ impl Default for PlayerData {
 pub fn player_startup_system() -> StartFn {
     Box::new(|ecs: &mut ECS, renderer: &mut Renderer| {
 
-        let player = ecs.create_entity();
+        ecs.register_component::<PlayerTag>();
+        ecs.register_component::<PlayerInput>();
+        ecs.register_component::<PlayerData>();
+
         let mut sprite = Sprite::new(&renderer.asset_m, TextureId::Player);
         sprite.set_sprite_sheet(6, 6);
 
@@ -62,11 +72,7 @@ pub fn player_startup_system() -> StartFn {
         );
         area.offset = Position::new(12.0, 12.0);
 
-        ecs.register_component::<PlayerTag>();
-        ecs.register_component::<PlayerInput>();
-        ecs.register_component::<PlayerData>();
-
-        ecs.spawn::<(Sprite, Position, Velocity, Area, PlayerTag, PlayerInput, PlayerData)>(player, (
+        ecs.spawn::<(Sprite, Position, Velocity, Area, PlayerTag, PlayerInput, PlayerData, AnimationPlayer)>((
             sprite,
             Position { x: 10.0, y: -1000.0 },
             Velocity { x: 0.0, y: 0.0 },
@@ -74,29 +80,34 @@ pub fn player_startup_system() -> StartFn {
             PlayerTag {},
             PlayerInput::default(),
             PlayerData::default(),
+            AnimationPlayer::new(PAnims::COUNT),
         ));
-        // ecs.add_component::<Position>(player, Position { x: 10.0, y: -1000.0 });
-        // ecs.add_component::<Velocity>(player, Velocity { x: 0.0, y: 0.0 });
-        // ecs.add_component::<Area>(player, area);
-
-        // ecs.add_component::<PlayerTag>(player, PlayerTag {});
-        // ecs.add_component::<PlayerInput>(player, PlayerInput::default());
-        // ecs.add_component::<PlayerData>(player, PlayerData::default());
     })
 }
 
+
 pub fn player_update_system() -> UpdateFn {
-    Box::new(|ecs: &mut ECS, _delta_time: f32| {
+    Box::new(|ecs: &mut ECS, delta_time: f32| {
         for (_p_tag, p_input, p_data, vel) in 
             ecs.query_comp::<(&PlayerTag, &mut PlayerInput, &PlayerData, &mut Velocity)>() {
-            if p_input.jumping && p_data.grounded {
+
+            if p_data.grounded {
+                p_input.can_jump = true;
+                // reset jump timer set to false delay to 0
+                p_input.can_jump_timer = 0.0;
+            }
+            // if not on ground, wait for jump_delay seconds before can_jump is disabled
+            else {
+                p_input.can_jump_timer += delta_time;
+                if p_input.can_jump_timer >= p_input.jump_delay {
+                    p_input.can_jump = false;
+                }
+            }
+
+            if p_input.jumping {
                 vel.y = -p_data.jump_force;
                 p_input.jumping = false;
-                p_input.can_jump = true;
-            }
-            else {
-                p_input.jumping = false;
-                p_input.can_jump = true;
+                p_input.can_jump = false
             }
         }
     })
@@ -148,7 +159,7 @@ fn player_input_sys(pi: &mut PlayerInput, k_state: &mut KeyboardState) {
 
     if k_state.is_scancode_pressed(Scancode::Space) && pi.can_jump {
         pi.jumping = true;
-        pi.can_jump = false;
+        // pi.can_jump = false;
     }
 
     if k_state.is_scancode_pressed(Scancode::A) {

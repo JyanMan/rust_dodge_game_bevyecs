@@ -77,7 +77,6 @@ bundle_impl!((0, A), (1, B), (2, C), (3, D), (4, E), (5, F), (6, G), (7, H));
 bundle_impl!((0, A), (1, B), (2, C), (3, D), (4, E), (5, F), (6, G), (7, H), (8, I));
 bundle_impl!((0, A), (1, B), (2, C), (3, D), (4, E), (5, F), (6, G), (7, H), (8, I), (9, J));
 
-
 impl ArchetypeManager {
     pub fn spawn<B: Bundle>(&mut self, entity: Entity, components: B::Item) {
         B::spawn(self, entity, components);
@@ -85,7 +84,8 @@ impl ArchetypeManager {
 }
 
 impl ECS {
-    pub fn spawn<B: Bundle>(&mut self, entity: Entity, components: B::Item) {
+    pub fn spawn<B: Bundle>(&mut self, components: B::Item) {
+        let entity = self.create_entity();
         self.archetype_m.spawn::<B>(entity, components);
     }
 }

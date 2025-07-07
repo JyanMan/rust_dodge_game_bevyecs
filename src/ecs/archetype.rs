@@ -36,33 +36,31 @@ impl ArchetypeManager {
         // loop through signatures map
         for (type_id, bit) in self.signatures.iter() {
             // bitmask check if signature is on archetype id
-            if signature & *bit != 0 {
-                component_types.push(*type_id);
+            if signature & *bit == 0 {
+                continue;
+            }
+            // if bit is on signature or archetype_id
+            component_types.push(*type_id);
 
-                let column = components.len();
+            let column = components.len();
 
-                // get a copy of an empty sparse_list of type from type_id
-                let sparse_set = self.empty_sets.get(type_id)
-                    .expect("component type not registered")
-                    .clone_box();
-                components.push(UnsafeCell::new(sparse_set));
+            // get a copy of an empty sparse_list of type from type_id
+            let sparse_set = self.empty_sets.get(type_id)
+                .expect("component type not registered")
+                .clone_box();
+            components.push(UnsafeCell::new(sparse_set));
 
-                // Register column index
-                if let Some(arch_map) = self.component_index.get_mut(&type_id) {
-                    assert!(!arch_map.contains_key(&signature));
-                    arch_map.insert(signature, ArchetypeRecord { column });
-                }
-                else {
-                    let new_arch_map = HashMap::from([(signature, ArchetypeRecord { column })]);
-                    self.component_index.insert(
-                        *type_id,
-                        new_arch_map
-                    );
-                }
-                // self.component_index
-                //     .entry(*type_id)
-                //     .or_default()
-                //     .insert(signature, ArchetypeRecord { column });
+            // Register column index
+            if let Some(arch_map) = self.component_index.get_mut(&type_id) {
+                assert!(!arch_map.contains_key(&signature));
+                arch_map.insert(signature, ArchetypeRecord { column });
+            }
+            else {
+                let new_arch_map = HashMap::from([(signature, ArchetypeRecord { column })]);
+                self.component_index.insert(
+                    *type_id,
+                    new_arch_map
+                );
             }
         }
 
@@ -84,6 +82,7 @@ impl ArchetypeManager {
 
         self.signatures.insert(type_id, new_id);
 
+        // init empty sparse set for creation of empty of type
         self.empty_sets.insert(type_id, Box::new(SparseSet::<T>::default()));
 
         // self.create_archetype(new_id);
@@ -123,7 +122,7 @@ impl ArchetypeManager {
     pub fn add_component<T: 'static + Clone>(&mut self, entity: Entity, component: T) {
         // search for the entity record
         let type_id = TypeId::of::<T>();
-        let new_comp_sign = self.signatures.get(&type_id).expect("component not registered");
+        let new_comp_sign = *self.signatures.get(&type_id).expect("component not registered");
         
         // if entity is already recorded
         if let Some(arch) = self.entity_index.get(&entity) {
@@ -197,7 +196,17 @@ impl ArchetypeManager {
 
         // if not in entity index, this is the first component of the entity
         // get the archetype for solo components
-        let solo_comp_arch = self.archetype_map.get_mut(&new_comp_sign).unwrap();
+        // NO MORE SOLO COMP ARCH ON REG
+        let solo_comp_arch: &mut Archetype = if let Some(new_arch) = self.archetype_map.get_mut(&new_comp_sign) {
+            // get column to lookup the type immediately
+            new_arch
+        }
+        // if not there, create new archetype with the new signature
+        else {
+            self.create_archetype(new_comp_sign);
+            self.archetype_map.get_mut(&new_comp_sign).expect("archetype not created properly")
+        };
+        // let solo_comp_arch = self.archetype_map.get_mut(&new_comp_sign).unwrap();
 
         // get component index
         let arch_rec = self.component_index.get(&type_id).expect("component not registered / properly");
