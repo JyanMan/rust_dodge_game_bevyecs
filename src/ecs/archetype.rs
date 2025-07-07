@@ -52,7 +52,6 @@ impl ArchetypeManager {
 
             // Register column index
             if let Some(arch_map) = self.component_index.get_mut(&type_id) {
-                assert!(!arch_map.contains_key(&signature));
                 arch_map.insert(signature, ArchetypeRecord { column });
             }
             else {
@@ -92,6 +91,40 @@ impl ArchetypeManager {
         // self.archetype_map.insert(new_id, new_arch);
         self.new_sign_id += 1;
         // self.new_arch_id += 1;
+    }
+
+    pub fn has_component<T: 'static + Clone>(&self, entity: Entity) -> bool {
+        unsafe {
+            let type_id = TypeId::of::<T>();
+            let archetype = &mut *self.entity_index[&entity];
+                // .expect("entity has no record")
+                // .as_mut()
+                // .unwrap();
+            // let archetype = record.archetype.as_mut().unwrap();
+
+            let arch_map = self.component_index
+                .get(&type_id)
+                .expect("component type not registered");
+            let arch_rec = if let Some(arch_rec) = arch_map.get(&archetype.id) {
+                arch_rec 
+            }
+            else {
+                return false;
+            };
+
+            if let Some(_comp) = archetype.components[arch_rec.column]
+                .get_mut()
+                .as_any_mut()
+                .downcast_mut::<SparseSet<T>>()
+                .unwrap()
+                .get_mut(entity) {
+                return true;
+            }
+            else {
+                return false;
+            }
+
+        }
     }
 
     pub fn get_component_mut<T: 'static + Clone>(&self, entity: Entity) -> Option<&mut T> {

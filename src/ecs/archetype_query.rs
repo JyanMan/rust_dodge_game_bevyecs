@@ -13,23 +13,20 @@ macro_rules! query_impl {
             where
                 $($ty: 'static + Clone),+
             {
-                type Output = Vec<($(&'a $($mut)? $ty), +)>;
+                type Output = Vec<(Entity, $(&'a $($mut)? $ty), +)>;
 
                 fn fetch(ecs: &'a ArchetypeManager) -> Self::Output {
+                    // init all type id
                     $(let [<id_$ty>] = TypeId::of::<$ty>();) +
+                    // init all corresponding signs of id
                     $(let [<sign_$ty>] = ecs.signatures[&[<id_$ty>]];) +
+                    // combine all signs to one sign
                     let sign_to_query = $([<sign_$ty>])|+;
-                    let mut components: Vec<($(&$($mut)? $ty), +)> = vec![];
-                    // let a_id = TypeId::of::<A>();
-                    // let b_id = TypeId::of::<B>();
-
-                    // let a_sign = ecs.signatures[&a_id];
-                    // let b_sign = ecs.signatures[&b_id];
-                    // let sign_to_query = a_sign | b_sign;
-                    // // let arch_map = self.component_index.get(&type_id).expect("component not registered");
-                    // let mut components: Vec<(&A, &B)> = vec![];
+                    // init empty components vec
+                    let mut components: Vec<(Entity, $(&$($mut)? $ty), +)> = vec![];
 
                     for (arch_id, arch) in ecs.archetype_map.iter() {
+                        // check only for id that has atleast sign to query signature
                         if arch_id & sign_to_query == sign_to_query {
                             $(let [<col_$ty>] = ecs.component_index[&[<id_$ty>]][&arch.id].column;) +
 
@@ -43,11 +40,12 @@ macro_rules! query_impl {
                                     .downcast_mut::<SparseSet<$ty>>()
                                     .unwrap();)+
 
-                                for i in 0..set_A.len() {
+                                let dense_list_a = set_A.get_dense_list();
+                                let mut i: usize = 0;
+                                for e in dense_list_a.iter() {
                                     $(let [<comp_$ty>] = [<set_$ty>].[<get_by_index$(_$mut)?>](i).unwrap();) +
-                                    // let comp_b = b_set.get_by_index(i).unwrap();
-                                    components.push(($([<comp_$ty>]), +));
-                                    // components.push((comp_a, comp_b));
+                                    components.push((*e, $([<comp_$ty>]), +));
+                                    i += 1;
                                 }
                             }
                         }

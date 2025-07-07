@@ -152,5 +152,9 @@ impl <T: 'static + Clone> SparseSet <T> {
             Some(&mut *ptr.add(index).cast_mut())
         }
     }
+
+    pub fn get_dense_list(&self) -> &Vec<Entity> {
+        &self.dense_entities
+    }
 }
 

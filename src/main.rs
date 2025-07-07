@@ -11,6 +11,7 @@ mod managers;
 mod components;
 mod math_helper;
 mod ecs;
+mod tests;
 
 use crate::core::renderer::*;
 use crate::managers::asset_manager::*;

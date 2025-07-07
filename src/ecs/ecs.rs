@@ -97,6 +97,10 @@ impl ECS {
         self.component_m.get_component_type::<T>()
     }
 
+    pub fn has_component<T: 'static + Clone>(&self, entity: Entity) -> bool {
+        self.archetype_m.has_component::<T>(entity)
+    }
+
     // SYSTEM CALLS
     pub fn call_startup_systems(&mut self, renderer: &mut Renderer) {
         // Take the list out to avoid mutable borrow overlap
@@ -180,18 +184,5 @@ impl ECS {
     pub fn get_resource<T: 'static + Any + Default>(&self) -> Ref<T> {
         self.resource_m.get_resource::<T>()
     }
-
-
-    // pub fn query_entities_test(&self, comp_a: &[TypeId], comp_b: &[TypeId]) 
-    //     -> (HashSet<Entity>, HashSet<Entity>) {
-    //     (
-    //     self.component_m.query_entities(comp_a),
-    //     self.component_m.query_entities(comp_b),
-    //     )
-    // }
-
-    // pub fn query_entities(&self, types_a: &[TypeId], types_b: &[TypeId]) -> HashSet<Entity> {
-    //     self.component_m.query_entities(component_types)
-    // }
 }
 

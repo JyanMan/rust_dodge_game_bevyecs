@@ -7,11 +7,13 @@ use std::rc::Rc;
 pub enum TextureId {
     #[default]
     Player,
-    TileAtlas
+    TileAtlas,
+    Zombie
 }
 
 pub struct AssetManager <'a> {
     player_t: Rc<Texture<'a>>,
+    zombie_t: Rc<Texture<'a>>,
     tile_atlas_t: Rc<Texture<'a>>,
 }
 
@@ -21,17 +23,20 @@ impl <'a> AssetManager <'a> {
         // let t_creator = canvas.texture_creator();
 
         let player_t = Rc::new(t_creator.load_texture("assets/player.png").unwrap());
+        let zombie_t = Rc::new(t_creator.load_texture("assets/zombie.png").unwrap());
         let tile_atlas_t = Rc::new(t_creator.load_texture("assets/tile_atlas.png").unwrap());
         Self {
             player_t: player_t,
             tile_atlas_t: tile_atlas_t,
+            zombie_t: zombie_t,
         }
     }
 
     pub fn get_texture(&self, t_id: TextureId) -> Rc<Texture<'a>> {
         match t_id {
             TextureId::Player => self.player_t.clone(),
-            TextureId::TileAtlas => self.tile_atlas_t.clone() 
+            TextureId::TileAtlas => self.tile_atlas_t.clone(),
+            TextureId::Zombie => self.zombie_t.clone() 
         }
     }
 }

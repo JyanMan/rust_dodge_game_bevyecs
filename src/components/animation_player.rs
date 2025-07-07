@@ -1,16 +1,15 @@
-use std::collections::HashMap;
 use crate::components::animation::*;
 
 #[derive(Clone, Default)]
 pub struct AnimationPlayer {
     playing: bool,
     curr_anim: usize,
-    num_anims: i32,
+    num_anims: usize,
     anims: Vec<Animation>
 }
 
 impl AnimationPlayer {
-    pub fn new(num_anims: i32) -> Self {
+    pub fn new(num_anims: usize) -> Self {
         let mut anims = vec![];
         for _ in 0..num_anims {
             anims.push(Animation::default());
@@ -23,6 +22,8 @@ impl AnimationPlayer {
         }
     }
     pub fn play(&mut self, index: usize) {
+        assert!(index < self.num_anims);
+
         if index == self.curr_anim {
             return;
         }
@@ -38,6 +39,8 @@ impl AnimationPlayer {
     }
 
     pub fn add_anim(&mut self, index: usize, anim: Animation) {
+        assert!(index < self.num_anims);
+
         self.anims[index] = anim;
     }
 }

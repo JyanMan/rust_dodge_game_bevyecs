@@ -1,8 +1,9 @@
-use sdl2::event::Event;
 use sdl2::keyboard::*;
+use rand::*;
 use crate::components::area::*;
 use crate::components::animation::*;
 use crate::components::animation_player::*;
+use crate::components::entity_data::*;
 use crate::components::position::*;
 use crate::components::rigidbody::*;
 use crate::components::sprite::*;
@@ -13,6 +14,7 @@ use crate::systems::player_animation_system::*;
 use crate::systems::physics_system::*;
 use crate::systems::chunk_system::*;
 use crate::systems::area_system::*;
+use crate::systems::zombie_system::*;
 use crate::systems::debug_system::*;
 use crate::systems::animation_system::*;
 use crate::core::renderer::*;
@@ -20,9 +22,6 @@ use crate::ecs::ecs::*;
 
 pub struct Game {
     pub ecs: ECS,
-    // test_player: Position,
-    // test_sprite: Sprite,
-    // move_dir: i32,
 }
 
 impl Game {
@@ -36,38 +35,56 @@ impl Game {
         ecs.register_component::<Sprite>();
         ecs.register_component::<Velocity>();
         ecs.register_component::<RigidBody>();
+        ecs.register_component::<WalkerData>();
+
+        zombie_register_components(&mut ecs);
 
         // STARTUP
-        ecs.register_system_startup(player_startup_system());
-        ecs.register_system_startup(player_animation_init());
-        ecs.register_system_startup(chunk_startup_system());
-        ecs.register_system_startup(area_manager_start());
-
+        ecs.register_system_startup(
+            Box::new(|ecs: &mut ECS, renderer: &mut Renderer| {
+                player_init(ecs, renderer);
+                player_animation_init(ecs, renderer);
+                zombie_init(ecs, renderer);
+                chunk_manager_init(ecs, renderer);
+                area_manager_init(ecs, renderer);
+            })
+        );
         // UPDATE
-        ecs.register_system_update(player_update_system());
-        ecs.register_system_update(player_animation_update());
-        ecs.register_system_update(chunk_update_system());
-        ecs.register_system_update(animation_player_update());
-
+        ecs.register_system_update(
+            Box::new(|ecs: &mut ECS, delta_time: f32| {
+                player_update(ecs, delta_time);
+                player_animation_update(ecs, delta_time);
+                chunk_manager_update(ecs, delta_time);
+                animation_player_update(ecs, delta_time);
+            })
+        );
         // FIXED UPDATE 
-        ecs.register_system_fixed_update(player_fixed_update_system());
-        ecs.register_system_fixed_update(physics_fixed_update_system());
-
+        ecs.register_system_fixed_update(
+            Box::new(|ecs: &mut ECS, time_step: f32| {
+                player_fixed_update(ecs, time_step);
+                physics_fixed_update(ecs, time_step);
+                zombie_fixed_update(ecs, time_step);
+            })
+        );
         // INPUT
-        ecs.register_system_input(player_input_system());
+        ecs.register_system_input(
+            Box::new(|ecs: &mut ECS, k_state: &mut KeyboardState| {
+                player_input(ecs, k_state);
+            })
+        );
 
         // DRAW
-        ecs.register_system_draw(chunk_draw_system());
-        ecs.register_system_draw(sprite_draw_system());
-        // ecs.register_system_draw(debug_draw_areas_system());
+        ecs.register_system_draw(
+            Box::new(|ecs: &mut ECS, renderer: &mut Renderer| {
+                chunk_manager_draw(ecs, renderer);
+                sprite_draw(ecs, renderer);
+            }) 
+        );
         
         ecs.call_startup_systems(renderer);
 
         Self {
             ecs: ecs,
-            // test_sprite: p_sprite,
-            // test_player: Position::new(0.0, 100.0),
-            // move_dir: 0
         }
     }   
 
@@ -82,33 +99,9 @@ impl Game {
 
     pub fn draw(&mut self, renderer: &mut Renderer) {
         self.ecs.call_draw_systems(renderer);
-        // renderer.draw_to_cam(&self.test_sprite, &self.test_player);
-
-        // if self.move_dir == 1 {
-        //     self.test_player.x += 10.0;
-        // }
-        // if self.move_dir == -1 {
-        //     self.test_player.x -= 10.0;
-        // }
     }
 
     pub fn input(&mut self, k_state: &mut KeyboardState) {
         self.ecs.call_input_systems(k_state);
-
-        // match event {
-        //     Event::KeyDown { keycode: Some(Keycode::A), .. } => {
-        //         self.move_dir = -1;
-        //     },
-        //     Event::KeyDown { keycode: Some(Keycode::D), .. } => {
-        //         self.move_dir = 1;
-        //     },
-        //     Event::KeyUp { keycode: Some(Keycode::A), .. } => {
-        //         self.move_dir = 0;
-        //     },
-        //     Event::KeyUp { keycode: Some(Keycode::D), .. } => {
-        //         self.move_dir = 0;
-        //     },
-        //     _ => {}
-        // }
     }
 }
