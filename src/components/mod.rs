@@ -1,13 +1,13 @@
 pub mod area;
-pub mod tags;
 pub mod sprite;
 pub mod position;
 pub mod camera;
 pub mod velocity;
-pub mod entity_data;
+pub mod walker_data;
+pub mod walker_state;
+pub mod walker_animation;
 pub mod tile;
 pub mod rigidbody;
-pub mod entity_state;
-pub mod state_machine;
+// pub mod state_machine;
 pub mod animation;
 pub mod animation_player;

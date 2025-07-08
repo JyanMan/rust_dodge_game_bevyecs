@@ -3,10 +3,11 @@ use rand::*;
 use crate::components::area::*;
 use crate::components::animation::*;
 use crate::components::animation_player::*;
-use crate::components::entity_data::*;
+use crate::components::walker_data::*;
 use crate::components::position::*;
 use crate::components::rigidbody::*;
 use crate::components::sprite::*;
+// use crate::components::state_machine::*;
 use crate::components::velocity::*;
 use crate::systems::sprite_system::*;
 use crate::systems::player_system::*;
@@ -15,6 +16,7 @@ use crate::systems::physics_system::*;
 use crate::systems::chunk_system::*;
 use crate::systems::area_system::*;
 use crate::systems::zombie_system::*;
+use crate::systems::walker_animation_system::*;
 use crate::systems::debug_system::*;
 use crate::systems::animation_system::*;
 use crate::core::renderer::*;
@@ -32,9 +34,10 @@ impl Game {
         ecs.register_component::<Animation>();
         ecs.register_component::<AnimationPlayer>();
         ecs.register_component::<Position>();
-        ecs.register_component::<Sprite>();
-        ecs.register_component::<Velocity>();
         ecs.register_component::<RigidBody>();
+        ecs.register_component::<Sprite>();
+        //ecs.register_component::<StateMachine>();
+        ecs.register_component::<Velocity>();
         ecs.register_component::<WalkerData>();
 
         zombie_register_components(&mut ecs);
@@ -45,6 +48,7 @@ impl Game {
                 player_init(ecs, renderer);
                 player_animation_init(ecs, renderer);
                 zombie_init(ecs, renderer);
+                zombie_animation_init(ecs, renderer);
                 chunk_manager_init(ecs, renderer);
                 area_manager_init(ecs, renderer);
             })
@@ -53,8 +57,9 @@ impl Game {
         ecs.register_system_update(
             Box::new(|ecs: &mut ECS, delta_time: f32| {
                 player_update(ecs, delta_time);
-                player_animation_update(ecs, delta_time);
+                //walker_animation_update(ecs, delta_time);
                 chunk_manager_update(ecs, delta_time);
+                walker_animation_update(ecs, delta_time);
                 animation_player_update(ecs, delta_time);
             })
         );
@@ -62,8 +67,8 @@ impl Game {
         ecs.register_system_fixed_update(
             Box::new(|ecs: &mut ECS, time_step: f32| {
                 player_fixed_update(ecs, time_step);
-                physics_fixed_update(ecs, time_step);
                 zombie_fixed_update(ecs, time_step);
+                physics_fixed_update(ecs, time_step);
             })
         );
         // INPUT

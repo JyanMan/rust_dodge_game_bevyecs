@@ -1,29 +1,10 @@
 use crate::core::renderer::*;
 use crate::components::animation::*;
 use crate::components::animation_player::*;
-use crate::components::entity_data::*;
+use crate::components::walker_animation::*;
 use crate::components::sprite::*;
-use crate::components::velocity::*;
-use crate::ecs::system::*;
 use crate::ecs::ecs::*;
 use crate::systems::player_system::*;
-
-#[derive(Clone)]
-#[repr(usize)]
-pub enum PAnims {
-    // these are indeces for animation lookup
-    Idle,
-    Run,
-    Rise,
-    Fall
-}
-
-impl PAnims {
-    pub const COUNT: usize = 4;
-    fn usize(&self) -> usize {
-        self.clone() as usize
-    }
-}
 
 pub fn player_animation_init(ecs: &mut ECS, _renderer: &mut Renderer) {
     for (_e, sprite, anim_player, _p_tag) in 
@@ -54,38 +35,38 @@ pub fn player_animation_init(ecs: &mut ECS, _renderer: &mut Renderer) {
         let mut fall_anim = Animation::new(1, 0.2);
         fall_anim.set_frame(0, AnimData::Integer { value: 15, target: s_frame_ptr});
 
-        anim_player.add_anim(PAnims::Idle.usize(), idle_anim);
-        anim_player.add_anim(PAnims::Run.usize(), run_anim);
-        anim_player.add_anim(PAnims::Rise.usize(), rise_anim);
-        anim_player.add_anim(PAnims::Fall.usize(), fall_anim);
+        anim_player.add_anim(WalkerAnim::Idle.usize(), idle_anim);
+        anim_player.add_anim(WalkerAnim::Run.usize(), run_anim);
+        anim_player.add_anim(WalkerAnim::Rise.usize(), rise_anim);
+        anim_player.add_anim(WalkerAnim::Fall.usize(), fall_anim);
         // anim_player.play(PAnims::Run.usize());
     }
 }
 
-pub fn player_animation_update(ecs: &mut ECS, _delta_time: f32) {
-    for (_e, p_input, p_data, sprite, anim_player, vel) in 
-        ecs.query_comp::<(&PlayerInput, &WalkerData, &mut Sprite, &mut AnimationPlayer, &Velocity)>() {
-
-        let mut anim_index = PAnims::Idle.usize();
-
-        if p_input.run_dir > 0 {
-            sprite.flip_x = false;
-            anim_index = PAnims::Run.usize();
-        }
-        else if p_input.run_dir < 0 {
-            sprite.flip_x = true;
-            anim_index = PAnims::Run.usize();
-        }
-        
-        if !p_data.grounded {
-            if vel.y <= 0.0 {
-                anim_index = PAnims::Rise.usize();
-            }
-            else if vel.y > 0.0 {
-                anim_index = PAnims::Fall.usize();
-            }
-        }
-
-        anim_player.play(anim_index);
-    }
-}
+// pub fn player_animation_update(ecs: &mut ECS, _delta_time: f32) {
+//     for (_e, p_input, p_data, sprite, anim_player, vel) in 
+//         ecs.query_comp::<(&PlayerInput, &WalkerData, &mut Sprite, &mut AnimationPlayer, &Velocity)>() {
+// 
+//         let mut anim_index = PAnims::Idle.usize();
+// 
+//         if p_input.run_dir > 0 {
+//             sprite.flip_x = false;
+//             anim_index = PAnims::Run.usize();
+//         }
+//         else if p_input.run_dir < 0 {
+//             sprite.flip_x = true;
+//             anim_index = PAnims::Run.usize();
+//         }
+//         
+//         if !p_data.grounded {
+//             if vel.y <= 0.0 {
+//                 anim_index = PAnims::Rise.usize();
+//             }
+//             else if vel.y > 0.0 {
+//                 anim_index = PAnims::Fall.usize();
+//             }
+//         }
+// 
+//         anim_player.play(anim_index);
+//     }
+// }

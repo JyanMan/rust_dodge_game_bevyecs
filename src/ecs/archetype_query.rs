@@ -110,6 +110,8 @@ query_impl!(mut (A), (B), (C), mut (D));
 query_impl!((A), mut (B), mut (C), (D));
 query_impl!((A), mut (B), (C), mut (D));
 query_impl!((A), (B), mut (C), mut (D));
+query_impl!((A), mut (B), mut (C), mut (D));
+query_impl!(mut (A), (B), mut (C), mut (D));
 query_impl!(mut (A), mut (B), mut (C), (D));
 query_impl!(mut (A), mut (B), mut (C), mut (D));
 

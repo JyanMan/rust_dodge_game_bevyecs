@@ -2,7 +2,10 @@ use sdl2::keyboard::*;
 use crate::core::renderer::*;
 use crate::components::animation_player::*;
 use crate::components::sprite::*;
-use crate::components::entity_data::*;
+// use crate::components::state_machine::*;
+use crate::components::walker_data::*;
+use crate::components::walker_state::*;
+use crate::components::walker_animation::*;
 use crate::components::position::*;
 use crate::components::velocity::*;
 use crate::components::area::*;
@@ -37,25 +40,6 @@ impl Default for PlayerInput {
     }
 }
 
-// #[derive(Clone)]
-// pub struct WalkerData {
-//     run_speed: f32,
-//     accel: f32,
-//     jump_force: f32,
-//     pub grounded: bool,
-// }
-// 
-// impl Default for WalkerData {
-//     fn default() -> Self {
-//         Self {
-//             run_speed: 200.0,
-//             accel: 50.0,
-//             jump_force: 300.0,
-//             grounded: false,
-//         }
-//     }
-// }
-
 pub fn player_init(ecs: &mut ECS, renderer: &mut Renderer) {
 
     ecs.register_component::<PlayerTag>();
@@ -78,7 +62,8 @@ pub fn player_init(ecs: &mut ECS, renderer: &mut Renderer) {
         PlayerTag {},
         PlayerInput::default(),
         WalkerData::default(),
-        AnimationPlayer::new(PAnims::COUNT),
+        AnimationPlayer::new(WalkerAnim::COUNT),
+        // StateMachine::default(),
     ));
 }
 
@@ -110,7 +95,7 @@ pub fn player_update(ecs: &mut ECS, delta_time: f32) {
 
 pub fn player_fixed_update(ecs: &mut ECS, _time_step: f32) {
     for (_e, _p_tag, p_input, p_data, vel) in 
-        ecs.query_comp::<(&PlayerTag, &mut PlayerInput, &WalkerData, &mut Velocity)>() {
+        ecs.query_comp::<(&PlayerTag, &mut PlayerInput, &mut WalkerData, &mut Velocity)>() {
 
         let mut run_dir: f32 = 0.0;
         // let mut vert_dir: f32 = 0.0;
@@ -122,12 +107,15 @@ pub fn player_fixed_update(ecs: &mut ECS, _time_step: f32) {
         }
         // let run_speed = p_data.run_speed;
         if run_dir != 0.0 {
+            p_data.state = WalkerState::Running;
+            //state_m.set_state(State::Running);
             vel.x += run_dir * p_data.accel;
             if vel.x.abs() >= p_data.run_speed {
                 vel.x = p_data.run_speed.copysign(run_dir);
             }
         }
         else {
+            p_data.state = WalkerState::Idle;
             if vel.x.abs() > 0.001 {
                 vel.x -= p_data.accel.copysign(vel.x);
             }

@@ -7,3 +7,4 @@ pub mod area_system;
 pub mod animation_system;
 pub mod physics_system;
 pub mod debug_system;
+pub mod walker_animation_system;
