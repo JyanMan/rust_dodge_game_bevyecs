@@ -2,6 +2,7 @@ use rand::*;
 use crate::core::renderer::*;
 use crate::components::animation_player::*;
 use crate::components::animation::*;
+use crate::components::entity::*;
 use crate::components::sprite::*;
 // use crate::components::state_machine::*;
 use crate::components::walker_data::*;
@@ -10,12 +11,11 @@ use crate::components::walker_animation::*;
 use crate::components::position::*;
 use crate::components::velocity::*;
 use crate::components::area::*;
-use crate::systems::player_system::*;
 use crate::ecs::ecs::*;
 use crate::managers::asset_manager::*;
 
-#[derive(Clone, Default)]
-struct ZombieTag {}
+// #[derive(Clone, Default)]
+// struct ZombieTag {}
 
 pub fn zombie_register_components(ecs: &mut ECS) {
     ecs.register_component::<ZombieTag>();
@@ -56,23 +56,31 @@ pub fn zombie_spawn(ecs: &mut ECS, renderer: &mut Renderer, speed: f32) {
 
 pub fn zombie_fixed_update(ecs: &mut ECS, _time_step: f32) {
     let mut p_pos = Position::zero();
-    for (_e, _p_tag, pos) in ecs.query_comp::<(&PlayerTag, &Position)>() {
+    for (_e, _p_tag, pos) in ecs.query_comp::<(&PlayerData, &Position)>() {
         p_pos = *pos;
     }
     for (_e, pos, vel, _z_tag, walker_d) 
-        in ecs.query_comp::<(&Position, &mut Velocity, &ZombieTag, &mut WalkerData)>() {
-
+        in ecs.query_comp::<(&Position, &mut Velocity, &ZombieTag, &mut WalkerData)>() 
+    {
+        // jump ai
         if vel.x.abs() <= 0.001 && walker_d.state == WalkerState::Chasing {
             vel.y -= walker_d.jump_force;
         }
 
         let x_pos = p_pos.x - pos.x;
         let y_pos = p_pos.y - pos.y;
+
+        // calc dist
         let mut dist = (x_pos*x_pos + y_pos*y_pos).sqrt();
+        // disallow dividing by zero
         if dist == 0.0 {
             dist = 0.0001;
         }
-        let x_dir = x_pos / dist;
+
+        // get the direction on x axis
+        let x_dir = {1.0 as f32}.copysign(x_pos);
+
+        // move toward dir if on distance or far away
         if dist <= 200.0 && dist >= 20.0 {
             walker_d.state = WalkerState::Chasing;
             vel.x += x_dir * walker_d.accel;

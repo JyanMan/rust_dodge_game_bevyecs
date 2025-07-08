@@ -11,3 +11,21 @@ pub mod rigidbody;
 // pub mod state_machine;
 pub mod animation;
 pub mod animation_player;
+pub mod entity;
+pub mod register_components;
+
+
+pub use area::*;
+pub use sprite::*;
+pub use position::*;
+pub use camera::*;
+pub use velocity::*;
+pub use walker_data::*;
+pub use walker_state::*;
+pub use walker_animation::*;
+pub use tile::*;
+pub use rigidbody::*;
+pub use animation::*;
+pub use animation_player::*;
+pub use entity::*;
+

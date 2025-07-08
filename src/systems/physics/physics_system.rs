@@ -5,7 +5,7 @@ use crate::components::position::*;
 use crate::components::velocity::*;
 //use crate::components::state_machine::*;
 use crate::core::collision::*;
-use crate::systems::player_system::*;
+use crate::systems::entity::player::*;
 use crate::ecs::system::*;
 use crate::ecs::ecs::*;
 use crate::managers::area_manager::*;

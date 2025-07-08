@@ -4,7 +4,7 @@ use crate::components::area::*;
 use crate::ecs::system::*;
 use crate::ecs::ecs::*;
 use crate::managers::area_manager::*;
-use crate::systems::player_system::*;
+use crate::systems::entity::player::*;
 
 pub fn debug_draw_areas_system(ecs: &mut ECS, renderer: &mut Renderer) {
     let entities = ecs.query_entities(&[

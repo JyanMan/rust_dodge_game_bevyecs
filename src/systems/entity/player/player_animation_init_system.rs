@@ -2,13 +2,13 @@ use crate::core::renderer::*;
 use crate::components::animation::*;
 use crate::components::animation_player::*;
 use crate::components::walker_animation::*;
+use crate::components::entity::PlayerData;
 use crate::components::sprite::*;
 use crate::ecs::ecs::*;
-use crate::systems::player_system::*;
 
 pub fn player_animation_init(ecs: &mut ECS, _renderer: &mut Renderer) {
     for (_e, sprite, anim_player, _p_tag) in 
-        ecs.query_comp::<(&mut Sprite, &mut AnimationPlayer, &PlayerTag)>() {
+        ecs.query_comp::<(&mut Sprite, &mut AnimationPlayer, &PlayerData)>() {
 
         let s_frame_ptr = &mut sprite.frame as *mut _;
 

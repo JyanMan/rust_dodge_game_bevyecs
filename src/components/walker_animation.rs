@@ -10,7 +10,7 @@ pub enum WalkerAnim {
 
 impl WalkerAnim {
     pub const COUNT: usize = 4;
-    pub fn usize(&self) -> usize {
-        self.clone() as usize
+    pub fn usize(self) -> usize {
+        self as usize
     }
 }

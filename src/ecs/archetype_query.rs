@@ -9,6 +9,7 @@ macro_rules! query_impl {
     ($($($mut:ident)? ($ty: ident) ), + $(,)?) => {
         paste! {
             #[allow(non_snake_case)]
+            #[allow(unused_parens)]
             impl <'a, $($ty), +> Query <'a> for ($(&$($mut)? $ty), +) 
             where
                 $($ty: 'static + Clone),+
@@ -96,6 +97,7 @@ query_impl!(mut (A), (B), (C));
 query_impl!((A), mut (B), (C));
 query_impl!((A), (B), mut (C));
 query_impl!((A), mut (B), mut (C));
+query_impl!(mut (A), (B), mut (C));
 query_impl!(mut (A), mut (B), (C));
 query_impl!(mut (A), mut (B), mut (C));
 

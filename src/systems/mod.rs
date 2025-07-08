@@ -1,10 +1,7 @@
-pub mod sprite_system;
-pub mod player_system;
-pub mod zombie_system;
-pub mod player_animation_system;
-pub mod chunk_system;
-pub mod area_system;
-pub mod animation_system;
-pub mod physics_system;
-pub mod debug_system;
-pub mod walker_animation_system;
+pub mod animation;
+pub mod debug;
+pub mod entity;
+pub mod physics;
+pub mod render;
+pub mod world;
+pub mod register_systems;
