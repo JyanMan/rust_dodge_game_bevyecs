@@ -1,6 +1,7 @@
 use crate::core::renderer::*;
 use crate::components::position::*;
 use crate::components::sprite::*;
+use crate::components::Vector2;
 use crate::components::entity::PlayerData;
 use crate::ecs::ecs::*;
 
@@ -10,7 +11,11 @@ pub fn sprite_draw(ecs: &mut ECS, renderer: &mut Renderer) {
     for (e, pos, sprite) in query {
         renderer.draw_to_cam(sprite, &pos.vec, 1.0);
         if ecs.has_component::<PlayerData>(e) {
-            renderer.camera.set_target(&pos.vec);
+            let half_size = Vector2::new(
+                sprite.width as f32 / 2.0,
+                sprite.height as f32 / 2.0
+            );
+            renderer.camera.set_target(&pos.vec + half_size);
         }
     }
 

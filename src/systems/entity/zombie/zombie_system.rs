@@ -5,18 +5,12 @@ use crate::components::animation::*;
 use crate::components::entity::*;
 use crate::components::sprite::*;
 // use crate::components::state_machine::*;
-use crate::components::walker_data::*;
-use crate::components::walker_state::*;
-use crate::components::walker_animation::*;
+use crate::components::entity::{ WalkerData, WalkerState, WalkerAnim };
 use crate::components::position::*;
 use crate::components::velocity::*;
 use crate::components::area::*;
 use crate::ecs::ecs::*;
 use crate::resources::asset_manager::*;
-
-pub fn zombie_register_components(ecs: &mut ECS) {
-    ecs.register_component::<ZombieTag>();
-}
 
 pub fn zombie_init(ecs: &mut ECS, renderer: &mut Renderer) {
     let mut rng = rand::thread_rng(); 
@@ -60,7 +54,7 @@ pub fn zombie_fixed_update(ecs: &mut ECS, _time_step: f32) {
         in ecs.query_comp::<(&Position, &mut Velocity, &ZombieTag, &mut WalkerData)>() 
     {
         // jump ai
-        if vel.vec.x.abs() <= 0.001 && walker_d.state == WalkerState::Chasing {
+        if vel.vec.x.abs() <= 0.001 && walker_d.state == WalkerState::Running {
             vel.vec.y -= walker_d.jump_force;
         }
 
@@ -79,7 +73,7 @@ pub fn zombie_fixed_update(ecs: &mut ECS, _time_step: f32) {
 
         // move toward dir if on distance or far away
         if dist <= 200.0 && dist >= 20.0 {
-            walker_d.state = WalkerState::Chasing;
+            walker_d.state = WalkerState::Running;
             vel.vec.x += x_dir * walker_d.accel;
         }
         else {

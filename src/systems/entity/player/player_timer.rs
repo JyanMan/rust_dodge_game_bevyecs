@@ -17,15 +17,17 @@ pub fn player_can_jump_delay_timer(p_data: &mut PlayerData, walker_d: &WalkerDat
     }
 }
 
-pub fn player_can_dodge_timer(p_data: &mut PlayerData, delta_time: f32) {
+pub fn player_dodge_timer(p_data: &mut PlayerData, delta_time: f32) {
     if p_data.state != P::Dodging {
         return;
     }
 
     p_data.dodge_timer += delta_time;
+    // make sure lerp timer is reset as you can dodge while lerping
     p_data.lerp_timer = 0.0;
 
     if p_data.dodge_timer >= p_data.dodge_duration {
+        // transition to lerping
         p_data.state = P::Lerping;
         p_data.dodge_timer = 0.0;
         p_data.can_dodge = true;

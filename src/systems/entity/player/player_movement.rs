@@ -90,7 +90,6 @@ pub fn player_lerping(vel: &mut Velocity) {
 pub fn player_dodge(
     ecs: &ECS,
     p_data: &mut PlayerData, 
-    walker_d: &mut WalkerData, 
     vel: &mut Velocity,
     pos: &Position,
 ) {
@@ -100,6 +99,7 @@ pub fn player_dodge(
         return;
     }
     p_data.can_dodge = false;
+    p_data.dodge_timer = 0.0;
     p_data.state = P::Dodging;
 }
 

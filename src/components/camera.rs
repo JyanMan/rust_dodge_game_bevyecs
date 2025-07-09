@@ -21,7 +21,7 @@ impl Camera {
         }
     }
 
-    pub fn set_target(&mut self, target_pos: &Vector2) {
+    pub fn set_target(&mut self, target_pos: Vector2) {
         let screen_center = Position::new(HALF_WIDTH_F, HALF_HEIGHT_F).vec / self.scale;
         self.target_pos = target_pos - screen_center;
     }

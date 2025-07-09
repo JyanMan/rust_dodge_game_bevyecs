@@ -1,6 +1,5 @@
 use crate::components::area::*;
-use crate::components::walker_data::*;
-use crate::components::walker_state::*;
+use crate::components::entity::{ WalkerData, WalkerState };
 use crate::components::position::*;
 use crate::components::velocity::*;
 //use crate::components::state_machine::*;

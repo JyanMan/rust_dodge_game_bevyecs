@@ -1,8 +1,7 @@
 use crate::core::renderer::*;
 use crate::components::animation::*;
 use crate::components::animation_player::*;
-use crate::components::walker_animation::*;
-use crate::components::entity::PlayerData;
+use crate::components::entity::{ WalkerAnim, PlayerData };
 use crate::components::sprite::*;
 use crate::ecs::ecs::*;
 

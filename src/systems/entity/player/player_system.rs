@@ -3,16 +3,15 @@ use sdl2::keyboard::*;
 use crate::core::renderer::*;
 use crate::components::animation_player::*;
 use crate::components::sprite::*;
-use crate::components::walker_data::*;
-use crate::components::walker_state::*;
-use crate::components::walker_animation::*;
+use crate::components::entity::{ WalkerData, WalkerState, WalkerAnim, };
 use crate::components::position::*;
 use crate::components::velocity::*;
 use crate::components::area::*;
 use crate::ecs::ecs::*;
 use crate::resources::asset_manager::*;
-use crate::resources::MouseInput;
 use crate::components::entity::*;
+
+use PlayerState as P;
 
 pub fn player_init(ecs: &mut ECS, renderer: &mut Renderer) {
 
@@ -49,7 +48,7 @@ pub fn player_update(ecs: &mut ECS, delta_time: f32) {
         ecs.query_comp::<(&mut PlayerData, &WalkerData)>() 
     {
         player_can_jump_delay_timer(p_data, walker_d, delta_time);
-        player_can_dodge_timer(p_data, delta_time);
+        player_dodge_timer(p_data, delta_time);
         player_lerp_timer(p_data, delta_time);
     }
 }
@@ -57,24 +56,19 @@ pub fn player_update(ecs: &mut ECS, delta_time: f32) {
 pub fn player_fixed_update(ecs: &mut ECS, _time_step: f32) {
     use super::player_movement::*;
 
-    // get mouse pos
-    //let mouse_input = ecs.get_resource::<MouseInput>();
-    //let mouse_pos = mouse_input.pos;
-
     for (_e,  p_data, walker_d, pos, vel, input) in 
         ecs.query_comp::<(&mut PlayerData, &mut WalkerData, &Position, &mut Velocity, &PlayerInput)>() 
     {
         if input.dodge && p_data.can_dodge {
-            player_dodge(ecs, p_data, walker_d, vel, pos);
+            player_dodge(ecs, p_data, vel, pos);
         }
 
-        if p_data.state == PlayerState::Dodging {
+        if p_data.state == P::Dodging {
             let dodge_dir = get_dodge_dir(ecs, pos, p_data);
             player_dodging(dodge_dir, p_data, vel);
             return;
         } 
-
-        if p_data.state == PlayerState::Lerping {
+        else if p_data.state == P::Lerping {
             player_lerping(vel);
             return;
         }

@@ -23,7 +23,6 @@
 #[derive(Clone, PartialEq)]
 pub enum PlayerState {
     Rest,
-    // Jumping,
     Dodging,
     Lerping
 }
@@ -38,7 +37,6 @@ pub enum PlayerState {
 pub struct PlayerData {
     pub state: PlayerState,
 
-    pub run_dir: i32,
 
     pub can_jump: bool,
     pub can_jump_timer: f32,
@@ -60,8 +58,6 @@ impl Default for PlayerData {
         Self {
             state: PlayerState::Rest,
 
-            run_dir: 0,
-
             // jumping: false,
             can_jump: false,
             can_jump_timer: 0.0,
@@ -69,13 +65,13 @@ impl Default for PlayerData {
 
             can_dodge: true,
             dodge_timer: 0.0,
-            dodge_speed: 10.0,
+            dodge_speed: 7.0,
             dodge_cd: 0.2,
-            dodge_duration: 0.01,
+            dodge_duration: 0.1,
             dodge_min: 40.0,
             dodge_max: 120.0,
             lerp_timer: 0.0,
-            lerp_duration: 0.1,
+            lerp_duration: 0.2,
         }
     }
 }

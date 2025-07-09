@@ -1,9 +1,7 @@
 use crate::components::animation_player::*;
 use crate::components::sprite::*;
 //use crate::components::state_machine::*;
-use crate::components::walker_animation::*;
-use crate::components::walker_state::*;
-use crate::components::walker_data::*;
+use crate::components::entity::{ WalkerAnim, WalkerState, WalkerData };
 use crate::components::velocity::*;
 use crate::ecs::ecs::*;
 
@@ -22,7 +20,6 @@ pub fn walker_animation_update(ecs: &mut ECS, _delta_time: f32) {
         
         match walker_d.state {
             S::Idle => anim_player.play(A::Idle.usize()),
-            S::Chasing => anim_player.play(A::Run.usize()),
             S::Running => anim_player.play(A::Run.usize()),
             S::Aired => {
                 if vel.vec.y <= 0.0 {
@@ -32,7 +29,6 @@ pub fn walker_animation_update(ecs: &mut ECS, _delta_time: f32) {
                     anim_player.play(A::Fall.usize())
                 }
             },
-            _ => {}
         }
     }
 }
