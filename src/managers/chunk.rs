@@ -1,5 +1,6 @@
 use crate::config::*;
 use crate::components::position::*;
+use crate::components::Vector2;
 use crate::components::sprite::*;
 use crate::components::tile::*;
 use crate::core::renderer::*;
@@ -9,7 +10,7 @@ use fastnoise_lite::*;
 
 #[derive(Default)]
 pub struct Chunk {
-    world_pos: Position,
+    world_pos: Vector2,
     pub chunk_pos: Point,
     tiles_arr: Vec<Tile>,
     max_height: i32,
@@ -44,7 +45,7 @@ impl Clone for Chunk {
 }
 
 impl Chunk {
-    pub fn new(world_pos: Position) -> Chunk {
+    pub fn new(world_pos: Vector2) -> Chunk {
         // init tiles_array all empty
         let tiles_arr: Vec<Tile> = std::iter::repeat_with(|| Tile::new()).
             take((CHUNK_SIZE * CHUNK_SIZE) as usize).
@@ -68,7 +69,7 @@ impl Chunk {
         chunk
     }
 
-    pub fn set(&mut self, world_pos: Position, area_m: &mut AreaManager) {
+    pub fn set(&mut self, world_pos: Vector2, area_m: &mut AreaManager) {
 
         self.chunk_pos = world_to_chunk(&world_pos);
         self.world_pos = world_pos;

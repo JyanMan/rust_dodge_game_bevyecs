@@ -10,6 +10,7 @@ pub struct Area {
     pub offset: Position,
 }
 
+#[allow(unused)]
 impl Area {
     pub fn new(x: f32, y: f32, w: f32, h: f32) -> Self {
         Self {
@@ -30,7 +31,7 @@ impl Area {
     }
 
     pub fn update_pos(&mut self, x: f32, y: f32) {
-        self.x = x + self.offset.x;
-        self.y = y + self.offset.y;
+        self.x = x + self.offset.vec.x;
+        self.y = y + self.offset.vec.y;
     }
 }

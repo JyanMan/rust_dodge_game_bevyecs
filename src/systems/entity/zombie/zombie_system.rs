@@ -14,9 +14,6 @@ use crate::components::area::*;
 use crate::ecs::ecs::*;
 use crate::managers::asset_manager::*;
 
-// #[derive(Clone, Default)]
-// struct ZombieTag {}
-
 pub fn zombie_register_components(ecs: &mut ECS) {
     ecs.register_component::<ZombieTag>();
 }
@@ -63,12 +60,12 @@ pub fn zombie_fixed_update(ecs: &mut ECS, _time_step: f32) {
         in ecs.query_comp::<(&Position, &mut Velocity, &ZombieTag, &mut WalkerData)>() 
     {
         // jump ai
-        if vel.x.abs() <= 0.001 && walker_d.state == WalkerState::Chasing {
-            vel.y -= walker_d.jump_force;
+        if vel.vec.x.abs() <= 0.001 && walker_d.state == WalkerState::Chasing {
+            vel.vec.y -= walker_d.jump_force;
         }
 
-        let x_pos = p_pos.x - pos.x;
-        let y_pos = p_pos.y - pos.y;
+        let x_pos = p_pos.vec.x - pos.vec.x;
+        let y_pos = p_pos.vec.y - pos.vec.y;
 
         // calc dist
         let mut dist = (x_pos*x_pos + y_pos*y_pos).sqrt();
@@ -83,17 +80,17 @@ pub fn zombie_fixed_update(ecs: &mut ECS, _time_step: f32) {
         // move toward dir if on distance or far away
         if dist <= 200.0 && dist >= 20.0 {
             walker_d.state = WalkerState::Chasing;
-            vel.x += x_dir * walker_d.accel;
+            vel.vec.x += x_dir * walker_d.accel;
         }
         else {
             walker_d.state = WalkerState::Idle;
-            vel.x -= x_dir.copysign(vel.x) * walker_d.accel;
-            if vel.x.abs() <= walker_d.accel {
-                vel.x = 0.0;
+            vel.vec.x -= x_dir.copysign(vel.vec.x) * walker_d.accel;
+            if vel.vec.x.abs() <= walker_d.accel {
+                vel.vec.x = 0.0;
             }
         }
-        if vel.x.abs() >= walker_d.run_speed {
-            vel.x = walker_d.run_speed.copysign(vel.x);
+        if vel.vec.x.abs() >= walker_d.run_speed {
+            vel.vec.x = walker_d.run_speed.copysign(vel.vec.x);
         }
     }    
 }

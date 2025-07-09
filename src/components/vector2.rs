@@ -1,0 +1,58 @@
+use std::ops::*;
+
+#[derive(Debug, Copy, Clone, Default, PartialEq)]
+pub struct Vector2 {
+    pub x: f32, pub y: f32,
+}
+
+impl Vector2 {
+    pub fn new(x: f32, y: f32) -> Self {
+        Self { x, y }
+    }
+    pub fn zero() -> Self {
+        Self { x: 0.0, y: 0.0 }
+    }
+}
+
+// Arithmetic
+impl Add for Vector2 {
+    type Output = Vector2;
+    fn add(self, other: Vector2) -> Vector2 {
+        Vector2 { x: self.x + other.x, y: self.y + other.y }
+    }
+}
+
+impl Sub for Vector2 {
+    type Output = Vector2;
+    fn sub(self, other: Vector2) -> Vector2 {
+        Vector2 { x: self.x - other.x, y: self.y - other.y }
+    }
+}
+
+impl <'a> Sub<&'a Vector2> for Vector2 {
+    type Output = Vector2;
+    fn sub(self, other: &'a Vector2) -> Vector2 {
+        Vector2 { x: self.x - other.x, y: self.y - other.y }
+    }
+}
+
+impl <'a> Sub<Vector2> for &'a Vector2 {
+    type Output = Vector2;
+    fn sub(self, other: Vector2) -> Vector2 {
+        Vector2 { x: self.x - other.x, y: self.y - other.y }
+    }
+}
+
+impl Mul<f32> for Vector2 {
+    type Output = Vector2;
+    fn mul(self, scalar: f32) -> Vector2 {
+        Vector2 { x: self.x * scalar, y: self.y * scalar }
+    }
+}
+impl Div<f32> for Vector2 {
+    type Output = Vector2;
+    fn div(self, scalar: f32) -> Vector2 {
+        Vector2 { x: self.x / scalar, y: self.y / scalar }
+    }
+}
+

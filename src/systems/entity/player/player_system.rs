@@ -24,8 +24,8 @@ pub fn player_init(ecs: &mut ECS, renderer: &mut Renderer) {
 
     ecs.spawn::<(Sprite, Position, Velocity, Area, PlayerData, PlayerInput, WalkerData, AnimationPlayer)>((
         sprite,
-        Position { x: 10.0, y: -1000.0 },
-        Velocity { x: 0.0, y: 0.0 },
+        Position::new(10.0, -1000.0),
+        Velocity::new(0.0, 0.0),
         area,
         PlayerData::default(),
         PlayerInput::default(),

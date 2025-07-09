@@ -1,7 +1,8 @@
 use std::f64;
 use crate::components::area::*;
-use crate::components::velocity::*;
-use crate::components::position::*;
+use crate::components::Vector2;
+// use crate::components::velocity::*;
+// use crate::components::position::*;
 use crate::managers::area_manager::*;
 use crate::math_helper::*;
 
@@ -17,24 +18,24 @@ pub fn aabb_is_colliding(a: &Area, b: &Area) -> bool {
     ;
 }
 
-pub fn collision_overlap(a: &Area, b: &Area) -> Position
+pub fn collision_overlap(a: &Area, b: &Area) -> Vector2
 {
      // Calculation of centers of rectangles
-    let center1 = Position::new( a.x + a.w / 2.0, a.y + a.h / 2.0 );
-    let center2 = Position::new( b.x + b.w / 2.0, b.y + b.h / 2.0 );
+    let center1 = Vector2::new( a.x + a.w / 2.0, a.y + a.h / 2.0 );
+    let center2 = Vector2::new( b.x + b.w / 2.0, b.y + b.h / 2.0 );
 
     // Calculation of the distance vector between the centers of the rectangles
     let delta = center1 - center2;
 
     // Calculation of half-widths and half-heights of rectangles
-    let hs1 = Position::new(a.w *0.5, a.h *0.5 );
-    let hs2 = Position::new( b.w *0.5, b.h *0.5 );
+    let hs1 = Vector2::new(a.w *0.5, a.h *0.5 );
+    let hs2 = Vector2::new( b.w *0.5, b.h *0.5 );
 
     // Calculation of the minimum distance at which the two rectangles can be separated
     let min_dist_x = hs1.x + hs2.x - (delta.x).abs();
     let min_dist_y = hs1.y + hs2.y - (delta.y).abs();
 
-    let mut adjusted_pos = Position::zero();
+    let mut adjusted_pos = Vector2::zero();
     // Adjusted object position based on minimum distance
     if min_dist_x < min_dist_y {
         adjusted_pos.x += min_dist_x.copysign(delta.x);
@@ -45,7 +46,7 @@ pub fn collision_overlap(a: &Area, b: &Area) -> Position
 }
 
 
-pub fn swept_aabb(moving: &Area, vel: &Velocity, target: &Area, normal_out: &mut Position ) -> f32 {
+pub fn swept_aabb(moving: &Area, vel: &Vector2, target: &Area, normal_out: &mut Vector2 ) -> f32 {
     //Broad-phase check: if there's no overlap in the axis perpendicular to movement, skip
     // check for vertical overlap
     if vel.x != 0.0 && (moving.y + moving.h <= target.y || moving.y >= target.y + target.h) {
@@ -129,20 +130,20 @@ pub fn swept_aabb(moving: &Area, vel: &Velocity, target: &Area, normal_out: &mut
 
 fn aabb_resolve(
     area: &mut Area, 
-    pos: &mut Position,
-    curr_vel: &mut Velocity,
-    axis_motion: &Velocity, 
-    motion: &Velocity, 
+    pos: &mut Vector2,
+    curr_vel: &mut Vector2,
+    axis_motion: &Vector2, 
+    motion: &Vector2, 
     grounded: &mut bool, 
     area_m: &mut AreaManager
 ) {
 
     let mut earliest_ct: f32 = 1.0;
     let mut hit_area: Option<&Area> = None;
-    let mut earliest_normal = Position::zero();
+    let mut earliest_normal = Vector2::zero();
 
-    let start = Position::new(area.x + area.offset.x, area.y + area.offset.y);
-    let end = Position::new(
+    let start = Vector2::new(area.x + area.offset.vec.x, area.y + area.offset.vec.y);
+    let end = Vector2::new(
         start.x + motion.x, start.y + motion.y
         );
     //let end = start + motion;
@@ -155,8 +156,8 @@ fn aabb_resolve(
         area.h + (end.y - start.y).abs()
     );
 
-    let min_tile = world_to_tile(&Position::new(swept.x, swept.y));
-    let max_tile = world_to_tile(&Position::new(swept.x + swept.w, swept.y + swept.h));
+    let min_tile = world_to_tile(&Vector2::new(swept.x, swept.y));
+    let max_tile = world_to_tile(&Vector2::new(swept.x + swept.w, swept.y + swept.h));
 
     // two is buffer, meaning buffer by two tiles on all dimensions
     for y in min_tile.y-2..max_tile.y+2 {
@@ -193,7 +194,7 @@ fn aabb_resolve(
             // }
             // continue;
 
-            let mut normal = Position::zero();
+            let mut normal = Vector2::zero();
             let collision_time = swept_aabb(area, axis_motion, tile_area, &mut normal);
             if collision_time == 1.0 {
                 // no collision
@@ -235,7 +236,7 @@ fn aabb_resolve(
         if earliest_ct >= 1.0 {
             return;
         }
-        *pos = Position::new(
+        *pos = Vector2::new(
             pos.x + axis_motion.x * earliest_ct,
             pos.y + axis_motion.y * earliest_ct,
         );
@@ -257,16 +258,16 @@ fn aabb_resolve(
 
 pub fn area_colliding_to_tile(
     entity_area: &mut Area,
-    entity_pos: &mut Position,
-    vel: &mut Velocity, grounded: &mut bool, area_m: &mut AreaManager, time_step: f32
+    entity_pos: &mut Vector2,
+    vel: &mut Vector2, grounded: &mut bool, area_m: &mut AreaManager, time_step: f32
 ) {
     *grounded = false;
     let mut e_motion = vel.clone() * time_step;
 
-    let mut y_motion = Velocity::new(0.0, e_motion.y);
+    let mut y_motion = Vector2::new(0.0, e_motion.y);
     aabb_resolve(entity_area, entity_pos, vel, &mut y_motion, &mut e_motion, grounded, area_m);
 
     let mut dummy_grounded = false;
-    let mut x_motion = Velocity::new(e_motion.x, 0.0);
+    let mut x_motion = Vector2::new(e_motion.x, 0.0);
     aabb_resolve(entity_area, entity_pos, vel, &mut x_motion, &mut e_motion, &mut dummy_grounded, area_m);
 }

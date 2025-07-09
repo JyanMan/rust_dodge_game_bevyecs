@@ -1,6 +1,7 @@
 use std::any::TypeId;
 use crate::core::renderer::*;
 use crate::components::position::*;
+use crate::components::Vector2;
 use crate::components::entity::*;
 use crate::ecs::system::*;
 use crate::ecs::ecs::*;
@@ -11,7 +12,7 @@ use crate::systems::entity::player::*;
 
 pub fn chunk_manager_init(ecs: &mut ECS, renderer: &mut Renderer) {
     ecs.add_resource::<ChunkManager>(ChunkManager::new(
-         Position::new(0.0, 0.0),
+         Vector2::new(0.0, 0.0),
          &renderer.asset_m,
          4,
     ));
@@ -23,7 +24,7 @@ pub fn chunk_manager_update(ecs: &mut ECS, _delta_time: f32) {
 
     for (_e, _p_data, p_pos) in
         ecs.query_comp::<(&PlayerData, &Position)>() {
-        chunk_m.generate(*p_pos, &mut *area_m);
+        chunk_m.generate(&p_pos.vec, &mut *area_m);
     }
 }
 

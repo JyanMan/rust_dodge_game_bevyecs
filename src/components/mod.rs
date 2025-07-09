@@ -13,7 +13,7 @@ pub mod animation;
 pub mod animation_player;
 pub mod entity;
 pub mod register_components;
-
+pub mod vector2;
 
 pub use area::*;
 pub use sprite::*;
@@ -28,4 +28,5 @@ pub use rigidbody::*;
 pub use animation::*;
 pub use animation_player::*;
 pub use entity::*;
+pub use vector2::*;
 

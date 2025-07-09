@@ -1,8 +1,7 @@
 use sdl2::render::*;
 use crate::managers::asset_manager::*;
 use crate::components::camera::*;
-use crate::components::position::*;
-use crate::components::sprite::*;
+use crate::components::{ Vector2, Sprite };
 
 pub struct Renderer <'a> {
     pub canvas: WindowCanvas,
@@ -21,18 +20,18 @@ impl <'a> Renderer <'a> {
         }
     }
 
-    pub fn draw(&mut self, sprite: &Sprite, pos: &Position, scale: f32) {
+    pub fn draw(&mut self, sprite: &Sprite, pos: &Vector2, scale: f32) {
         let cam_scale = self.camera.scale;
         sprite.draw(self, &pos, scale * cam_scale);
     }
 
-    pub fn draw_frame_to_cam(&mut self, sprite: &Sprite, pos: &Position, scale: f32, frame: i32) {
+    pub fn draw_frame_to_cam(&mut self, sprite: &Sprite, pos: &Vector2, scale: f32, frame: i32) {
         let cam_scale = self.camera.scale;
         let adjusted_pos = (*pos - self.camera.get_pos()) * cam_scale;
         sprite.draw_frame(self, &adjusted_pos, scale * cam_scale, frame);
     }
 
-    pub fn draw_to_cam(&mut self, sprite: &Sprite, pos: &Position, scale: f32) {
+    pub fn draw_to_cam(&mut self, sprite: &Sprite, pos: &Vector2, scale: f32) {
         let cam_scale = self.camera.scale;
         let adjusted_pos = (*pos - self.camera.get_pos()) * cam_scale;
         sprite.draw(self, &adjusted_pos, scale * cam_scale);

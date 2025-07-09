@@ -1,10 +1,8 @@
 use std::any::TypeId;
 use crate::core::renderer::*;
-use crate::components::area::*;
-use crate::ecs::system::*;
+use crate::components::Area;
 use crate::ecs::ecs::*;
-use crate::managers::area_manager::*;
-use crate::systems::entity::player::*;
+use crate::managers::AreaManager;
 
 pub fn debug_draw_areas_system(ecs: &mut ECS, renderer: &mut Renderer) {
     let entities = ecs.query_entities(&[

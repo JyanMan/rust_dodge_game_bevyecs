@@ -3,7 +3,7 @@ use sdl2::rect::*;
 use sdl2::pixels::Color;
 use std::rc::Rc;
 use crate::core::renderer::*;
-use crate::components::position::*;
+use crate::components::Vector2;
 use crate::managers::asset_manager::*;
 
 #[derive(Default, Clone)]
@@ -50,11 +50,11 @@ impl Sprite {
         self.hor = hor;
         self.vert = vert;
     }
-    pub fn draw(&self, renderer: &mut Renderer, pos: &Position, scale: f32) {
+    pub fn draw(&self, renderer: &mut Renderer, pos: &Vector2, scale: f32) {
         self.draw_frame(renderer, pos, scale, self.frame);
     }
 
-    pub fn draw_frame(&self, renderer: &mut Renderer, pos: &Position, scale: f32, frame: i32) {
+    pub fn draw_frame(&self, renderer: &mut Renderer, pos: &Vector2, scale: f32, frame: i32) {
 
         let px_w = self.width as i32;
         let px_h = self.height as i32;

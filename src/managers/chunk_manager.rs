@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use crate::components::position::*;
+use crate::components::Vector2;
 use crate::core::renderer::*;
 use crate::components::sprite::*;
 use crate::managers::chunk::*; 
@@ -13,12 +13,12 @@ pub struct ChunkManager  {
     chunks_arr: Vec<Chunk>,
     new_chunk_points: Vec<Point>,
     render_dist: i32,
-    world_pos: Position,
+    world_pos: Vector2,
     sprite: Sprite
 }
 
 impl ChunkManager {
-    pub fn new(world_pos: Position, asset_m: &AssetManager, h_render_dist: i32) -> ChunkManager {
+    pub fn new(world_pos: Vector2, asset_m: &AssetManager, h_render_dist: i32) -> ChunkManager {
 
         // init sprite here so chunks and tiles don't create one for themselves
         let mut sprite = Sprite::new(asset_m, TextureId::TileAtlas);
@@ -35,7 +35,7 @@ impl ChunkManager {
         new_chunk_points.reserve_exact(size as usize);
 
         // init chunks array with default value and size
-        let chunks_arr = vec![Chunk::new(Position::new(0.0, 0.0)); size as usize];
+        let chunks_arr = vec![Chunk::new(Vector2::new(0.0, 0.0)); size as usize];
         let chunks_map = HashMap::new();
 
         // init default values of chunk manager
@@ -54,9 +54,9 @@ impl ChunkManager {
         cm
     }
 
-    pub fn generate(&mut self, world_pos: Position, area_m: &mut AreaManager) {
+    pub fn generate(&mut self, world_pos: &Vector2, area_m: &mut AreaManager) {
 
-        self.world_pos = world_pos;
+        self.world_pos = *world_pos;
 
         // new chunk points to save unrendered new chunk positions
         self.new_chunk_points.clear();

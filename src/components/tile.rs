@@ -3,6 +3,7 @@ use crate::core::renderer::*;
 use crate::math_helper::*;
 use crate::components::area::*;
 use crate::components::position::*;
+use crate::components::Vector2;
 use crate::components::sprite::*;
 use crate::managers::area_manager::*;
 
@@ -22,14 +23,14 @@ pub enum TileType {
 #[derive(Clone, Default)]
 pub struct Tile {
     tile_pos: Point,
-    world_pos: Position,
+    world_pos: Vector2,
     tile_type: TileType,
 
 }
 
 impl Tile {
     pub fn new() -> Tile {
-        let world_pos = Position::new(0.0, 0.0);
+        let world_pos = Vector2::new(0.0, 0.0);
 
         Tile {
             tile_pos: world_to_tile(&world_pos),

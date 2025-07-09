@@ -23,18 +23,18 @@ pub fn physics_fixed_update(ecs: &mut ECS, time_step: f32) {
     {
 
         //GRAVITY
-        vel.y += GRAVITY_ACCEL;
-        if vel.y >= MAX_GRAVITY {
-            vel.y = MAX_GRAVITY
+        vel.vec.y += GRAVITY_ACCEL;
+        if vel.vec.y >= MAX_GRAVITY {
+            vel.vec.y = MAX_GRAVITY
         }
 
         //COLLISION RESOLUTION
-        area_colliding_to_tile(area, pos, vel, &mut walker_d.grounded, &mut *area_m, time_step);
+        area_colliding_to_tile(area, &mut pos.vec, &mut vel.vec, &mut walker_d.grounded, &mut *area_m, time_step);
 
         // needs to happen last due to area colliding grounded trigger not reached due to
         // zeroed velocity
-        if walker_d.grounded && vel.y > 0.0 {
-            vel.y = 0.0;
+        if walker_d.grounded && vel.vec.y > 0.0 {
+            vel.vec.y = 0.0;
         }
         if !walker_d.grounded {
             walker_d.state = WalkerState::Aired;
@@ -42,9 +42,9 @@ pub fn physics_fixed_update(ecs: &mut ECS, time_step: f32) {
         }
 
         //ADJUSTMENT
-        pos.x += vel.x * time_step;
-        pos.y += vel.y * time_step;
+        pos.vec.x += vel.vec.x * time_step;
+        pos.vec.y += vel.vec.y * time_step;
 
-        area.update_pos(pos.x, pos.y);
+        area.update_pos(pos.vec.x, pos.vec.y);
     }
 }

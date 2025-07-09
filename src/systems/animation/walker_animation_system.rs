@@ -13,10 +13,10 @@ pub fn walker_animation_update(ecs: &mut ECS, _delta_time: f32) {
     for (_e, vel, sprite, anim_player, walker_d) 
         in ecs.query_comp::<(&Velocity, &mut Sprite, &mut AnimationPlayer, &WalkerData)>() 
     {
-        if vel.x > 0.0 {
+        if vel.vec.x > 0.0 {
             sprite.flip_x = false;
         }
-        else if vel.x < 0.0 {
+        else if vel.vec.x < 0.0 {
             sprite.flip_x = true;
         }
         
@@ -25,7 +25,7 @@ pub fn walker_animation_update(ecs: &mut ECS, _delta_time: f32) {
             S::Chasing => anim_player.play(A::Run.usize()),
             S::Running => anim_player.play(A::Run.usize()),
             S::Aired => {
-                if vel.y <= 0.0 {
+                if vel.vec.y <= 0.0 {
                     anim_player.play(A::Rise.usize())
                 }
                 else {

@@ -8,9 +8,9 @@ pub fn sprite_draw(ecs: &mut ECS, renderer: &mut Renderer) {
     let query = ecs.query_comp::<(&Position, &Sprite)>();
 
     for (e, pos, sprite) in query {
-        renderer.draw_to_cam(sprite, pos, 1.0);
+        renderer.draw_to_cam(sprite, &pos.vec, 1.0);
         if ecs.has_component::<PlayerData>(e) {
-            renderer.camera.set_target(&pos);
+            renderer.camera.set_target(&pos.vec);
         }
     }
 
