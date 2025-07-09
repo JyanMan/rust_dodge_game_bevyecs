@@ -49,6 +49,10 @@ pub struct PlayerData {
     pub dodge_speed: f32,
     pub dodge_cd: f32,
     pub dodge_duration: f32,
+    pub dodge_min: f32,
+    pub dodge_max: f32,
+    pub lerp_timer: f32,
+    pub lerp_duration: f32,
 }
 
 impl Default for PlayerData {
@@ -67,7 +71,11 @@ impl Default for PlayerData {
             dodge_timer: 0.0,
             dodge_speed: 10.0,
             dodge_cd: 0.2,
-            dodge_duration: 0.1,
+            dodge_duration: 0.01,
+            dodge_min: 40.0,
+            dodge_max: 120.0,
+            lerp_timer: 0.0,
+            lerp_duration: 0.1,
         }
     }
 }
@@ -79,4 +87,3 @@ pub struct PlayerInput {
     pub left: bool,
     pub right: bool,
 }
-

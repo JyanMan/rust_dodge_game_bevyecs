@@ -3,7 +3,7 @@ use crate::components::area::*;
 use crate::components::Vector2;
 // use crate::components::velocity::*;
 // use crate::components::position::*;
-use crate::managers::area_manager::*;
+use crate::resources::area_manager::*;
 use crate::math_helper::*;
 
 const INFINITY: f32 = f64::INFINITY as f32;

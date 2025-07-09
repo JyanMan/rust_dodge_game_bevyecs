@@ -1,5 +1,5 @@
 use sdl2::render::*;
-use crate::managers::asset_manager::*;
+use crate::resources::asset_manager::*;
 use crate::components::camera::*;
 use crate::components::{ Vector2, Sprite };
 

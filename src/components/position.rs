@@ -5,6 +5,7 @@ use super::Vector2;
 pub struct Position {
     pub vec: Vector2
 }
+
 impl Position {
     pub fn new(x: f32, y: f32) -> Self {
         Self { vec: Vector2::new( x, y ) }

@@ -12,7 +12,7 @@ use crate::components::position::*;
 use crate::components::velocity::*;
 use crate::components::area::*;
 use crate::ecs::ecs::*;
-use crate::managers::asset_manager::*;
+use crate::resources::asset_manager::*;
 
 pub fn zombie_register_components(ecs: &mut ECS) {
     ecs.register_component::<ZombieTag>();

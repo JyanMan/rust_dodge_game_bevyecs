@@ -5,7 +5,7 @@ use crate::components::area::*;
 use crate::components::position::*;
 use crate::components::Vector2;
 use crate::components::sprite::*;
-use crate::managers::area_manager::*;
+use crate::resources::area_manager::*;
 
 #[repr(i32)]
 #[derive(Copy, Clone, Debug, Default)]

@@ -1,7 +1,9 @@
+use sdl2::EventPump;
 use sdl2::keyboard::*;
 use crate::components::entity::{PlayerInput};
 
-pub fn player_input_sys(input: &mut PlayerInput, k_state: &mut KeyboardState) {
+pub fn player_input_sys(input: &mut PlayerInput, event: &mut EventPump) {
+    let k_state = event.keyboard_state();
     if k_state.is_scancode_pressed(Scancode::Space) { input.jump = true; } else { input.jump = false; }
 
     if k_state.is_scancode_pressed(Scancode::A) { input.left = true; } else { input.left = false; }

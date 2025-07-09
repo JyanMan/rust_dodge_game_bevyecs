@@ -1,4 +1,4 @@
-use sdl2::keyboard::*;
+use sdl2::EventPump;
 use std::collections::HashSet;
 use std::any::Any;
 use crate::ecs::entity::*;
@@ -10,7 +10,7 @@ pub type StartFn = Box<dyn FnMut(&mut ECS, &mut Renderer)>;
 pub type DrawFn = Box<dyn FnMut(&mut ECS, &mut Renderer)>;
 pub type UpdateFn = Box<dyn FnMut(&mut ECS, f32)>;
 pub type FixedUpdateFn = Box<dyn FnMut(&mut ECS, f32)>;
-pub type InputFn = Box<dyn FnMut(&mut ECS, &mut KeyboardState)>;
+pub type InputFn = Box<dyn FnMut(&mut ECS, &mut EventPump)>;
 
 // pub trait System: Any {
 //     fn entities(&mut self) -> &mut HashSet<Entity>;

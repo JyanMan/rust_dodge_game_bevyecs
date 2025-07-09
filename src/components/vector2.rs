@@ -12,6 +12,21 @@ impl Vector2 {
     pub fn zero() -> Self {
         Self { x: 0.0, y: 0.0 }
     }
+
+    pub fn len(&self) -> f32 {
+        (self.x*self.x + self.y*self.y).sqrt()
+    }
+
+    pub fn normalize(&self) -> Vector2 {
+        let mut len = self.len();
+        if len == 0.0 {
+            len = 0.0001;
+        }
+        Vector2 {
+            x: self.x / len,
+            y: self.y / len
+        }
+    }
 }
 
 // Arithmetic

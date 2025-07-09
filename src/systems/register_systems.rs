@@ -1,4 +1,4 @@
-use sdl2::keyboard::*;
+use sdl2::EventPump;
 use crate::core::renderer::*;
 use crate::ecs::ecs::*;
 use super::animation::*;
@@ -17,8 +17,8 @@ pub fn register_all_systems(ecs: &mut ECS, renderer: &mut Renderer) {
             player_animation_init(ecs, renderer);
             zombie_init(ecs, renderer);
             zombie_animation_init(ecs, renderer);
-            chunk_manager_init(ecs, renderer);
-            area_manager_init(ecs, renderer);
+            // chunk_manager_init(ecs, renderer);
+            // area_manager_init(ecs, renderer);
         })
     );
     // UPDATE
@@ -41,8 +41,9 @@ pub fn register_all_systems(ecs: &mut ECS, renderer: &mut Renderer) {
     );
     // INPUT
     ecs.register_system_input(
-        Box::new(|ecs: &mut ECS, k_state: &mut KeyboardState| {
-            player_input(ecs, k_state);
+        Box::new(|ecs: &mut ECS, event: &mut EventPump| {
+            player_input(ecs, event);
+            mouse_input_system(ecs, event);
         })
     );
 

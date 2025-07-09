@@ -2,7 +2,7 @@ use std::any::TypeId;
 use crate::core::renderer::*;
 use crate::components::Area;
 use crate::ecs::ecs::*;
-use crate::managers::AreaManager;
+use crate::resources::AreaManager;
 
 pub fn debug_draw_areas_system(ecs: &mut ECS, renderer: &mut Renderer) {
     let entities = ecs.query_entities(&[

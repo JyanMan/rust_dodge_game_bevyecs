@@ -7,14 +7,14 @@ mod config;
 // mod structs;
 mod core;
 mod systems;
-mod managers;
+mod resources;
 mod components;
 mod math_helper;
 mod ecs;
 mod tests;
 
 use crate::core::renderer::*;
-use crate::managers::asset_manager::*;
+use crate::resources::asset_manager::*;
 use crate::components::camera::Camera;
 
 pub fn main() {
@@ -68,7 +68,7 @@ pub fn main() {
             game.fixed_update(time_step);
         }
 
-        game.input(&mut event_pump.keyboard_state());
+        game.input(&mut event_pump);
         for event in event_pump.poll_iter() {
             match event {
                 Event::Quit {..} |

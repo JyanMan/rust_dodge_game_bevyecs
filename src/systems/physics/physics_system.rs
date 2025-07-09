@@ -8,7 +8,7 @@ use crate::core::collision::*;
 use crate::systems::entity::player::*;
 use crate::ecs::system::*;
 use crate::ecs::ecs::*;
-use crate::managers::area_manager::*;
+use crate::resources::area_manager::*;
 
 const GRAVITY_ACCEL: f32 = 15.0;
 const MAX_GRAVITY: f32 = 700.0;

@@ -6,17 +6,17 @@ use crate::components::entity::*;
 use crate::ecs::system::*;
 use crate::ecs::ecs::*;
 use crate::ecs::ecs_query::*;
-use crate::managers::chunk_manager::*;
-use crate::managers::area_manager::*;
+use crate::resources::chunk_manager::*;
+use crate::resources::area_manager::*;
 use crate::systems::entity::player::*;
 
-pub fn chunk_manager_init(ecs: &mut ECS, renderer: &mut Renderer) {
-    ecs.add_resource::<ChunkManager>(ChunkManager::new(
-         Vector2::new(0.0, 0.0),
-         &renderer.asset_m,
-         4,
-    ));
-}
+// pub fn chunk_manager_init(ecs: &mut ECS, renderer: &mut Renderer) {
+//     ecs.add_resource::<ChunkManager>(ChunkManager::new(
+//          Vector2::new(0.0, 0.0),
+//          &renderer.asset_m,
+//          4,
+//     ));
+// }
 
 pub fn chunk_manager_update(ecs: &mut ECS, _delta_time: f32) {
     let mut chunk_m = ecs.get_resource_mut::<ChunkManager>();

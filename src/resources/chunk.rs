@@ -2,10 +2,10 @@ use crate::config::*;
 use crate::components::position::*;
 use crate::components::Vector2;
 use crate::components::sprite::*;
-use crate::components::tile::*;
 use crate::core::renderer::*;
 use crate::math_helper::*;
-use crate::managers::area_manager::*;
+use crate::resources::tile::*;
+use crate::resources::area_manager::*;
 use fastnoise_lite::*;
 
 #[derive(Default)]

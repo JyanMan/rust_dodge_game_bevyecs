@@ -2,9 +2,9 @@ use std::collections::HashMap;
 use crate::components::Vector2;
 use crate::core::renderer::*;
 use crate::components::sprite::*;
-use crate::managers::chunk::*; 
-use crate::managers::asset_manager::*;
-use crate::managers::area_manager::*;
+use crate::resources::chunk::*; 
+use crate::resources::asset_manager::*;
+use crate::resources::area_manager::*;
 use crate::math_helper::*;
 
 #[derive(Clone, Default)]

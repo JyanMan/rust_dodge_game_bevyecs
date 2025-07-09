@@ -4,7 +4,7 @@ use sdl2::pixels::Color;
 use std::rc::Rc;
 use crate::core::renderer::*;
 use crate::components::Vector2;
-use crate::managers::asset_manager::*;
+use crate::resources::asset_manager::*;
 
 #[derive(Default, Clone)]
 pub struct Sprite {
