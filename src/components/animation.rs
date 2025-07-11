@@ -23,13 +23,13 @@ pub struct Animation {
     frames: Vec<AnimFrame>,
     frame_num: usize,
     // playing: bool,
-    f_per_sec: f32,
+    s_per_frame: f32,
     curr_frame: usize,
     play_timer: f32,
 }
 
 impl Animation {
-    pub fn new(frame_num: usize, f_per_sec: f32) -> Self {
+    pub fn new(frame_num: usize, s_per_frame: f32) -> Self {
         let mut new_frames_vec = Vec::new();
 
         for _ in 0..frame_num {
@@ -40,7 +40,7 @@ impl Animation {
             frame_num: frame_num,
             frames: new_frames_vec,
             // playing: false,
-            f_per_sec: f_per_sec,
+            s_per_frame: s_per_frame,
             curr_frame: 0,
             play_timer: 0.0,
         }
@@ -65,7 +65,7 @@ impl Animation {
 
         self.play_timer += delta_time;
 
-        if self.play_timer >= self.f_per_sec {
+        if self.play_timer >= self.s_per_frame {
             self.play_timer = 0.0;
 
             self.curr_frame += 1;

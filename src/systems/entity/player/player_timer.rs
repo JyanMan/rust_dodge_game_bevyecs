@@ -30,7 +30,7 @@ pub fn player_dodge_timer(p_data: &mut PlayerData, delta_time: f32) {
         // transition to lerping
         p_data.state = P::Lerping;
         p_data.dodge_timer = 0.0;
-        p_data.can_dodge = true;
+        // p_data.can_dodge = true;
     }
 }
 
@@ -39,6 +39,7 @@ pub fn player_lerp_timer(p_data: &mut PlayerData, delta_time: f32) {
         return;
     }
     p_data.lerp_timer += delta_time;
+    //p_data.dodge_timer = 0.0;
     if p_data.lerp_timer >= p_data.lerp_duration {
         p_data.lerp_timer = 0.0;
         p_data.state = P::Rest;

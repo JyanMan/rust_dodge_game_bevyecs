@@ -86,11 +86,11 @@ impl ECS {
     }
 
     pub fn get_component<T: 'static + Clone>(&self, entity: Entity) -> Option<&T> {
-        self.component_m.get_component::<T>(entity)
+        self.archetype_m.get_component::<T>(entity)
     }
 
     pub fn get_component_mut<T: 'static + Clone>(&self, entity: Entity) -> Option<&mut T> {
-        self.component_m.get_component_mut::<T>(entity)
+        self.archetype_m.get_component_mut::<T>(entity)
     }
 
     pub fn get_component_type<T: 'static>(&mut self) -> Option<ComponentType> {

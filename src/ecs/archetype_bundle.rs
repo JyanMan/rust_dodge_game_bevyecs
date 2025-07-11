@@ -84,8 +84,9 @@ impl ArchetypeManager {
 }
 
 impl ECS {
-    pub fn spawn<B: Bundle>(&mut self, components: B::Item) {
+    pub fn spawn<B: Bundle>(&mut self, components: B::Item) -> Entity {
         let entity = self.create_entity();
         self.archetype_m.spawn::<B>(entity, components);
+        entity
     }
 }

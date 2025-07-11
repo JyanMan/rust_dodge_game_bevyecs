@@ -127,6 +127,32 @@ impl ArchetypeManager {
         }
     }
 
+    pub fn get_component<T: 'static + Clone>(&self, entity: Entity) -> Option<&T> {
+        unsafe {
+            let type_id = TypeId::of::<T>();
+            let archetype = self.entity_index.get(&entity)
+                .expect("entity has no record")
+                .as_ref()
+                .unwrap();
+            // let archetype = record.archetype.as_mut().unwrap();
+
+            let arch_map = if let Some(map) = self.component_index.get(&type_id) {
+                map
+            } else {
+                return None;
+            };
+
+            let arch_record = arch_map.get(&archetype.id).unwrap(); 
+            archetype.components[arch_record.column]
+                .get()
+                .as_ref().unwrap()
+                .as_any()
+                .downcast_ref::<SparseSet<T>>()
+                .unwrap()
+                .get(entity)
+        }
+    }
+
     pub fn get_component_mut<T: 'static + Clone>(&self, entity: Entity) -> Option<&mut T> {
         unsafe {
             let type_id = TypeId::of::<T>();

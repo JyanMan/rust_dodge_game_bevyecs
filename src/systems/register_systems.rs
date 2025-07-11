@@ -8,6 +8,7 @@ use super::entity::player::*;
 use super::physics::*;
 use super::render::*;
 use super::world::*;
+use super::weapon::*;
 
 pub fn register_all_systems(ecs: &mut ECS, renderer: &mut Renderer) {
     // STARTUP
@@ -28,6 +29,9 @@ pub fn register_all_systems(ecs: &mut ECS, renderer: &mut Renderer) {
             //walker_animation_update(ecs, delta_time);
             chunk_manager_update(ecs, delta_time);
             walker_animation_update(ecs, delta_time);
+
+            weapon_update(ecs, delta_time);
+
             animation_player_update(ecs, delta_time);
         })
     );
@@ -36,6 +40,9 @@ pub fn register_all_systems(ecs: &mut ECS, renderer: &mut Renderer) {
         Box::new(|ecs: &mut ECS, time_step: f32| {
             player_fixed_update(ecs, time_step);
             zombie_fixed_update(ecs, time_step);
+
+            weapon_fixed_update(ecs, time_step);
+            
             physics_fixed_update(ecs, time_step);
         })
     );

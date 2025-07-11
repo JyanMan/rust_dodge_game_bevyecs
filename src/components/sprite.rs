@@ -10,6 +10,7 @@ use crate::resources::asset_manager::*;
 pub struct Sprite {
     // texture: Option<Rc<Texture<'static>>>,
     texture_id: TextureId,
+    pub visible: bool,
     pub scale: f32,
     hor: i32,
     vert: i32,
@@ -28,6 +29,7 @@ impl Sprite {
         let height = texture.query().height;
         Self {
             texture_id: t_id,
+            visible: true,
            // texture: Some(texture),
            scale: 1.0,
            hor: 1,

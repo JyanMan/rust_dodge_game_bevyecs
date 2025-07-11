@@ -1,9 +1,11 @@
 use sdl2::EventPump;
 use sdl2::keyboard::*;
 use crate::components::entity::{PlayerInput};
+use crate::components::Combat;
 
-pub fn player_input_sys(input: &mut PlayerInput, event: &mut EventPump) {
+pub fn player_input_sys(input: &mut PlayerInput, event: &mut EventPump, combat: &mut Combat) {
     let k_state = event.keyboard_state();
+
     if k_state.is_scancode_pressed(Scancode::Space) { input.jump = true; } else { input.jump = false; }
 
     if k_state.is_scancode_pressed(Scancode::A) { input.left = true; } else { input.left = false; }
@@ -11,4 +13,6 @@ pub fn player_input_sys(input: &mut PlayerInput, event: &mut EventPump) {
     if k_state.is_scancode_pressed(Scancode::D) { input.right = true; } else { input.right = false; }
 
     if k_state.is_scancode_pressed(Scancode::Q) { input.dodge = true; } else { input.dodge = false; }
+
+    if k_state.is_scancode_pressed(Scancode::E) { combat.attacking = true } else { combat.attacking = false }
 }
