@@ -1,3 +1,6 @@
-use crate::resources::asset_manager::*;
-use crate::components::{ Sprite };
+#[derive(Clone, Default)]
+pub struct SteelSwordData {
+
+}
+
 

@@ -59,12 +59,10 @@ pub fn player_jump(
 
 pub fn get_dodge_dir( ecs: &ECS, pos: &Position, p_data: &PlayerData ) -> Vector2 {
     let mouse_input = ecs.get_resource::<MouseInput>();
-    let mouse_pos = mouse_input.pos;
-    //get player center
-    let screen_center = Vector2::new(SCREEN_WIDTH as f32 / 2.0, SCREEN_HEIGHT as f32 / 2.0);
 
     // get mouse direction and distance from player center
-    let mut mouse_delta = mouse_pos - screen_center;
+    // let mut mouse_delta = mouse_pos - screen_center;
+    let mut mouse_delta = mouse_input.dist_to_center();
     let mouse_dir = mouse_delta.normalize();
 
     // limit dodge dir from min to max

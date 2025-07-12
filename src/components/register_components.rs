@@ -3,6 +3,7 @@ use super::*;
 
 pub fn register_all_components(ecs: &mut ECS) {
     register_entity_components(ecs);
+    register_weapon_components(ecs);
 
     ecs.register_component::<Area>();
     ecs.register_component::<Animation>();
@@ -14,5 +15,4 @@ pub fn register_all_components(ecs: &mut ECS) {
     ecs.register_component::<Sprite>();
     ecs.register_component::<Velocity>();
     ecs.register_component::<WalkerData>();
-    ecs.register_component::<WeaponData>();
 }

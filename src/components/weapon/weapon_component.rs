@@ -1,3 +1,5 @@
+use super::*;
+
 #[derive(Clone, Default, PartialEq)]
 pub enum WeaponState {
     #[default]
@@ -9,6 +11,7 @@ pub enum WeaponState {
 
 #[derive(Clone)]
 pub struct WeaponData {
+    pub w_type: WeaponType,
     pub state: WeaponState,
     pub damage: i32,
     pub knock_force: f32,
@@ -21,6 +24,7 @@ pub struct WeaponData {
 impl Default for WeaponData {
     fn default() -> Self {
         Self {
+            w_type: WeaponType::default(),
             state: WeaponState::default(),
             damage: 1,
             knock_force: 5.0,
@@ -33,8 +37,9 @@ impl Default for WeaponData {
 }
 
 impl WeaponData {
-    pub fn new(damage: i32, knock_force: f32, attack_duration: f32, state: WeaponState) -> Self {
+    pub fn new(damage: i32, knock_force: f32, attack_duration: f32, state: WeaponState, w_type: WeaponType) -> Self {
         Self {
+            w_type: w_type,
             state: state,
             damage: damage,
             knock_force: knock_force,

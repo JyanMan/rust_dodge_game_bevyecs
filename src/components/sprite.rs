@@ -14,6 +14,7 @@ pub struct Sprite {
     pub scale: f32,
     hor: i32,
     vert: i32,
+    pub angle: f64,
     pub px_h: i32,
     pub px_w: i32,
     pub width: f32,
@@ -34,6 +35,7 @@ impl Sprite {
            scale: 1.0,
            hor: 1,
            vert: 1,
+           angle: 0.0,
            px_w: width as i32,
            px_h: height as i32,
            width: width as f32,
@@ -59,16 +61,10 @@ impl Sprite {
         self.height = (self.px_h / self.vert) as f32;
     }
     pub fn draw(&self, renderer: &mut Renderer, pos: &Vector2, scale: f32) {
-        self.draw_frame(renderer, pos, scale, self.frame);
+        self.draw_frame_angle(renderer, pos, scale, self.frame, self.angle);
     }
 
-    pub fn draw_frame(&self, renderer: &mut Renderer, pos: &Vector2, scale: f32, frame: i32) {
-
-        // let px_w = self.px_w as i32;
-        // let px_h = self.px_h as i32;
-
-        //let cell_w = px_w / self.hor;
-        //let cell_h = px_h / self.vert;
+    pub fn draw_frame_angle(&self, renderer: &mut Renderer, pos: &Vector2, scale: f32, frame: i32, angle: f64) {
 
         let frame_x: i32 = self.width as i32 * (frame % self.hor);
         let frame_y: i32 = self.height as i32 * (frame / self.hor);
@@ -90,7 +86,7 @@ impl Sprite {
             &*texture,
             src_rect,
             dest_rect,
-            0.0,
+            angle,
             None,
             self.flip_x,
             false,

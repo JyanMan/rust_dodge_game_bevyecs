@@ -27,13 +27,14 @@ pub fn weapon_fixed_update(ecs: &mut ECS, _time_step: f32) {
 }
 
 pub fn weapon_update(ecs: &mut ECS, delta_time: f32) {
-    for (_e, sprite, weapon_d, anim_player, _holder) in 
+    for (e, sprite, weapon_d, anim_player, owner) in 
         ecs.query_comp::<(&mut Sprite, &mut WeaponData, &mut AnimationPlayer, &Owner)>() 
     {
         if weapon_d.attacking {
             sprite.visible = true;
             weapon_d.attack_timer(delta_time);
             anim_player.play(WeaponAnim::Attack.usize());
+            weapon_d.w_type.play_anim(ecs, sprite, e, owner, delta_time);
         }
         else {
             sprite.visible = false;
@@ -43,18 +44,19 @@ pub fn weapon_update(ecs: &mut ECS, delta_time: f32) {
     // weapon_animation_update(ecs, delta_time);
 }
 
-pub fn weapon_animation_update(ecs: &mut ECS, _delta_time: f32) {
-    for (_e, weapon_d, anim_player) in
-        ecs.query_comp::<(&mut WeaponData, &mut AnimationPlayer)>() 
-    {
-        if weapon_d.attacking {
-            anim_player.play(WeaponAnim::Attack.usize());
-        }
-        else {
-            anim_player.play(WeaponAnim::Idle.usize());
-        }
-    }
-}
+// pub fn weapon_animation_update(ecs: &mut ECS, delta_time: f32) {
+//     for (_e, weapon_d, anim_player, sprite) in
+//         ecs.query_comp::<(&mut WeaponData, &mut AnimationPlayer, &mut Sprite)>() 
+//     {
+//         if weapon_d.attacking {
+//             anim_player.play(WeaponAnim::Attack.usize());
+//             weapon_d.w_type.play_anim(ecs, sprite, delta_time);
+//         }
+//         else {
+//             anim_player.play(WeaponAnim::Idle.usize());
+//         }
+//     }
+// }
 
 // so you have a weapon data
     // to which all weapon entities have one
