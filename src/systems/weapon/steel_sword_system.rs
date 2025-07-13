@@ -11,8 +11,8 @@ pub fn new_steel_sword(ecs: &mut ECS, renderer: &mut Renderer, entity_owner: Ent
     sprite.set_sprite_sheet(4, 2);
     sprite.visible = true;
 
-    let steel_sword = ecs.spawn::<(Position, Sprite, WeaponData, SteelSwordData, Area, Owner, AnimationPlayer)>((
-        Position::zero(),
+    let steel_sword = ecs.spawn::<(Transform, Sprite, WeaponData, SteelSwordData, Area, Owner, AnimationPlayer)>((
+        Transform::zero(),
         sprite,
         WeaponData::new(1, 10.0, 0.2, WeaponState::Owned, WeaponType::SteelSword), 
         SteelSwordData::default(),
@@ -42,10 +42,10 @@ pub fn new_steel_sword(ecs: &mut ECS, renderer: &mut Renderer, entity_owner: Ent
 }
 
 pub fn steel_sword_animation(ecs: &ECS, e: Entity, _owner: &Owner, _delta_time: f32) {
-    // get weapon sprite, weapon pos, and owner pos
+    // get weapon sprite, weapon trans, and owner trans
     let sprite = ecs.get_component_mut::<Sprite>(e).expect("owner has no sprite component");
-    let self_pos = ecs.get_component_mut::<Position>(e).expect("entity weapon has no pos component");
-    // let owner_pos = ecs.get_component::<Position>(owner.entity).expect("owner has no pos component");
+    let self_trans = ecs.get_component_mut::<Transform>(e).expect("entity weapon has no trans component");
+    // let owner_trans = ecs.get_component::<Transform>(owner.entity).expect("owner has no trans component");
 
     // get mouse direction
     let mouse_input = ecs.get_resource::<MouseInput>();
@@ -60,8 +60,8 @@ pub fn steel_sword_animation(ecs: &ECS, e: Entity, _owner: &Owner, _delta_time: 
         sprite.flip_y = false;
     }
 
-    // set weapon local pos based on some magnitude away from owner
-    self_pos.local = mouse_dir * 10.0;
+    // set weapon local trans based on some magnitude away from owner
+    self_trans.local = mouse_dir * 10.0;
 
     // convert normalized vec to ang in deg
     let angle_to_mouse = mouse_dir.y.atan2(mouse_dir.x);

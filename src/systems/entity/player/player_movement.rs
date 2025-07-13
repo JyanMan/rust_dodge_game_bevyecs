@@ -5,7 +5,7 @@ use crate::components::{
     WalkerState,
     Velocity,
     Vector2,
-    Position,
+    Transform,
 };
 use crate::config::*;
 use crate::resources::MouseInput;
@@ -57,7 +57,7 @@ pub fn player_jump(
     p_data.can_jump = false;
 }
 
-pub fn get_dodge_dir( ecs: &ECS, pos: &Position, p_data: &PlayerData ) -> Vector2 {
+pub fn get_dodge_dir( ecs: &ECS, p_data: &PlayerData ) -> Vector2 {
     let mouse_input = ecs.get_resource::<MouseInput>();
 
     // get mouse direction and distance from player center
@@ -86,14 +86,13 @@ pub fn player_lerping(vel: &mut Velocity) {
 }
 
 pub fn player_dodge(
-    ecs: &ECS,
+    // ecs: &ECS,
     p_data: &mut PlayerData, 
-    vel: &mut Velocity,
-    pos: &Position,
+    // vel: &mut Velocity,
 ) {
     if p_data.state == P::Dodging {
-        let dodge_dir = get_dodge_dir(ecs, pos, p_data);
-        player_dodging(dodge_dir, p_data, vel);
+        // let dodge_dir = get_dodge_dir(ecs, p_data);
+        // player_dodging(dodge_dir, p_data, vel);
         return;
     }
     p_data.can_dodge = false;

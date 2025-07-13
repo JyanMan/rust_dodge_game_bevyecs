@@ -10,7 +10,7 @@ pub fn register_all_components(ecs: &mut ECS) {
     ecs.register_component::<AnimationPlayer>();
     ecs.register_component::<Combat>();
     ecs.register_component::<Owner>();
-    ecs.register_component::<Position>();
+    ecs.register_component::<Transform>();
     ecs.register_component::<RigidBody>();
     ecs.register_component::<Sprite>();
     ecs.register_component::<Velocity>();

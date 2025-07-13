@@ -1,9 +1,9 @@
-use crate::components::position::*;
+use crate::components::Transform;
 use crate::components::velocity::*;
 
 #[derive(Debug, Copy, Clone, Default)]
 pub struct RigidBody {
-    pos: Position,
+    transform: Transform,
     vel: Velocity,
     grounded: bool
 }

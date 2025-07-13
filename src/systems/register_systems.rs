@@ -18,8 +18,6 @@ pub fn register_all_systems(ecs: &mut ECS, renderer: &mut Renderer) {
             player_animation_init(ecs, renderer);
             zombie_init(ecs, renderer);
             zombie_animation_init(ecs, renderer);
-            // chunk_manager_init(ecs, renderer);
-            // area_manager_init(ecs, renderer);
         })
     );
     // UPDATE
@@ -35,16 +33,17 @@ pub fn register_all_systems(ecs: &mut ECS, renderer: &mut Renderer) {
             animation_player_update(ecs, delta_time);
         })
     );
+
     // FIXED UPDATE 
     ecs.register_system_fixed_update(
         Box::new(|ecs: &mut ECS, time_step: f32| {
             player_fixed_update(ecs, time_step);
             zombie_fixed_update(ecs, time_step);
             weapon_fixed_update(ecs, time_step);
-            transform_update_system(ecs, time_step);
             physics_fixed_update(ecs, time_step);
         })
     );
+    
     // INPUT
     ecs.register_system_input(
         Box::new(|ecs: &mut ECS, event: &mut EventPump| {

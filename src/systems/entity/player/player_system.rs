@@ -17,15 +17,15 @@ pub fn player_init(ecs: &mut ECS, renderer: &mut Renderer) {
     let mut area = Area::new(
         10.0, -1000.0, 10.0, 20.0
     );
-    area.offset = Position::new(0.0, 6.0);
+    area.offset = Vector2::new(0.0, 6.0);
 
     let player = ecs.spawn::<(
-        Sprite, Position, Velocity, Area, 
+        Sprite, Transform, Velocity, Area, 
         PlayerData, PlayerInput, WalkerData, AnimationPlayer,
         Combat,
         )>((
         sprite,
-        Position::new(10.0, -1000.0),
+        Transform::new(10.0, -1000.0),
         Velocity::new(0.0, 0.0),
         area,
         PlayerData::default(),
@@ -58,11 +58,11 @@ pub fn player_update(ecs: &mut ECS, delta_time: f32) {
 pub fn player_fixed_update(ecs: &mut ECS, _time_step: f32) {
     use super::player_movement::*;
 
-    for (_e,  p_data, walker_d, pos, vel, input) in 
-        ecs.query_comp::<(&mut PlayerData, &mut WalkerData, &Position, &mut Velocity, &PlayerInput)>() 
+    for (_e,  p_data, walker_d, vel, input) in 
+        ecs.query_comp::<(&mut PlayerData, &mut WalkerData, &mut Velocity, &PlayerInput)>() 
     {
         if input.dodge && p_data.can_dodge {
-            player_dodge(ecs, p_data, vel, pos);
+            player_dodge(p_data);
         }
 
         // only allow dodge again if dodge button is let go
@@ -71,7 +71,7 @@ pub fn player_fixed_update(ecs: &mut ECS, _time_step: f32) {
             p_data.can_dodge = true; 
         }
         if p_data.state == P::Dodging {
-            let dodge_dir = get_dodge_dir(ecs, pos, p_data);
+            let dodge_dir = get_dodge_dir(ecs, p_data);
             player_dodging(dodge_dir, p_data, vel);
             return;
         } 

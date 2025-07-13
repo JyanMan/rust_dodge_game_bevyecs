@@ -38,23 +38,7 @@ pub fn weapon_update(ecs: &mut ECS, delta_time: f32) {
             anim_player.stop();
         }
     }
-    // weapon_animation_update(ecs, delta_time);
 }
-
-// pub fn weapon_animation_update(ecs: &mut ECS, delta_time: f32) {
-//     for (_e, weapon_d, anim_player, sprite) in
-//         ecs.query_comp::<(&mut WeaponData, &mut AnimationPlayer, &mut Sprite)>() 
-//     {
-//         if weapon_d.attacking {
-//             anim_player.play(WeaponAnim::Attack.usize());
-//             weapon_d.w_type.play_anim(ecs, sprite, delta_time);
-//         }
-//         else {
-//             anim_player.play(WeaponAnim::Idle.usize());
-//         }
-//     }
-// }
-
 // so you have a weapon data
     // to which all weapon entities have one
 // you also have handle component

@@ -2,7 +2,6 @@ use std::rc::Rc;
 use crate::core::renderer::*;
 use crate::math_helper::*;
 use crate::components::area::*;
-use crate::components::position::*;
 use crate::components::Vector2;
 use crate::components::sprite::*;
 use crate::resources::area_manager::*;

@@ -146,8 +146,8 @@ fn aabb_resolve(
     // only in physics calculations are areas use x as topleft
     // x and y area center already on area.update_pos
     let start = Vector2::new(
-        area.x + area.offset.vec.x + area.w / 2.0, 
-        area.y + area.offset.vec.y + area.h / 2.0
+        area.x + area.offset.x + area.w / 2.0, 
+        area.y + area.offset.y + area.h / 2.0
     );
     let end = Vector2::new(
         start.x + motion.x, start.y + motion.y

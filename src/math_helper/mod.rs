@@ -1,5 +1,4 @@
 use crate::config::*;
-use crate::components::position::*;
 use crate::components::Vector2;
 use std::ops;
 

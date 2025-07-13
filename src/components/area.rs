@@ -1,13 +1,13 @@
 use sdl2::rect::*;
 use sdl2::pixels::Color;
 use crate::core::renderer::*;
-use crate::components::position::*;
+use crate::components::Vector2;
 
 #[derive(Debug, Copy, Clone, Default)]
 pub struct Area {
     pub x: f32, pub y: f32,
     pub w: f32, pub h: f32,
-    pub offset: Position,
+    pub offset: Vector2,
 }
 
 #[allow(unused)]
@@ -19,7 +19,7 @@ impl Area {
             y: y - h / 2.0, 
             w: w, 
             h: h,
-            offset: Position::new(0.0, 0.0)
+            offset: Vector2::new(0.0, 0.0)
         }
     }
 
@@ -37,7 +37,7 @@ impl Area {
 
     pub fn update_pos(&mut self, x: f32, y: f32) {
         // center pos by subtracting half bounds
-        self.x = x + self.offset.vec.x - self.w / 2.0;
-        self.y = y + self.offset.vec.y - self.h / 2.0;
+        self.x = x + self.offset.x - self.w / 2.0;
+        self.y = y + self.offset.y - self.h / 2.0;
     }
 }

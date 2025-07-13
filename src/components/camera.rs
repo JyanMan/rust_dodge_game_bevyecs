@@ -1,6 +1,5 @@
 use crate::math_helper::*;
-use crate::components::position::*;
-use crate::components::Vector2;
+use crate::components::{ Vector2 };
 use crate::config::*;
 
 #[derive(Default)]
@@ -22,7 +21,7 @@ impl Camera {
     }
 
     pub fn set_target(&mut self, target_pos: Vector2) {
-        let screen_center = Position::new(HALF_WIDTH_F, HALF_HEIGHT_F).vec / self.scale;
+        let screen_center = Vector2::new(HALF_WIDTH_F, HALF_HEIGHT_F) / self.scale;
         self.target_pos = target_pos - screen_center;
     }
 
