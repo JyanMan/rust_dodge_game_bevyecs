@@ -14,7 +14,7 @@ use crate::resources::asset_manager::*;
 
 pub fn zombie_init(ecs: &mut ECS, renderer: &mut Renderer) {
     let mut rng = rand::thread_rng(); 
-    for _ in 0..2 {
+    for _ in 0..1 {
         zombie_spawn(ecs, renderer, rng.gen_range(30..80) as f32);
     }
 }
@@ -55,6 +55,7 @@ pub fn zombie_fixed_update(ecs: &mut ECS, _time_step: f32) {
     {
         // jump ai
         if vel.vec.x.abs() <= 0.001 && walker_d.state == WalkerState::Running {
+            println!("happened");
             vel.vec.y -= walker_d.jump_force;
         }
 

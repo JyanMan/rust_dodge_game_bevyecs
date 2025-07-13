@@ -23,7 +23,7 @@ pub fn weapon_fixed_update(ecs: &mut ECS, time_step: f32) {
         }
 
         pos.vec = owner_pos.vec + pos.local;
-        area.update_pos(pos.vec.x, pos.vec.y);
+        // area.update_pos(pos.vec.x, pos.vec.y);
     }
 }
 

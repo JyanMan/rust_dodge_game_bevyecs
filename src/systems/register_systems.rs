@@ -40,9 +40,7 @@ pub fn register_all_systems(ecs: &mut ECS, renderer: &mut Renderer) {
         Box::new(|ecs: &mut ECS, time_step: f32| {
             player_fixed_update(ecs, time_step);
             zombie_fixed_update(ecs, time_step);
-
             weapon_fixed_update(ecs, time_step);
-            
             physics_fixed_update(ecs, time_step);
         })
     );
@@ -59,7 +57,7 @@ pub fn register_all_systems(ecs: &mut ECS, renderer: &mut Renderer) {
         Box::new(|ecs: &mut ECS, renderer: &mut Renderer| {
             chunk_manager_draw(ecs, renderer);
             sprite_draw(ecs, renderer);
-            // debug_draw_entity_areas(ecs, renderer);
+            debug_draw_entity_areas(ecs, renderer);
             // debug_draw_areas_system(ecs, renderer);
         }) 
     );
