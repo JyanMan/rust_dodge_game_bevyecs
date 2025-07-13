@@ -41,6 +41,7 @@ pub fn register_all_systems(ecs: &mut ECS, renderer: &mut Renderer) {
             player_fixed_update(ecs, time_step);
             zombie_fixed_update(ecs, time_step);
             weapon_fixed_update(ecs, time_step);
+            transform_update_system(ecs, time_step);
             physics_fixed_update(ecs, time_step);
         })
     );

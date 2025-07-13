@@ -29,16 +29,18 @@ pub fn collision_system(ecs: &mut ECS, time_step: f32) {
     for (e, pos, vel, area) in 
         ecs.query_comp::<(&mut Position, &mut Velocity, &mut Area)>() 
     {
-        let mut dummy_grounded = false;
         // if not a walker, means entity can fly
         // use dummy grounded to modify pointless bool
+        let mut dummy_grounded = false;
         let mut walker_d = ecs.get_component_mut::<WalkerData>(e);
+
         let grounded: &mut bool = 
             match &mut walker_d {
                 Some(wd) => &mut wd.grounded,
                 None => &mut dummy_grounded
             };
 
+        // COLLISION RESOLUTION
         area_colliding_to_tile(
             area, 
             &mut pos.vec, 
@@ -48,6 +50,7 @@ pub fn collision_system(ecs: &mut ECS, time_step: f32) {
             time_step
         );
 
+        // only walkers have grounded state
         match &mut walker_d {
             Some(wd) => {
                 if !wd.grounded {
@@ -79,7 +82,6 @@ pub fn area_update_system(ecs: &mut ECS, _time_step: f32) {
 
 pub fn physics_fixed_update(ecs: &mut ECS, time_step: f32) {
     gravity_system(ecs, time_step);
-    // GROUNDED STATE CHANGE IS NOT IMMEDIATE
     collision_system(ecs, time_step);
     pos_vel_update_system(ecs, time_step);
     area_update_system(ecs, time_step);
