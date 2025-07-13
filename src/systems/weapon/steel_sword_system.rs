@@ -28,8 +28,8 @@ pub fn new_steel_sword(ecs: &mut ECS, renderer: &mut Renderer, entity_owner: Ent
 
     let s_frame_ptr = &mut sprite.frame as *mut _;
 
-    let mut idle_anim = Animation::new(1, 0.2);
-    idle_anim.set_frame(0, AnimData::Integer { value: 0, target: s_frame_ptr});
+    // let mut idle_anim = Animation::new(1, 0.2);
+    // idle_anim.set_frame(0, AnimData::Integer { value: 0, target: s_frame_ptr});
 
     let mut attack_anim = Animation::new(4, 0.05);
     attack_anim.set_frame(0, AnimData::Integer { value: 0, target: s_frame_ptr});
@@ -37,26 +37,35 @@ pub fn new_steel_sword(ecs: &mut ECS, renderer: &mut Renderer, entity_owner: Ent
     attack_anim.set_frame(2, AnimData::Integer { value: 2, target: s_frame_ptr});
     attack_anim.set_frame(3, AnimData::Integer { value: 3, target: s_frame_ptr});
 
-    anim_player.add_anim(WeaponAnim::Idle.usize(), idle_anim);
+    // anim_player.add_anim(WeaponAnim::Idle.usize(), idle_anim);
     anim_player.add_anim(WeaponAnim::Attack.usize(), attack_anim);
 }
 
-pub fn steel_sword_animation(ecs: &ECS, sprite: &mut Sprite, e: Entity, owner: &Owner, _delta_time: f32) {
+pub fn steel_sword_animation(ecs: &ECS, e: Entity, _owner: &Owner, _delta_time: f32) {
+    // get weapon sprite, weapon pos, and owner pos
+    let sprite = ecs.get_component_mut::<Sprite>(e).expect("owner has no sprite component");
+    let self_pos = ecs.get_component_mut::<Position>(e).expect("entity weapon has no pos component");
+    // let owner_pos = ecs.get_component::<Position>(owner.entity).expect("owner has no pos component");
 
+    // get mouse direction
     let mouse_input = ecs.get_resource::<MouseInput>();
     let mouse_dir = mouse_input.dir_from_center();
 
-    // adjust weapon pos
-    let owner_pos = ecs.get_component::<Position>(owner.entity).expect("owner has no pos component");
-    let self_pos = ecs.get_component_mut::<Position>(e).expect("entity weapon has no pos component");
-    // get the local pos based on some magnitude away from parent
-    let self_local_pos = mouse_dir * 10.0;
-    // adjust pos
-    self_pos.vec = owner_pos.vec + self_local_pos;
+    // flip y if left side 
+    // this allows animation to be consistent not flipped on another direction
+    if mouse_dir.x < 0.0 {
+        sprite.flip_y = true;
+    }
+    else if mouse_dir.x > 0.0 {
+        sprite.flip_y = false;
+    }
 
+    // set weapon local pos based on some magnitude away from owner
+    self_pos.local = mouse_dir * 10.0;
+
+    // convert normalized vec to ang in deg
     let angle_to_mouse = mouse_dir.y.atan2(mouse_dir.x);
     let angle_deg = angle_to_mouse as f64 * (180.0 / PI);
-
+    // adjust sprite angle
     sprite.angle = angle_deg;
-    println!("angle: {}", sprite.angle);
 }

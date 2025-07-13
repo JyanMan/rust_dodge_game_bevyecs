@@ -3,15 +3,16 @@ use super::Vector2;
 
 #[derive(Debug, Copy, Clone, Default, PartialEq)]
 pub struct Position {
-    pub vec: Vector2
+    pub vec: Vector2,
+    pub local: Vector2,
 }
 
 impl Position {
     pub fn new(x: f32, y: f32) -> Self {
-        Self { vec: Vector2::new( x, y ) }
+        Self { vec: Vector2::new( x, y ), local: Vector2::zero() }
     }
     pub fn zero() -> Self {
-        Self { vec: Vector2::new( 0.0, 0.0 ) }
+        Self { vec: Vector2::new( 0.0, 0.0 ), local: Vector2::zero() }
     }
 }
 // 

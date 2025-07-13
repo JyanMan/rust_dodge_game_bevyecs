@@ -24,12 +24,18 @@ impl AnimationPlayer {
     pub fn play(&mut self, index: usize) {
         assert!(index < self.num_anims);
 
-        if index == self.curr_anim {
+        if index == self.curr_anim && self.playing {
             return;
         }
+
         self.anims[self.curr_anim].stop();
         self.curr_anim = index;
         self.playing = true;
+    }
+
+    pub fn stop(&mut self) {
+        self.playing = false;
+        self.anims[self.curr_anim].stop();
     }
 
     pub fn update_play(&mut self, delta_time: f32) {

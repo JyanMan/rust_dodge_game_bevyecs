@@ -14,10 +14,10 @@ pub fn sprite_draw(ecs: &mut ECS, renderer: &mut Renderer) {
             continue;
         }
 
-        let half_size = Vector2::new(
-            sprite.width as f32 / 2.0,
-            sprite.height as f32 / 2.0
-        );
+        // let half_size = Vector2::new(
+        //     sprite.width as f32 / 2.0,
+        //     sprite.height as f32 / 2.0
+        // );
         renderer.draw_to_cam(sprite, pos.vec, 1.0);
         if ecs.has_component::<PlayerData>(e) {
             renderer.camera.set_target(pos.vec);

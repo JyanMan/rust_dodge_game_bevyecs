@@ -21,6 +21,7 @@ pub struct Sprite {
     pub height: f32,
     pub frame: i32,
     pub flip_x: bool,
+    pub flip_y: bool,
 }
 
 impl Sprite {
@@ -42,6 +43,7 @@ impl Sprite {
            height: height as f32,
            frame: 0,
            flip_x: false,
+           flip_y: false,
         }
     }
 
@@ -89,7 +91,7 @@ impl Sprite {
             angle,
             None,
             self.flip_x,
-            false,
+            self.flip_y,
         );
     }
 }

@@ -18,3 +18,11 @@ pub fn debug_draw_areas_system(ecs: &mut ECS, renderer: &mut Renderer) {
     let mut area_m = ecs.get_resource_mut::<AreaManager>();
     area_m.draw_tile_areas(renderer);
 }
+
+pub fn debug_draw_entity_areas(ecs: &mut ECS, renderer: &mut Renderer) {
+    for (_e, area) in
+        ecs.query_comp::<&Area>() 
+    {
+        area.draw(renderer);
+    }
+}

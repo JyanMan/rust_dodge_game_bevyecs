@@ -17,7 +17,7 @@ pub fn player_init(ecs: &mut ECS, renderer: &mut Renderer) {
     let mut area = Area::new(
         10.0, -1000.0, 10.0, 20.0
     );
-    area.offset = Position::new(12.0, 12.0);
+    area.offset = Position::new(0.0, 6.0);
 
     let player = ecs.spawn::<(
         Sprite, Position, Velocity, Area, 

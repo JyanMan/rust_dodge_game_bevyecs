@@ -26,7 +26,7 @@ pub fn zombie_spawn(ecs: &mut ECS, renderer: &mut Renderer, speed: f32) {
     let mut area = Area::new(
         10.0, -1000.0, 10.0, 20.0
     );
-    area.offset = Position::new(12.0, 12.0);
+    area.offset = Position::new(0.0, 6.0);
     ecs.spawn::<(ZombieTag, Position, Velocity, Area, Sprite, WalkerData, AnimationPlayer)>((
         ZombieTag {},
         Position::new(10.0, -1000.0),

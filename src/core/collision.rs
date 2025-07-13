@@ -142,7 +142,13 @@ fn aabb_resolve(
     let mut hit_area: Option<&Area> = None;
     let mut earliest_normal = Vector2::zero();
 
-    let start = Vector2::new(area.x + area.offset.vec.x, area.y + area.offset.vec.y);
+    // this is the fake center as all areas x and y are adjusted to be center
+    // only in physics calculations are areas use x as topleft
+    // x and y area center already on area.update_pos
+    let start = Vector2::new(
+        area.x + area.offset.vec.x + area.w / 2.0, 
+        area.y + area.offset.vec.y + area.h / 2.0
+    );
     let end = Vector2::new(
         start.x + motion.x, start.y + motion.y
         );
@@ -169,30 +175,6 @@ fn aabb_resolve(
             } else {
                 continue; 
             };
-
-            // if aabb_is_colliding(&area, &tile_area) {
-            //     // entity update bounds comes first because the bounds is not the same as entity position
-            //     // requires an update, otherwise sprite is ahead, you resolve delayed bounds
-            //     // entity_update_bounds(e);
-
-            //     let adjusted_pos = collision_overlap(&area, &tile_area);
-            //     pos.x += adjusted_pos.x;
-            //     pos.y += adjusted_pos.y;
-
-            //     if adjusted_pos.y < 0.0 {
-            //     }
-            //     *grounded = true;
-
-            //     if adjusted_pos.y.abs() >= EPSILON {
-            //         curr_vel.y = 0.0;
-            //     }
-            //     if adjusted_pos.x.abs() >= EPSILON  {
-            //         curr_vel.x = 0.0;
-            //     }
-            //     area.update_pos(pos.x, pos.y);
-            //     continue;
-            // }
-            // continue;
 
             let mut normal = Vector2::zero();
             let collision_time = swept_aabb(area, axis_motion, tile_area, &mut normal);

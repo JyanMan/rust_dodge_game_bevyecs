@@ -28,7 +28,14 @@ pub fn physics_fixed_update(ecs: &mut ECS, time_step: f32) {
         }
 
         //COLLISION RESOLUTION
-        area_colliding_to_tile(area, &mut pos.vec, &mut vel.vec, &mut walker_d.grounded, &mut *area_m, time_step);
+        area_colliding_to_tile(
+            area, 
+            &mut pos.vec, 
+            &mut vel.vec, 
+            &mut walker_d.grounded, 
+            &mut *area_m, 
+            time_step
+        );
 
         // needs to happen last due to area colliding grounded trigger not reached due to
         // zeroed velocity

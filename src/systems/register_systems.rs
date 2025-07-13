@@ -2,7 +2,7 @@ use sdl2::EventPump;
 use crate::core::renderer::*;
 use crate::ecs::ecs::*;
 use super::animation::*;
-// use super::debug::*;
+use super::debug::*;
 use super::entity::zombie::*;
 use super::entity::player::*;
 use super::physics::*;
@@ -59,6 +59,8 @@ pub fn register_all_systems(ecs: &mut ECS, renderer: &mut Renderer) {
         Box::new(|ecs: &mut ECS, renderer: &mut Renderer| {
             chunk_manager_draw(ecs, renderer);
             sprite_draw(ecs, renderer);
+            // debug_draw_entity_areas(ecs, renderer);
+            // debug_draw_areas_system(ecs, renderer);
         }) 
     );
 }

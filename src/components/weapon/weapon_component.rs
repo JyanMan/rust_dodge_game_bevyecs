@@ -79,12 +79,11 @@ impl WeaponData {
 #[repr(usize)]
 pub enum WeaponAnim {
     #[default]
-    Idle,
     Attack,
 }
 
 impl WeaponAnim {
-    pub const COUNT: usize = 4;
+    pub const COUNT: usize = 1;
     pub fn usize(self) -> usize {
         self as usize
     }

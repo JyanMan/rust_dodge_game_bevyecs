@@ -1,8 +1,8 @@
 use crate::ecs::ecs::*;
 use crate::components::*;
 
-pub fn weapon_fixed_update(ecs: &mut ECS, _time_step: f32) {
-    for (_e, pos, weapon_d, area, owner) in 
+pub fn weapon_fixed_update(ecs: &mut ECS, time_step: f32) {
+    for (e, pos, weapon_d, area, owner) in 
         ecs.query_comp::<(&mut Position, &mut WeaponData, &mut Area, &Owner)>() 
     {
         if weapon_d.state == WeaponState::Unowned {
@@ -12,33 +12,33 @@ pub fn weapon_fixed_update(ecs: &mut ECS, _time_step: f32) {
         let owner_entity = owner.entity;
         let owner_pos = ecs.get_component::<Position>(owner_entity).expect("owner has no position component"); 
         let owner_combat = ecs.get_component::<Combat>(owner_entity).expect("owner has no combat component"); 
-        pos.vec = owner_pos.vec;
-
-        area.update_pos(pos.vec.x, pos.vec.y);
 
         // disallow hold attack button
         if owner_combat.attacking && weapon_d.can_attack {
             weapon_d.attack();
+            weapon_d.w_type.play_anim(ecs, e, owner, time_step);
         }
         else if !owner_combat.attacking {
             weapon_d.can_attack = true;
         }
+
+        pos.vec = owner_pos.vec + pos.local;
+        area.update_pos(pos.vec.x, pos.vec.y);
     }
 }
 
 pub fn weapon_update(ecs: &mut ECS, delta_time: f32) {
-    for (e, sprite, weapon_d, anim_player, owner) in 
+    for (_e, sprite, weapon_d, anim_player, _owner) in 
         ecs.query_comp::<(&mut Sprite, &mut WeaponData, &mut AnimationPlayer, &Owner)>() 
     {
         if weapon_d.attacking {
             sprite.visible = true;
             weapon_d.attack_timer(delta_time);
             anim_player.play(WeaponAnim::Attack.usize());
-            weapon_d.w_type.play_anim(ecs, sprite, e, owner, delta_time);
         }
         else {
             sprite.visible = false;
-            anim_player.play(WeaponAnim::Idle.usize());
+            anim_player.stop();
         }
     }
     // weapon_animation_update(ecs, delta_time);
