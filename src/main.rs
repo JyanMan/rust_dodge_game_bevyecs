@@ -13,6 +13,7 @@ mod math_helper;
 mod ecs;
 mod tests;
 
+use crate::game::*;
 use crate::core::renderer::*;
 use crate::resources::asset_manager::*;
 use crate::components::camera::Camera;
@@ -42,7 +43,7 @@ pub fn main() {
 
     sdl2::hint::set("SDL_RENDER_SCALE_QUALITY", "0");
 
-    let mut game = game::Game::new(&mut renderer);
+    let mut game = Game::new(&mut renderer);
 
     let mut dt_accumulator = 0.0;
     let fps: f32 = 60.0;
