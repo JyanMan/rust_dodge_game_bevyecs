@@ -18,12 +18,12 @@ use crate::resources::asset_manager::*;
 use crate::components::camera::Camera;
 
 pub fn main() {
-    sdl2::hint::set("SDL_RENDER_DRIVER", "opengl");
     let sdl_context = sdl2::init().unwrap();
     let video_subsystem = sdl_context.video().unwrap();
     let timer_subsystem = sdl_context.timer().unwrap();
 
     let window = video_subsystem.window("rust-sdl2 demo", 800, 600)
+        .opengl()
         .position_centered()
         .build()
         .unwrap();
@@ -83,6 +83,5 @@ pub fn main() {
         game.draw(&mut renderer);
         // The rest of the game loop goes here...
         renderer.canvas.present();
-        // ::std::thread::sleep(Duration::new(0, 1_000_000_000u32 / 60));
     }
 }
