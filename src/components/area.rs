@@ -1,9 +1,11 @@
 use sdl2::rect::*;
 use sdl2::pixels::Color;
+use bevy_ecs::prelude::*;
+
 use crate::core::renderer::*;
 use crate::components::Vector2;
 
-#[derive(Debug, Copy, Clone, Default)]
+#[derive(Component, Debug, Copy, Clone, Default)]
 pub struct Area {
     pub x: f32, pub y: f32,
     pub w: f32, pub h: f32,

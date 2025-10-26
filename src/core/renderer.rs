@@ -1,8 +1,11 @@
 use sdl2::render::*;
+use bevy_ecs::prelude::*;
+
 use crate::resources::asset_manager::*;
 use crate::components::camera::*;
 use crate::components::{ Vector2, Sprite };
 
+#[derive(Resource)]
 pub struct Renderer <'a> {
     pub canvas: WindowCanvas,
     pub asset_m: AssetManager <'a>,

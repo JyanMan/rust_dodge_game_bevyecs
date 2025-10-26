@@ -69,15 +69,9 @@ pub fn main() {
             game.fixed_update(time_step);
         }
 
-        game.input(&mut event_pump);
-        for event in event_pump.poll_iter() {
-            match event {
-                Event::Quit {..} |
-                Event::KeyDown { keycode: Some(Keycode::Escape), .. } => {
-                    break 'running
-                },
-                _ => {}
-            }
+        let state = game.input(&mut event_pump);
+        if !state {
+            break 'running;
         }
         renderer.alpha = dt_accumulator / time_step;
         game.update(delta_time, &mut renderer);

@@ -1,7 +1,9 @@
+use bevy_ecs::prelude::*;
+
 use std::ops::*;
 use super::Vector2;
 
-#[derive(Debug, Copy, Clone, Default, PartialEq)]
+#[derive(Component, Debug, Copy, Clone, Default, PartialEq)]
 pub struct Velocity {
     pub vec: Vector2
 }

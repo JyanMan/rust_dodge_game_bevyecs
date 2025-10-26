@@ -19,6 +19,11 @@
 //    }
 //}
 
+use bevy_ecs::prelude::*;
+
+#[derive(Component)]
+pub struct PlayerTag {}
+
 #[repr(u8)]
 #[derive(Clone, PartialEq)]
 pub enum PlayerState {
@@ -33,7 +38,7 @@ pub enum PlayerState {
 //    }
 //}
 
-#[derive(Clone)]
+#[derive(Component, Clone)]
 pub struct PlayerData {
     pub state: PlayerState,
 
@@ -76,7 +81,7 @@ impl Default for PlayerData {
     }
 }
 
-#[derive(Default, Clone)]
+#[derive(Component, Default, Clone)]
 pub struct PlayerInput {
     pub dodge: bool,
     pub jump: bool,

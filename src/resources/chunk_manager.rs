@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use bevy_ecs::prelude::*;
 use crate::components::Vector2;
 use crate::core::renderer::*;
 use crate::components::sprite::*;
@@ -7,7 +8,7 @@ use crate::resources::asset_manager::*;
 use crate::resources::area_manager::*;
 use crate::math_helper::*;
 
-#[derive(Clone, Default)]
+#[derive(Resource, Clone, Default)]
 pub struct ChunkManager  {
     chunks_map: HashMap<Point, usize>,
     chunks_arr: Vec<Chunk>,

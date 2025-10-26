@@ -1,4 +1,6 @@
-#[derive(Clone)]
+use bevy_ecs::prelude::*;
+
+#[derive(Component, Clone)]
 pub struct WalkerData {
     pub run_speed: f32,
     pub accel: f32,

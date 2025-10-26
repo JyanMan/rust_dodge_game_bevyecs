@@ -2,12 +2,16 @@ pub mod chunk;
 pub mod chunk_manager;
 pub mod asset_manager;
 pub mod area_manager;
+pub mod event_pump_res;
+pub mod delta_time_res;
 pub mod tile;
 pub mod mouse_input;
 pub mod register_resources;
 
 pub use chunk::*;
 pub use chunk_manager::*;
+pub use event_pump_res::*;
+pub use delta_time_res::*;
 pub use asset_manager::*;
 pub use area_manager::*;
 pub use tile::*;

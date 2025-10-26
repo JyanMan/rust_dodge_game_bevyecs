@@ -1,10 +1,11 @@
 use std::collections::HashMap;
+use bevy_ecs::prelude::*;
 use crate::core::renderer::*;
 use crate::components::area::*;
 use crate::math_helper::*;
 use crate::config::*;
 
-#[derive(Default, Clone)]
+#[derive(Resource, Default, Clone)]
 pub struct AreaManager {
     tile_areas: HashMap<Point, Area>,    
 }

@@ -2,11 +2,13 @@ use sdl2::render::*;
 use sdl2::rect::*;
 use sdl2::pixels::Color;
 use std::rc::Rc;
+use bevy_ecs::prelude::*;
+
 use crate::core::renderer::*;
 use crate::components::Vector2;
 use crate::resources::asset_manager::*;
 
-#[derive(Default, Clone)]
+#[derive(Component, Default, Clone)]
 pub struct Sprite {
     // texture: Option<Rc<Texture<'static>>>,
     texture_id: TextureId,

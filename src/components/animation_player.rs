@@ -1,3 +1,5 @@
+use bevy_ecs::prelude::*;
+
 use crate::components::animation::*;
 
 #[derive(Clone, Default)]

@@ -1,4 +1,6 @@
 use std::any::TypeId;
+use bevy_ecs::prelude::*;
+
 use crate::core::renderer::*;
 use crate::components::Transform;
 use crate::components::entity::*;
@@ -14,6 +16,18 @@ use crate::resources::area_manager::*;
 //     ));
 // }
 
+pub fn chunk_system_update(mut chunk_m: ResMut<ChunkManager>, mut area_m: ResMut<AreaManager>, query: Query<&Transform, With<PlayerTag>>){
+    for transform in &query {
+        chunk_m.generate(&transform.global, &mut area_m);
+    }
+}
+
+pub fn chunk_system_draw(world: &mut World, renderer: &mut Renderer) {
+    let mut chunk_m = world.get_resource_mut::<ChunkManager>().unwrap();
+    chunk_m.draw(renderer);
+}
+
+/*
 pub fn chunk_manager_update(ecs: &mut ECS, _delta_time: f32) {
     let mut chunk_m = ecs.get_resource_mut::<ChunkManager>();
     let mut area_m = ecs.get_resource_mut::<AreaManager>();
@@ -29,3 +43,4 @@ pub fn chunk_manager_draw(ecs: &mut ECS, renderer: &mut Renderer) {
     let mut chunk_m = ecs.get_resource_mut::<ChunkManager>();
     chunk_m.draw(renderer);
 }
+*/

@@ -1,4 +1,5 @@
 use sdl2::EventPump;
+use bevy_ecs::prelude::*;
 use crate::core::renderer::*;
 use crate::ecs::ecs::*;
 use super::animation::*;
@@ -10,7 +11,11 @@ use super::render::*;
 use super::world::*;
 use super::weapon::*;
 
-pub fn register_all_systems(ecs: &mut ECS, renderer: &mut Renderer) {
+pub fn register_render_systems(world: &mut World, sched: &mut Schedule) {
+
+}
+
+/* pub fn register_all_systems(ecs: &mut ECS, renderer: &mut Renderer) {
     // STARTUP
     ecs.register_system_startup(
         Box::new(|ecs: &mut ECS, renderer: &mut Renderer| {
@@ -25,7 +30,7 @@ pub fn register_all_systems(ecs: &mut ECS, renderer: &mut Renderer) {
         Box::new(|ecs: &mut ECS, delta_time: f32| {
             player_update(ecs, delta_time);
             //walker_animation_update(ecs, delta_time);
-            chunk_manager_update(ecs, delta_time);
+            // chunk_manager_update(ecs, delta_time);
             walker_animation_update(ecs, delta_time);
 
             weapon_update(ecs, delta_time);
@@ -55,10 +60,11 @@ pub fn register_all_systems(ecs: &mut ECS, renderer: &mut Renderer) {
     // DRAW
     ecs.register_system_draw(
         Box::new(|ecs: &mut ECS, renderer: &mut Renderer| {
-            chunk_manager_draw(ecs, renderer);
+            // chunk_manager_draw(ecs, renderer);
             sprite_draw(ecs, renderer);
             debug_draw_entity_areas(ecs, renderer);
             // debug_draw_areas_system(ecs, renderer);
         }) 
     );
 }
+*/
