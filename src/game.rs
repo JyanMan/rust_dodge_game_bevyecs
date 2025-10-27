@@ -24,33 +24,29 @@ pub struct Game {
 
 #[allow(dead_code, unused)]
 impl Game {
-    pub fn new(renderer: &mut Renderer) -> Self {
-        let mut world = World::new();
-        let mut update_sched = Schedule::default();
-        let mut fixed_update_sched = Schedule::default();
-        let mut draw_sched = Schedule::default();
-        let mut input_sched = Schedule::default();
-
-        let chunk_m = ChunkManager::new(Vector2::new(0.0, 0.0), &renderer.asset_m, 2);
-        world.insert_resource(chunk_m);
+    fn register_resources(&mut self, renderer: &mut Renderer) {
+        let chunk_m = ChunkManager::new(Vector2::new(0.0, 0.0), &renderer.asset_m, 3);
+        self.world.insert_resource(chunk_m);
 
         let area_m = AreaManager::new();
-        world.insert_resource(area_m);
+        self.world.insert_resource(area_m);
 
         let dt_res = DeltaTimeRes { delta_time: 0.0 };
-        world.insert_resource(dt_res);
+        self.world.insert_resource(dt_res);
 
         let ts_res = TimeStepRes { time_step: 0.0 };
-        world.insert_resource(ts_res);
+        self.world.insert_resource(ts_res);
 
         let user_input_res = UserInputRes::default();
-        world.insert_resource(user_input_res);
+        self.world.insert_resource(user_input_res);
+    }
 
-        update_sched.add_systems((
+    fn register_systems(&mut self, renderer: &mut Renderer) {
+        self.update_sched.add_systems((
             chunk_system_update,
             player_timer_system,
         ));
-        fixed_update_sched.add_systems((
+        self.fixed_update_sched.add_systems((
             player_movement_system,
             gravity_system.after(player_movement_system),
             collision_system.after(gravity_system),
@@ -58,11 +54,25 @@ impl Game {
             transform_update_system.after(pos_vel_update_system),
             area_update_system.after(transform_update_system),
         ));
-        input_sched.add_systems(player_system_input);
+        self.input_sched.add_systems(player_system_input);
+    }
 
-        player_spawn(&mut world, renderer);
+    pub fn new(renderer: &mut Renderer) -> Self {
 
-        Self { world, update_sched, fixed_update_sched, draw_sched, input_sched }
+        let mut game = Self {
+            world: World::new(), 
+            update_sched: Schedule::default(),
+            fixed_update_sched: Schedule::default(),
+            draw_sched: Schedule::default(),
+            input_sched: Schedule::default(),
+        };
+
+        game.register_systems(renderer);
+        game.register_resources(renderer);
+
+        player_spawn(&mut game.world, renderer);
+
+        game
     }   
 
     pub fn update(&mut self, delta_time: f32, renderer: &mut Renderer) {
@@ -83,9 +93,8 @@ impl Game {
 
     pub fn draw(&mut self, renderer: &mut Renderer) {
         chunk_system_draw(&mut self.world, renderer);
-        //self.draw_sched.run(&mut self.world);
         sprite_system_draw(&mut self.world, renderer);
-        debug_draw_entity_areas(&mut self.world, renderer);
+        // debug_draw_entity_areas(&mut self.world, renderer);
     }
 
     pub fn input(&mut self, event_pump: &mut EventPump) -> bool {
