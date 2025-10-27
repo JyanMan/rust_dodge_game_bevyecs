@@ -73,25 +73,25 @@ impl Chunk {
         self.chunk_pos = world_to_chunk(&world_pos);
         self.world_pos = world_pos;
 
-        let base_x = (self.world_pos.x / TILE_SIZE as f32).floor() as f32;
-        let base_y = (self.world_pos.y / TILE_SIZE as f32).floor() as f32;
+        let base_x = (self.world_pos.x / TILE_SIZE as f32).floor() as i32;
+        let base_y = (self.world_pos.y / TILE_SIZE as f32).floor() as i32;
 
         for y in 0..(CHUNK_SIZE) {
             for x in 0..(CHUNK_SIZE) {
-                let tile_x = base_x + x as f32;
-                let tile_y = base_y + y as f32;
+                let tile_x = base_x + x;
+                let tile_y = base_y + y;
 
-                let noise_val = self.noise.get_noise_2d(tile_x, 0.0);
+                let noise_val = self.noise.get_noise_2d(tile_x as f32, 0.0);
                 let surface_y = -(noise_val * self.max_height as f32) + self.min_y as f32;
 
                 let tile_type: TileType = {
-                    if tile_y < surface_y {
+                    if (tile_y as f32) < surface_y {
                         TileType::Air
                     }
-                    else if tile_y > surface_y + 8.0 {
+                    else if tile_y as f32 > surface_y + 8.0 {
                         TileType::Stone
                     }
-                    else if tile_y > surface_y + 1.0 {
+                    else if tile_y as f32 > surface_y + 1.0 {
                         TileType::Dirt
                     }
                     else {
@@ -101,7 +101,7 @@ impl Chunk {
 
                 let index = (y * CHUNK_SIZE + x) as usize;
                 if let Some(tile) = self.tiles_arr.get_mut(index) {
-                    tile.set(Point { x: tile_x as i32, y: tile_y as i32 }, tile_type, area_m);
+                    tile.set(Point { x: tile_x, y: tile_y }, tile_type, area_m);
                 }
             }
         }
