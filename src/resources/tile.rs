@@ -40,13 +40,16 @@ impl Tile {
         }
     }
 
-    pub fn set(&mut self, tile_pos: Point, tile_type: TileType, area_m: &mut AreaManager) {
+    pub fn set(&mut self, new_tile_pos: Point, tile_type: TileType, area_m: &mut AreaManager) {
         if tile_type != TileType::Air {
-            area_m.set_tile_area(&self.tile_pos, &tile_pos);
+            area_m.set_tile_area(&self.tile_pos, &new_tile_pos);
+        }
+        else {
+            area_m.remove_tile(&self.tile_pos);
         }
 
-        self.tile_pos = tile_pos.clone();
-        self.world_pos = tile_to_world(&tile_pos);
+        self.tile_pos = new_tile_pos.clone();
+        self.world_pos = tile_to_world(&new_tile_pos);
         self.tile_type = tile_type;
 
         // self.area.x = self.world_pos.x;

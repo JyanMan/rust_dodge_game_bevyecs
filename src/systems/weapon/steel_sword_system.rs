@@ -11,13 +11,13 @@ pub fn new_steel_sword(ecs: &mut ECS, renderer: &mut Renderer, entity_owner: Ent
     sprite.set_sprite_sheet(4, 2);
     sprite.visible = true;
 
-    let steel_sword = ecs.spawn::<(Transform, Sprite, WeaponData, SteelSwordData, Area, Owner, AnimationPlayer)>((
+    let steel_sword = ecs.spawn::<(Transform, Sprite, WeaponData, SteelSwordData, Area, /*Owner, */ AnimationPlayer)>((
         Transform::zero(),
         sprite,
         WeaponData::new(1, 10.0, 0.2, WeaponState::Owned, WeaponType::SteelSword), 
         SteelSwordData::default(),
         Area::new(0.0, 0.0, 10.0, 10.0),
-        Owner::new(entity_owner),
+        // Owner::new(entity_owner),
         AnimationPlayer::new(WeaponAnim::COUNT)
     ));
 

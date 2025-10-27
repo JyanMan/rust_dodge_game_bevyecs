@@ -15,7 +15,7 @@ impl Camera {
         Self {
             pos: Vector2::new(0.0, 0.0),
             target_pos: Vector2::new(0.0, 0.0),
-            scale: 2.0,
+            scale: 1.0,
             interp: 0.2,
         }
     }

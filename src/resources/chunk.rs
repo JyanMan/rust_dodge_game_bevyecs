@@ -21,7 +21,7 @@ pub struct Chunk {
 fn get_perlin_noise() -> FastNoiseLite {
     let mut noise = FastNoiseLite::new();
     noise.set_noise_type(Some(NoiseType::Perlin));
-    noise.set_seed(Some(1337));
+    noise.set_seed(Some(1234));
     noise.set_frequency(Some(0.005));
     noise.set_fractal_type(Some(FractalType::FBm));
     noise.set_fractal_octaves(Some(6));
@@ -73,8 +73,8 @@ impl Chunk {
         self.chunk_pos = world_to_chunk(&world_pos);
         self.world_pos = world_pos;
 
-        let base_x = self.world_pos.x.floor() / TILE_SIZE as f32;
-        let base_y = self.world_pos.y.floor() / TILE_SIZE as f32;
+        let base_x = (self.world_pos.x / TILE_SIZE as f32).floor() as f32;
+        let base_y = (self.world_pos.y / TILE_SIZE as f32).floor() as f32;
 
         for y in 0..(CHUNK_SIZE) {
             for x in 0..(CHUNK_SIZE) {

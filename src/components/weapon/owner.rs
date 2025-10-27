@@ -1,7 +1,10 @@
-use crate::ecs::entity::*;
+use bevy_ecs::prelude::*;
+// use crate::ecs::entity::*;
 
-#[derive(Clone, Default)]
+#[derive(Component, Clone)]
+#[relationship(relationship_target = OwnedEntity)]
 pub struct Owner {
+    #[relationship]
     pub entity: Entity,
 }
 
@@ -13,3 +16,6 @@ impl Owner {
     }
 }
 
+#[derive(Component)]
+#[relationship_target(relationship = Owner)]
+pub struct OwnedEntity(Entity);

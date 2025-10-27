@@ -1,18 +1,19 @@
+use bevy_ecs::prelude::*;
+
 use crate::components::area::*;
 use crate::components::entity::{ WalkerData, WalkerState };
 use crate::components::{ Transform, Velocity };
 use crate::core::collision::*;
 use crate::ecs::ecs::*;
 use crate::resources::area_manager::*;
+use crate::resources::*;
 use super::*;
 
 const GRAVITY_ACCEL: f32 = 15.0;
 const MAX_GRAVITY: f32 = 700.0;
 
-pub fn gravity_system(ecs: &mut ECS, _time_step: f32) {
-    for (_e, vel, _walker_d) in 
-        ecs.query_comp::<(&mut Velocity,  &mut WalkerData)>() 
-    {
+pub fn gravity_system(mut query: Query<(&mut Velocity, &mut WalkerData)>) {
+    for (mut vel, mut _walker_d) in &mut query {
         //GRAVITY
         vel.vec.y += GRAVITY_ACCEL;
         if vel.vec.y >= MAX_GRAVITY {
@@ -21,15 +22,16 @@ pub fn gravity_system(ecs: &mut ECS, _time_step: f32) {
     }
 }
 
-pub fn collision_system(ecs: &mut ECS, time_step: f32) {
-    let mut area_m = ecs.get_resource_mut::<AreaManager>();
-    for (e, trans, vel, area) in 
-        ecs.query_comp::<(&mut Transform, &mut Velocity, &mut Area)>() 
-    {
+pub fn collision_system(
+    mut area_m: ResMut<AreaManager>, 
+    ts_res: Res<TimeStepRes>, 
+    mut query: Query<(&mut Transform, &mut Velocity, &mut Area, Option<&mut WalkerData>)>
+) {
+    // let mut area_m = ecs.get_resource_mut::<AreaManager>();
+    for (mut trans, mut vel, mut area, mut walker_d) in &mut query {
         // if not a walker, means entity can fly
         // use dummy grounded to modify pointless bool
         let mut dummy_grounded = false;
-        let mut walker_d = ecs.get_component_mut::<WalkerData>(e);
 
         let grounded: &mut bool = 
             match &mut walker_d {
@@ -39,12 +41,12 @@ pub fn collision_system(ecs: &mut ECS, time_step: f32) {
 
         // COLLISION RESOLUTION
         area_colliding_to_tile(
-            area, 
+            &mut area, 
             &mut trans.global, 
             &mut vel.vec, 
             grounded, 
             &mut *area_m, 
-            time_step
+            ts_res.time_step
         );
 
         // only walkers have grounded state
@@ -59,29 +61,26 @@ pub fn collision_system(ecs: &mut ECS, time_step: f32) {
     }
 }
 
-pub fn pos_vel_update_system(ecs: &mut ECS, time_step: f32) {
-    for (_e, trans, vel) in
-        ecs.query_comp::<(&mut Transform, &Velocity)>()
-    {
-        trans.global.x += vel.vec.x * time_step;
-        trans.global.y += vel.vec.y * time_step;
+pub fn pos_vel_update_system(mut query: Query<(&mut Transform, &Velocity)>, ts_res: Res<TimeStepRes>) {
+    for (mut trans, vel) in &mut query {
+        trans.global.x += vel.vec.x * ts_res.time_step;
+        trans.global.y += vel.vec.y * ts_res.time_step;
     }
 }
 
-pub fn area_update_system(ecs: &mut ECS, _time_step: f32) {
-    for (_e, trans, area) in
-        ecs.query_comp::<(&Transform, &mut Area)>()
-    {
+pub fn area_update_system(mut query: Query<(&Transform, &mut Area)>) {
+    for (trans, mut area) in &mut query {
         area.update_pos(trans.global.x, trans.global.y);
     }
 }
 
 pub fn physics_fixed_update(ecs: &mut ECS, time_step: f32) {
-    gravity_system(ecs, time_step);
-    collision_system(ecs, time_step);
-    pos_vel_update_system(ecs, time_step);
-    transform_update_system(ecs, time_step);
-    area_update_system(ecs, time_step);
+    // gravity_system(ecs, time_step);
+    // collision_system(ecs, time_step);
+    // pos_vel_update_system(ecs, time_step);
+    // transform_update_system(ecs, time_step);
+    // area_update_system(ecs, time_step);
+    
     // let mut area_m = ecs.get_resource_mut::<AreaManager>();
     // for (_e, pos, vel, area, walker_d) in 
     //     ecs.query_comp::<(&mut Transform, &mut Velocity, &mut Area, &mut WalkerData)>() 

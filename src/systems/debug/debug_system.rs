@@ -1,3 +1,5 @@
+use bevy_ecs::prelude::*;
+
 use std::any::TypeId;
 use crate::core::renderer::*;
 use crate::components::Area;
@@ -19,10 +21,13 @@ pub fn debug_draw_areas_system(ecs: &mut ECS, renderer: &mut Renderer) {
     area_m.draw_tile_areas(renderer);
 }
 
-pub fn debug_draw_entity_areas(ecs: &mut ECS, renderer: &mut Renderer) {
-    for (_e, area) in
-        ecs.query_comp::<&Area>() 
-    {
+pub fn debug_draw_entity_areas(world: &mut World, renderer: &mut Renderer) {
+    let mut query = world.query::<&Area>();
+
+    for area in query.iter(world) {
         area.draw(renderer);
     }
+
+    let mut area_m = world.get_resource_mut::<AreaManager>().unwrap();
+    area_m.draw_tile_areas(renderer);
 }

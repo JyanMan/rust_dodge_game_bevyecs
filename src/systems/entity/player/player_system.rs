@@ -13,57 +13,7 @@ use crate::systems::weapon::*;
 
 use PlayerState as P;
 
-pub fn player_spawn(world: &mut World, renderer: &mut Renderer) {
-    let mut sprite = Sprite::new(&renderer.asset_m, TextureId::Player);
-    sprite.set_sprite_sheet(6, 6);
-
-    let mut area = Area::new(
-        10.0, -1000.0, 10.0, 20.0
-    );
-    area.offset = Vector2::new(0.0, 6.0);
-
-    let player_e = world.spawn((
-         sprite,
-         Transform::new(10.0, -1000.0),
-         Velocity::new(0.0, 0.0),
-         area,
-         PlayerData::default(),
-         PlayerTag {},
-         PlayerInput::default(),
-         WalkerData {
-             run_speed: 200.0,
-             accel: 50.0,
-             jump_force: 300.0,
-             grounded: false,
-             state: WalkerState::default()
-         },
-         // AnimationPlayer::new(WalkerAnim::COUNT),
-         Combat::default(),
-    )).id();
-}
-
-pub fn player_system_input(mut query: Query<(&mut PlayerInput, &mut Combat)>, user_input_res: Res<UserInputRes>) {
-    for (mut input, mut combat) in &mut query {
-        if user_input_res.k_state.contains(&Keycode::Space) { input.jump = true; } else { input.jump = false; }
-
-        if user_input_res.k_state.contains(&Keycode::A) { input.left = true; println!("pressed a") } else { input.left = false; }
-
-        if user_input_res.k_state.contains(&Keycode::D) { input.right = true; } else { input.right = false; }
-
-        if user_input_res.k_state.contains(&Keycode::Q) { input.dodge = true; } else { input.dodge = false; }
-
-        if user_input_res.k_state.contains(&Keycode::E) { combat.attacking = true } else { combat.attacking = false }
-    }
-}
-
-pub fn player_input_system(mut query: Query<(&mut PlayerInput, &mut Combat)>, user_input: ResMut<UserInputRes>) {
-    use super::player_input::*;
-    for (mut input, mut combat) in &mut query {
-        player_input_update(&mut input, &user_input.k_state, &mut combat);
-    }
-}
-
-pub fn player_movement_system(mut query: Query<(&mut PlayerData, &mut WalkerData)>, dt_res: Res<DeltaTimeRes>) {
+pub fn player_timer_system(mut query: Query<(&mut PlayerData, &mut WalkerData)>, dt_res: Res<DeltaTimeRes>) {
     use super::player_timer::*;
     for (mut p_data, mut walker_d) in &mut query {
         let delta_time = dt_res.delta_time;
@@ -119,14 +69,14 @@ pub fn player_update(ecs: &mut ECS, delta_time: f32) {
     }
 }
 
-pub fn player_fixed_update(ecs: &mut ECS, _time_step: f32) {
+pub fn player_movement_system(mut query: Query<(&mut PlayerData, &mut WalkerData, &mut Velocity, &PlayerInput)>, user_input: Res<UserInputRes>) {
     use super::player_movement::*;
 
-    for (_e,  p_data, walker_d, vel, input) in 
-        ecs.query_comp::<(&mut PlayerData, &mut WalkerData, &mut Velocity, &PlayerInput)>() 
-    {
+    let mouse_pos = user_input.mouse_pos;
+
+    for (mut p_data, mut walker_d, mut vel, input) in &mut query {
         if input.dodge && p_data.can_dodge {
-            player_dodge(p_data);
+            player_dodge(&mut p_data);
         }
 
         // only allow dodge again if dodge button is let go
@@ -135,27 +85,20 @@ pub fn player_fixed_update(ecs: &mut ECS, _time_step: f32) {
             p_data.can_dodge = true; 
         }
         if p_data.state == P::Dodging {
-            let dodge_dir = get_dodge_dir(ecs, p_data);
-            player_dodging(dodge_dir, p_data, vel);
+            let dodge_dir = get_dodge_dir(mouse_pos, &mut p_data);
+            player_dodging(dodge_dir, &mut p_data, &mut vel);
             return;
         } 
         else if p_data.state == P::Lerping {
-            player_lerping(vel);
+            player_lerping(&mut vel);
             return;
         }
 
-        player_left_right_motion(p_data, walker_d, vel, input);
+        player_left_right_motion(&mut p_data, &mut walker_d, &mut vel, input);
 
         if input.jump && p_data.can_jump {
-            player_jump(p_data, walker_d, vel);
+            player_jump(&mut p_data, &mut walker_d, &mut vel);
         }
-    }
-}
-
-pub fn player_input(ecs: &mut ECS, k_state: &mut EventPump) {
-    use super::player_input::*;
-    for (_e, input, combat) in ecs.query_comp::<(&mut PlayerInput, &mut Combat)>() {
-        player_input_sys(input, k_state, combat);
     }
 }
 

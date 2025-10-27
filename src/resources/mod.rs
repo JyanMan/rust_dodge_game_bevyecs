@@ -6,6 +6,7 @@ pub mod event_pump_res;
 pub mod delta_time_res;
 pub mod tile;
 pub mod mouse_input;
+pub mod time_step_res;
 pub mod register_resources;
 
 pub use chunk::*;
@@ -15,5 +16,6 @@ pub use delta_time_res::*;
 pub use asset_manager::*;
 pub use area_manager::*;
 pub use tile::*;
+pub use time_step_res::*;
 pub use mouse_input::*;
 pub use register_resources::*;

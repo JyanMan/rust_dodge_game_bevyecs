@@ -2,26 +2,26 @@ use crate::ecs::ecs::*;
 use crate::components::*;
 
 pub fn weapon_fixed_update(ecs: &mut ECS, time_step: f32) {
-    for (e, weapon_d, owner) in 
-        ecs.query_comp::<(&mut WeaponData, &Owner)>() 
-    {
-        if weapon_d.state == WeaponState::Unowned {
-            return;
-        }
+    // for (e, weapon_d, owner) in 
+    //     ecs.query_comp::<(&mut WeaponData, &Owner)>() 
+    // {
+    //     if weapon_d.state == WeaponState::Unowned {
+    //         return;
+    //     }
 
-        let owner_entity = owner.entity;
-        // let owner_pos = ecs.get_component::<Position>(owner_entity).expect("owner has no position component"); 
-        let owner_combat = ecs.get_component::<Combat>(owner_entity).expect("owner has no combat component"); 
+    //     let owner_entity = owner.entity;
+    //     // let owner_pos = ecs.get_component::<Position>(owner_entity).expect("owner has no position component"); 
+    //     let owner_combat = ecs.get_component::<Combat>(owner_entity).expect("owner has no combat component"); 
 
-        // disallow hold attack button
-        if owner_combat.attacking && weapon_d.can_attack {
-            weapon_d.attack();
-            weapon_d.w_type.play_anim(ecs, e, owner, time_step);
-        }
-        else if !owner_combat.attacking && !weapon_d.attacking {
-            weapon_d.can_attack = true;
-        }
-    }
+    //     // disallow hold attack button
+    //     if owner_combat.attacking && weapon_d.can_attack {
+    //         weapon_d.attack();
+    //         weapon_d.w_type.play_anim(ecs, e, owner, time_step);
+    //     }
+    //     else if !owner_combat.attacking && !weapon_d.attacking {
+    //         weapon_d.can_attack = true;
+    //     }
+    // }
 }
 
 pub fn weapon_update(ecs: &mut ECS, delta_time: f32) {
