@@ -33,13 +33,13 @@ impl Game {
         let area_m = AreaManager::new();
         self.world.insert_resource(area_m);
 
-        let dt_res = DeltaTimeRes { delta_time: 0.0 };
+        let dt_res = DeltaTime(0.0);
         self.world.insert_resource(dt_res);
 
-        let ts_res = TimeStepRes { time_step: 0.0 };
+        let ts_res = TimeStep(0.0);
         self.world.insert_resource(ts_res);
 
-        let user_input_res = UserInputRes::default();
+        let user_input_res = KeyInput::default();
         self.world.insert_resource(user_input_res);
 
         let mouse_input = MouseInput::default();
@@ -86,8 +86,8 @@ impl Game {
     }   
 
     pub fn update(&mut self, delta_time: f32, renderer: &mut Renderer) {
-        let mut dt_res = self.world.get_resource_mut::<DeltaTimeRes>().unwrap();
-        dt_res.delta_time = delta_time;
+        let mut delta_time_res = self.world.get_resource_mut::<DeltaTime>().unwrap();
+        delta_time_res.0 = delta_time;
 
         self.update_sched.run(&mut self.world);
 
@@ -95,8 +95,8 @@ impl Game {
     }
 
     pub fn fixed_update(&mut self, time_step: f32) {
-        let mut ts_res = self.world.get_resource_mut::<TimeStepRes>().unwrap();
-        ts_res.time_step = time_step;
+        let mut time_step_res = self.world.get_resource_mut::<TimeStep>().unwrap();
+        time_step_res.0 = time_step;
 
         self.fixed_update_sched.run(&mut self.world)
     }
@@ -108,7 +108,7 @@ impl Game {
     }
 
     pub fn input(&mut self, event_pump: &mut EventPump) -> bool {
-        let mut user_input_res = self.world.get_resource_mut::<UserInputRes>().unwrap();
+        let mut user_input_res = self.world.get_resource_mut::<KeyInput>().unwrap();
         for event in event_pump.poll_iter() {
             match event {
                 Event::Quit {..} => {
@@ -118,10 +118,10 @@ impl Game {
                     if (s == Keycode::Escape)  {
                         return false;
                     }
-                    user_input_res.k_state.insert(s);
+                    user_input_res.0.insert(s);
                 },
                 Event::KeyUp { keycode: Some(s), .. } => {
-                    user_input_res.k_state.remove(&s);
+                    user_input_res.0.remove(&s);
                 }
                 _ => {}
             }

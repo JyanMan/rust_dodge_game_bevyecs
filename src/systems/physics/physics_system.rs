@@ -27,7 +27,7 @@ pub fn gravity_system(mut query: Query<(&mut Velocity, &GravityAffected)>) {
 
 pub fn collision_system(
     mut area_m: ResMut<AreaManager>, 
-    ts_res: Res<TimeStepRes>, 
+    time_step: Res<TimeStep>, 
     mut query: Query<(&mut Transform, &mut Velocity, &mut Area, Option<&mut WalkerData>)>
 ) {
     // let mut area_m = ecs.get_resource_mut::<AreaManager>();
@@ -49,7 +49,7 @@ pub fn collision_system(
             &mut vel.vec, 
             grounded, 
             &mut *area_m, 
-            ts_res.time_step
+            time_step.0
         );
 
         // only walkers have grounded state
@@ -64,10 +64,10 @@ pub fn collision_system(
     }
 }
 
-pub fn pos_vel_update_system(mut query: Query<(&mut Transform, &Velocity)>, ts_res: Res<TimeStepRes>) {
+pub fn pos_vel_update_system(mut query: Query<(&mut Transform, &Velocity)>, time_step: Res<TimeStep>) {
     for (mut trans, vel) in &mut query {
-        trans.global.x += vel.vec.x * ts_res.time_step;
-        trans.global.y += vel.vec.y * ts_res.time_step;
+        trans.global.x += vel.vec.x * time_step.0;
+        trans.global.y += vel.vec.y * time_step.0;
     }
 }
 

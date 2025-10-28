@@ -6,20 +6,18 @@ use crate::components::entity::{ WalkerData, WalkerState, WalkerAnim, };
 use crate::components::*;
 use crate::ecs::ecs::*;
 use crate::resources::asset_manager::*;
-use crate::resources::event_pump_res::UserInputRes;
 use crate::resources::*;
 use crate::components::entity::*;
 use crate::systems::weapon::*;
 
 use PlayerState as P;
 
-pub fn player_timer_system(mut query: Query<(&mut PlayerData, &mut WalkerData)>, dt_res: Res<DeltaTimeRes>) {
+pub fn player_timer_system(mut query: Query<(&mut PlayerData, &mut WalkerData)>, delta_time: Res<DeltaTime>) {
     use super::player_timer::*;
     for (mut p_data, mut walker_d) in &mut query {
-        let delta_time = dt_res.delta_time;
-        player_can_jump_delay_timer(&mut p_data, &mut walker_d, delta_time);
-        player_dodge_timer(&mut p_data, delta_time);
-        player_lerp_timer(&mut p_data, delta_time);
+        player_can_jump_delay_timer(&mut p_data, &mut walker_d, delta_time.0);
+        player_dodge_timer(&mut p_data, delta_time.0);
+        player_lerp_timer(&mut p_data, delta_time.0);
     } 
 }
 

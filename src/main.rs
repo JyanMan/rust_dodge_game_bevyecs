@@ -16,7 +16,7 @@ mod tests;
 use crate::game::*;
 use crate::core::renderer::*;
 use crate::resources::asset_manager::*;
-use crate::components::camera::Camera;
+use crate::resources::Camera;
 
 pub fn main() {
     let sdl_context = sdl2::init().unwrap();

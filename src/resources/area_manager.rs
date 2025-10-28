@@ -21,8 +21,6 @@ impl AreaManager {
         let new_world_pos = tile_to_world(&new_pos);
         if let Some(mut old_area) = self.tile_areas.remove(prev_pos) {
             old_area.update_pos(new_world_pos.x, new_world_pos.y);
-            // old_area.x = new_world_pos.x;
-            // old_area.y = new_world_pos.y;
             self.tile_areas.insert(new_pos.clone(), old_area);
         }
         else {

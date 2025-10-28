@@ -36,12 +36,12 @@ pub fn weapon_system_animation_update(
 
 pub fn weapon_attack_timer_and_signal_update(
     mut query: Query<(&mut Sprite, &mut WeaponData, &mut AnimationPlayer), With<HeldBy>>,
-    dt_res: Res<DeltaTimeRes>
+    delta_time: Res<DeltaTime>
 ) {
     for (mut sprite, mut weapon_d, mut anim_player) in &mut query {
         if weapon_d.attacking {
             sprite.visible = true;
-            weapon_d.attack_timer(dt_res.delta_time);
+            weapon_d.attack_timer(delta_time.0);
             anim_player.play(WeaponAnim::Attack.usize());
         }
         else {

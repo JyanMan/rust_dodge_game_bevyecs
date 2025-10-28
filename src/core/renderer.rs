@@ -1,8 +1,8 @@
 use sdl2::render::*;
 use bevy_ecs::prelude::*;
 
-use crate::resources::asset_manager::*;
-use crate::components::camera::*;
+use crate::resources::AssetManager;
+use crate::resources::Camera;
 use crate::components::{ Vector2, Sprite };
 
 #[derive(Resource)]
