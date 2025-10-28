@@ -16,4 +16,14 @@ impl WeaponType {
             WeaponType::SteelSword => steel_sword_animation(sprite, trans, weapon_d.attack_dir),
         }
     }
+    pub fn start_attack_effect(&self, vel: &mut Velocity, weapon_d: &WeaponData, grav_affected: &mut GravityAffected) {
+        match self {
+            WeaponType::SteelSword => steel_sword_start_attack_effect(vel, weapon_d.attack_dir, grav_affected),
+        }
+    }
+    pub fn end_attack_effect(&self, vel: &mut Velocity, weapon_d: &WeaponData, grav_affected: &mut GravityAffected) {
+        match self {
+            WeaponType::SteelSword => steel_sword_end_attack_effect(vel, grav_affected),
+        }
+    }
 }

@@ -1,5 +1,6 @@
 use bevy_ecs::prelude::*;
 
+use crate::components::GravityAffected;
 use crate::components::area::*;
 use crate::components::entity::{ WalkerData, WalkerState };
 use crate::components::{ Transform, Velocity };
@@ -7,13 +8,15 @@ use crate::core::collision::*;
 use crate::ecs::ecs::*;
 use crate::resources::area_manager::*;
 use crate::resources::*;
-use super::*;
 
 const GRAVITY_ACCEL: f32 = 15.0;
 const MAX_GRAVITY: f32 = 700.0;
 
-pub fn gravity_system(mut query: Query<(&mut Velocity, &mut WalkerData)>) {
-    for (mut vel, mut _walker_d) in &mut query {
+pub fn gravity_system(mut query: Query<(&mut Velocity, &GravityAffected)>) {
+    for (mut vel, grav_affected) in &mut query {
+        if grav_affected.0 == false {
+            continue;
+        }
         //GRAVITY
         vel.vec.y += GRAVITY_ACCEL;
         if vel.vec.y >= MAX_GRAVITY {

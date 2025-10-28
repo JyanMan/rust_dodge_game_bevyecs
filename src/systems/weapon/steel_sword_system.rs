@@ -43,9 +43,6 @@ pub fn steel_sword_spawn(world: &mut World, renderer: &mut Renderer, entity_owne
 }
 
 pub fn steel_sword_animation(sprite: &mut Sprite, trans: &mut Transform, attack_dir: Vector2) {
-    // get mouse direction
-    // let mouse_input = ecs.get_resource::<MouseInput>();
-
     // flip y if left side 
     // this allows animation to be consistent not flipped on another direction
     if attack_dir.x < 0.0 {
@@ -64,6 +61,12 @@ pub fn steel_sword_animation(sprite: &mut Sprite, trans: &mut Transform, attack_
     trans.local = attack_dir * 10.0;
 }
 
-pub fn steel_sword_movement_effect(user_vel: &mut Velocity, mouse_input: MouseInput) {
-    user_vel.vec = mouse_input.dir_from_center() * 1000.0;
+pub fn steel_sword_start_attack_effect(user_vel: &mut Velocity, attack_dir: Vector2, grav_affected: &mut GravityAffected) {
+    user_vel.vec = attack_dir * 1000.0;
+    grav_affected.0 = false;
+}
+
+pub fn steel_sword_end_attack_effect(user_vel: &mut Velocity, grav_affected: &mut GravityAffected) {
+    user_vel.vec = Vector2::zero();
+    grav_affected.0 = true;
 }

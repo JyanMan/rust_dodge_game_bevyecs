@@ -32,6 +32,7 @@ pub fn player_spawn(world: &mut World, renderer: &mut Renderer) -> Entity {
              state: WalkerState::default()
          },
          AnimationPlayer::new(WalkerAnim::COUNT),
+         GravityAffected(true),
          Combat::default(),
     )).id();
 

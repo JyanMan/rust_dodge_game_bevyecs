@@ -51,8 +51,8 @@ pub fn player_movement_system(
             return;
         }
         if combat.attacking {
-            vel.vec = Vector2::zero();
-            steel_sword_movement_effect(&mut vel, mouse_input.clone());
+            vel.vec = vel.vec * 0.5;
+            // steel_sword_movement_effect(&mut vel, mouse_input.clone());
             return;
         }
 
