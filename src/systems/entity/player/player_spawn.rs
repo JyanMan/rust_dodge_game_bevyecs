@@ -6,7 +6,7 @@ use crate::resources::asset_manager::*;
 use crate::components::entity::*;
 use super::player_animation_init;
 
-pub fn player_spawn(world: &mut World, renderer: &mut Renderer) {
+pub fn player_spawn(world: &mut World, renderer: &mut Renderer) -> Entity {
     let mut sprite = Sprite::new(&renderer.asset_m, TextureId::Player);
     sprite.set_sprite_sheet(6, 6);
 
@@ -37,5 +37,7 @@ pub fn player_spawn(world: &mut World, renderer: &mut Renderer) {
 
     let mut player_ref_mut = world.entity_mut(player_e);
     let mut anim_player = player_ref_mut.get_mut::<AnimationPlayer>().unwrap();
-    player_animation_init(&mut anim_player, player_e)
+    player_animation_init(&mut anim_player, player_e);
+
+    player_e
 }

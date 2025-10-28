@@ -1,7 +1,9 @@
+use bevy_ecs::prelude::*;
+
 use crate::components::Vector2;
 use crate::config::*;
 
-#[derive(Default, Clone)]
+#[derive(Resource, Default, Clone)]
 pub struct MouseInput {
     pub pos: Vector2,
 }

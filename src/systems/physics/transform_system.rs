@@ -2,13 +2,15 @@ use bevy_ecs::prelude::*;
 use std::vec::Vec;
 
 use crate::ecs::ecs::ECS;
-use crate::components::{Transform, Owner, OwnedEntity};
+use crate::components::*;
 
-pub fn transform_update_system(mut query: Query<(&mut Transform, &Owner)>, /*parent_query: Query<&Transform, (With<OwnedEntity>, Without<Owner>)>*/) {
-    // for (mut pos, owner) in &mut query {
-    //     // if (owner)
-    //     let owner_pos = parent_query.get(owner.entity).expect("entity has no owner");
-
-    //     pos.global = owner_pos.global + pos.local;
-    // }
+pub fn transform_update_system(
+    mut query: Query<(&mut Transform, &HeldBy)>, 
+    parent_query: Query<&mut Transform, (With<HeldItem>, Without<HeldBy>)>
+) {
+    for (mut pos, owned_by) in &mut query {
+        // if (owner)
+        let owner_pos = parent_query.get(owned_by.0).expect("entity somehow has no owner...");
+        pos.global = owner_pos.global + pos.local;
+    }
 }

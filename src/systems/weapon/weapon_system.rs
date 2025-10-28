@@ -1,43 +1,51 @@
+use bevy_ecs::prelude::*;
 use crate::ecs::ecs::*;
 use crate::components::*;
+use crate::components::item_handle::*;
+use crate::resources::*;
 
-pub fn weapon_fixed_update(ecs: &mut ECS, time_step: f32) {
-    // for (e, weapon_d, owner) in 
-    //     ecs.query_comp::<(&mut WeaponData, &Owner)>() 
-    // {
-    //     if weapon_d.state == WeaponState::Unowned {
-    //         return;
-    //     }
+pub fn weapon_system_animation_update(
+    mut query: Query<(&mut WeaponData, &mut Sprite, &mut Transform, &HeldBy)>, 
+    mut owner_query: Query<&mut Combat, (With<HeldItem>, Without<HeldBy>)>, 
+    mouse_input: Res<MouseInput>
+) {
+    for (mut weapon_d, mut sprite, mut trans, owned_by) in &mut query {
+        if weapon_d.state == WeaponState::Unowned {
+            return;
+        }
 
-    //     let owner_entity = owner.entity;
-    //     // let owner_pos = ecs.get_component::<Position>(owner_entity).expect("owner has no position component"); 
-    //     let owner_combat = ecs.get_component::<Combat>(owner_entity).expect("owner has no combat component"); 
+        let owner_entity = owned_by.0;
 
-    //     // disallow hold attack button
-    //     if owner_combat.attacking && weapon_d.can_attack {
-    //         weapon_d.attack();
-    //         weapon_d.w_type.play_anim(ecs, e, owner, time_step);
-    //     }
-    //     else if !owner_combat.attacking && !weapon_d.attacking {
-    //         weapon_d.can_attack = true;
-    //     }
-    // }
+        if let Ok(owner_combat) = owner_query.get_mut(owner_entity) {
+            // disallow hold attack button
+            if owner_combat.attacking && weapon_d.can_attack {
+                weapon_d.attack();
+                weapon_d.attack_dir = mouse_input.dir_from_center();
+                println!("attacked??");
+                weapon_d.w_type.play_anim(&mut sprite, &mut trans, &weapon_d);
+            }
+            else if !owner_combat.attacking && !weapon_d.attacking {
+                weapon_d.can_attack = true;
+            }
+        }
+    }
 }
 
-pub fn weapon_update(ecs: &mut ECS, delta_time: f32) {
-//     for (_e, sprite, weapon_d, anim_player, _owner) in 
-//         ecs.query_comp::<(&mut Sprite, &mut WeaponData, &mut AnimationPlayer, &Owner)>() 
-//     {
-//         if weapon_d.attacking {
-//             sprite.visible = true;
-//             weapon_d.attack_timer(delta_time);
-//             anim_player.play(WeaponAnim::Attack.usize());
-//         }
-//         else {
-//             sprite.visible = false;
-//             anim_player.stop();
-//         }
-//     }
+pub fn weapon_attack_timer_and_signal_update(
+    mut query: Query<(&mut Sprite, &mut WeaponData, &mut AnimationPlayer), With<HeldBy>>,
+    dt_res: Res<DeltaTimeRes>
+) {
+     for (mut sprite, mut weapon_d, mut anim_player) in &mut query {
+         if weapon_d.attacking {
+             sprite.visible = true;
+             weapon_d.attack_timer(dt_res.delta_time);
+             anim_player.play(WeaponAnim::Attack.usize());
+         }
+         else {
+             sprite.visible = false;
+             anim_player.stop();
+         }
+     }
 }
 // so you have a weapon data
     // to which all weapon entities have one

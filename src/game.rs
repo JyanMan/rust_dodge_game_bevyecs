@@ -13,6 +13,7 @@ use crate::systems::render::*;
 use crate::systems::physics::*;
 use crate::systems::debug::*;
 use crate::systems::animation::*;
+use crate::systems::weapon::*;
 
 #[allow(dead_code)]
 pub struct Game {
@@ -40,6 +41,9 @@ impl Game {
 
         let user_input_res = UserInputRes::default();
         self.world.insert_resource(user_input_res);
+
+        let mouse_input = MouseInput::default();
+        self.world.insert_resource(mouse_input);
     }
 
     fn register_systems(&mut self, renderer: &mut Renderer) {
@@ -48,6 +52,8 @@ impl Game {
             player_timer_system,
             animation_player_update,
             walker_animation_update,
+            weapon_system_animation_update,
+            weapon_attack_timer_and_signal_update
         ));
         self.fixed_update_sched.add_systems((
             player_movement_system,
@@ -73,7 +79,8 @@ impl Game {
         game.register_systems(renderer);
         game.register_resources(renderer);
 
-        player_spawn(&mut game.world, renderer);
+        let player_e = player_spawn(&mut game.world, renderer);
+        steel_sword_spawn(&mut game.world, renderer, player_e);
 
         game
     }   
@@ -120,8 +127,9 @@ impl Game {
             }
         }
 
+        let mut mouse_input = self.world.get_resource_mut::<MouseInput>().unwrap();
         let mouse_state = event_pump.mouse_state();
-        user_input_res.mouse_pos = Vector2::new(
+        mouse_input.pos = Vector2::new(
             mouse_state.x() as f32, mouse_state.y() as f32
         );
 

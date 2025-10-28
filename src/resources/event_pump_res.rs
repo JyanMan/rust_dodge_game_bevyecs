@@ -9,5 +9,4 @@ use crate::components::Vector2;
 #[derive(Resource, Default)]
 pub struct UserInputRes {
     pub k_state: HashSet<Keycode>,
-    pub mouse_pos: Vector2,
 }

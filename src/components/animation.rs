@@ -102,20 +102,4 @@ impl Animation {
             }
         }
     }
-
-    // fn update_frame(&mut self, world: &mut World) {
-    //     let anim_frame = &self.frames[self.curr_frame];
-    //     for anim_data in anim_frame.data.iter() {
-    //         match *anim_data {
-    //             // AnimData::Integer { value, target } => unsafe { *target = value; },
-    //             AnimData::SpriteFrame { value, target } => {
-    //                 let mut e = world.entity_mut(target);
-    //                 let mut sprite = e.get_mut::<Sprite>().expect("entity does not have sprite component");
-    //                 sprite.frame = value;
-    //             },
-    //             // AnimData::Float { value, target } => unsafe { *target = value; },
-    //             // AnimData::Bool { value, target } => unsafe { *target = value; },
-    //         }
-    //     }
-    // }
 }

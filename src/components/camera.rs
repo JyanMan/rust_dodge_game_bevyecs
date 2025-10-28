@@ -1,8 +1,10 @@
+use bevy_ecs::prelude::*;
+
 use crate::math_helper::*;
 use crate::components::{ Vector2 };
 use crate::config::*;
 
-#[derive(Default)]
+#[derive(Resource, Default)]
 pub struct Camera {
    target_pos: Vector2,
    pos: Vector2,

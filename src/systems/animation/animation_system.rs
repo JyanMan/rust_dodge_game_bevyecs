@@ -3,8 +3,6 @@ use bevy_ecs::prelude::*;
 use crate::components::animation_player::*;
 use crate::resources::DeltaTimeRes;
 use crate::components::animation::*;
-use crate::ecs::system::*;
-use crate::ecs::ecs::*;
 
 pub fn animation_player_update(mut query: Query<(Entity, &mut AnimationPlayer)>, dt_res: Res<DeltaTimeRes>, mut commands: Commands) {
     /* bevy disallows the use of mutable world twice... so you separate the update_frame and timer
