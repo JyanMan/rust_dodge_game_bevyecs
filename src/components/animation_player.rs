@@ -40,7 +40,7 @@ impl AnimationPlayer {
         self.anims[self.curr_anim].stop();
     }
 
-    pub fn update_play(&mut self, delta_time: f32) {
+    pub fn update_timer(&mut self, delta_time: f32) {
         if self.playing {
             self.anims[self.curr_anim].play(delta_time);
         }
