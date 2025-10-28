@@ -25,19 +25,19 @@ pub fn weapon_fixed_update(ecs: &mut ECS, time_step: f32) {
 }
 
 pub fn weapon_update(ecs: &mut ECS, delta_time: f32) {
-    for (_e, sprite, weapon_d, anim_player, _owner) in 
-        ecs.query_comp::<(&mut Sprite, &mut WeaponData, &mut AnimationPlayer, &Owner)>() 
-    {
-        if weapon_d.attacking {
-            sprite.visible = true;
-            weapon_d.attack_timer(delta_time);
-            anim_player.play(WeaponAnim::Attack.usize());
-        }
-        else {
-            sprite.visible = false;
-            anim_player.stop();
-        }
-    }
+//     for (_e, sprite, weapon_d, anim_player, _owner) in 
+//         ecs.query_comp::<(&mut Sprite, &mut WeaponData, &mut AnimationPlayer, &Owner)>() 
+//     {
+//         if weapon_d.attacking {
+//             sprite.visible = true;
+//             weapon_d.attack_timer(delta_time);
+//             anim_player.play(WeaponAnim::Attack.usize());
+//         }
+//         else {
+//             sprite.visible = false;
+//             anim_player.stop();
+//         }
+//     }
 }
 // so you have a weapon data
     // to which all weapon entities have one

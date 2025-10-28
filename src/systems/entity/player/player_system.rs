@@ -55,7 +55,7 @@ pub fn player_init(ecs: &mut ECS, renderer: &mut Renderer) {
         Combat::default(),
     ));
 
-    new_steel_sword(ecs, renderer, player);
+    // new_steel_sword(ecs, renderer, player);
 }
 
 pub fn player_update(ecs: &mut ECS, delta_time: f32) {

@@ -4,6 +4,7 @@ use crate::components::entity::{ WalkerData, WalkerState };
 use crate::components::*;
 use crate::resources::asset_manager::*;
 use crate::components::entity::*;
+use super::player_animation_init;
 
 pub fn player_spawn(world: &mut World, renderer: &mut Renderer) {
     let mut sprite = Sprite::new(&renderer.asset_m, TextureId::Player);
@@ -14,7 +15,8 @@ pub fn player_spawn(world: &mut World, renderer: &mut Renderer) {
     );
     area.offset = Vector2::new(0.0, 6.0);
 
-    world.spawn((
+
+    let player_e = world.spawn((
          sprite,
          Transform::new(10.0, -1000.0),
          Velocity::new(0.0, 0.0),
@@ -29,7 +31,11 @@ pub fn player_spawn(world: &mut World, renderer: &mut Renderer) {
              grounded: false,
              state: WalkerState::default()
          },
-         // AnimationPlayer::new(WalkerAnim::COUNT),
+         AnimationPlayer::new(WalkerAnim::COUNT),
          Combat::default(),
-    ));
+    )).id();
+
+    let mut player_ref_mut = world.entity_mut(player_e);
+    let mut anim_player = player_ref_mut.get_mut::<AnimationPlayer>().unwrap();
+    player_animation_init(&mut anim_player, player_e)
 }

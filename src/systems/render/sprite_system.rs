@@ -5,7 +5,7 @@ use crate::components::entity::*;
 use crate::components::Transform;
 use crate::components::sprite::*;
 use crate::components::Vector2;
-use crate::components::WeaponData;
+// use crate::components::WeaponData;
 use crate::ecs::ecs::*;
 
 pub fn sprite_system_draw(world: &mut World, renderer: &mut Renderer) {

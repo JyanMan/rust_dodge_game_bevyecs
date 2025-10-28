@@ -1,5 +1,8 @@
+use bevy_ecs::prelude::*;
 use std::ptr::*;
 use std::any::*;
+
+use crate::components::Sprite;
 
 pub trait AnimationSet {
     fn get(&mut self, name: &str) -> Option<&mut Animation>;
@@ -7,9 +10,10 @@ pub trait AnimationSet {
 
 #[derive(Clone)]
 pub enum AnimData {
-    Integer { value: i32, target: *mut i32 },
-    Float { value: f32, target: *mut f32 },
-    Bool { value: bool, target: *mut bool },
+    //Integer { value: i32, target: *mut i32 },
+    SpriteFrame { value: i32, target: Entity },
+    // Float { value: f32, target: *mut f32 },
+    // Bool { value: bool, target: *mut bool },
 }
 
 #[derive(Clone, Default)]
@@ -59,9 +63,9 @@ impl Animation {
     }
 
     pub fn play(&mut self, delta_time: f32) {
-        if self.play_timer == 0.0 {
-            self.update_frame();
-        }
+        // if self.play_timer == 0.0 {
+        //     self.update_frame(world);
+        // }
 
         self.play_timer += delta_time;
 
@@ -76,14 +80,42 @@ impl Animation {
         }
     }
 
-    fn update_frame(&mut self) {
-        let anim_frame = &self.frames[self.curr_frame];
+    pub fn play_timer(&self) -> f32 {
+        self.play_timer
+    }
+
+    pub fn curr_frame(&self) -> &AnimFrame {
+        &self.frames[self.curr_frame]
+    }
+
+    pub fn update_frame(world: &mut World, anim_frame: &AnimFrame) {
         for anim_data in anim_frame.data.iter() {
             match *anim_data {
-                AnimData::Integer { value, target } => unsafe { *target = value; },
-                AnimData::Float { value, target } => unsafe { *target = value; },
-                AnimData::Bool { value, target } => unsafe { *target = value; },
+                // AnimData::Integer { value, target } => unsafe { *target = value; },
+                AnimData::SpriteFrame { value, target } => {
+                    let mut e = world.entity_mut(target);
+                    let mut sprite = e.get_mut::<Sprite>().expect("entity does not have sprite component");
+                    sprite.frame = value;
+                },
+                // AnimData::Float { value, target } => unsafe { *target = value; },
+                // AnimData::Bool { value, target } => unsafe { *target = value; },
             }
         }
     }
+
+    // fn update_frame(&mut self, world: &mut World) {
+    //     let anim_frame = &self.frames[self.curr_frame];
+    //     for anim_data in anim_frame.data.iter() {
+    //         match *anim_data {
+    //             // AnimData::Integer { value, target } => unsafe { *target = value; },
+    //             AnimData::SpriteFrame { value, target } => {
+    //                 let mut e = world.entity_mut(target);
+    //                 let mut sprite = e.get_mut::<Sprite>().expect("entity does not have sprite component");
+    //                 sprite.frame = value;
+    //             },
+    //             // AnimData::Float { value, target } => unsafe { *target = value; },
+    //             // AnimData::Bool { value, target } => unsafe { *target = value; },
+    //         }
+    //     }
+    // }
 }

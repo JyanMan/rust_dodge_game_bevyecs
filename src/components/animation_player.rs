@@ -2,7 +2,7 @@ use bevy_ecs::prelude::*;
 
 use crate::components::animation::*;
 
-#[derive(Clone, Default)]
+#[derive(Component, Clone, Default)]
 pub struct AnimationPlayer {
     playing: bool,
     curr_anim: usize,
@@ -44,6 +44,10 @@ impl AnimationPlayer {
         if self.playing {
             self.anims[self.curr_anim].play(delta_time);
         }
+    }
+
+    pub fn curr_anim(&self) -> &Animation {
+        &self.anims[self.curr_anim] 
     }
 
     pub fn add_anim(&mut self, index: usize, anim: Animation) {

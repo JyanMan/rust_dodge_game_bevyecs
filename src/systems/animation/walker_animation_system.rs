@@ -1,16 +1,15 @@
+use bevy_ecs::prelude::*;
+
 use crate::components::animation_player::*;
 use crate::components::sprite::*;
 //use crate::components::state_machine::*;
 use crate::components::entity::{ WalkerAnim, WalkerState, WalkerData };
 use crate::components::velocity::*;
-use crate::ecs::ecs::*;
 
-pub fn walker_animation_update(ecs: &mut ECS, _delta_time: f32) {
+pub fn walker_animation_update(mut query: Query<(&Velocity, &mut Sprite, &mut AnimationPlayer, &WalkerData)>) {
     use WalkerState as S;
     use WalkerAnim as A;
-    for (_e, vel, sprite, anim_player, walker_d) 
-        in ecs.query_comp::<(&Velocity, &mut Sprite, &mut AnimationPlayer, &WalkerData)>() 
-    {
+    for (vel, mut sprite, mut anim_player, walker_d) in &mut query {
         if vel.vec.x > 0.0 {
             sprite.flip_x = false;
         }

@@ -12,6 +12,7 @@ use crate::systems::world::*;
 use crate::systems::render::*;
 use crate::systems::physics::*;
 use crate::systems::debug::*;
+use crate::systems::animation::*;
 
 #[allow(dead_code)]
 pub struct Game {
@@ -45,6 +46,8 @@ impl Game {
         self.update_sched.add_systems((
             chunk_system_update,
             player_timer_system,
+            animation_player_update,
+            walker_animation_update,
         ));
         self.fixed_update_sched.add_systems((
             player_movement_system,
