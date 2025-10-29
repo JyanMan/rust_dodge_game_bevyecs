@@ -21,10 +21,10 @@ pub fn walker_animation_update(mut query: Query<(&Velocity, &mut Sprite, &mut An
             S::Idle => anim_player.play(A::Idle.usize()),
             S::Running => anim_player.play(A::Run.usize()),
             S::Aired => {
-                if vel.vec.y <= 0.0 {
+                if vel.vec.y < 0.0 {
                     anim_player.play(A::Rise.usize())
                 }
-                else {
+                else if vel.vec.y > 0.0 {
                     anim_player.play(A::Fall.usize())
                 }
             },
