@@ -7,13 +7,7 @@ use crate::core::renderer::*;
 use crate::systems::world::*;
 use crate::resources::*;
 use crate::components::Vector2;
-use crate::systems::entity::player::*;
-use crate::systems::world::*;
-use crate::systems::render::*;
-use crate::systems::physics::*;
-use crate::systems::debug::*;
-use crate::systems::animation::*;
-use crate::systems::weapon::*;
+use crate::systems::*;
 
 #[allow(dead_code)]
 pub struct Game {
