@@ -2,7 +2,7 @@ use bevy_ecs::prelude::*;
 use std::ptr::*;
 use std::any::*;
 
-use crate::components::Sprite;
+use crate::components::{ Sprite, Vector2, OBB };
 
 pub trait AnimationSet {
     fn get(&mut self, name: &str) -> Option<&mut Animation>;
@@ -12,6 +12,7 @@ pub trait AnimationSet {
 pub enum AnimData {
     //Integer { value: i32, target: *mut i32 },
     SpriteFrame { value: i32, target: Entity },
+    OBBOffset { offset: Vector2, target: Entity }
     // Float { value: f32, target: *mut f32 },
     // Bool { value: bool, target: *mut bool },
 }
@@ -96,6 +97,12 @@ impl Animation {
                     let mut e = world.entity_mut(target);
                     let mut sprite = e.get_mut::<Sprite>().expect("entity does not have sprite component");
                     sprite.frame = value;
+                },
+                AnimData::OBBOffset { offset, target } => {
+                    let mut e = world.entity_mut(target);
+                    let mut obb = e.get_mut::<OBB>().expect("entity does not have sprite component");
+                    obb.offset = offset;
+                    // obb.compute_vertices();
                 },
                 // AnimData::Float { value, target } => unsafe { *target = value; },
                 // AnimData::Bool { value, target } => unsafe { *target = value; },

@@ -10,7 +10,7 @@ use crate::resources::area_manager::*;
 use crate::resources::*;
 
 const GRAVITY_ACCEL: f32 = 15.0;
-const MAX_GRAVITY: f32 = 700.0;
+const MAX_GRAVITY: f32 = 500.0;
 
 pub fn gravity_system(mut query: Query<(&mut Velocity, &GravityAffected)>) {
     for (mut vel, grav_affected) in &mut query {
@@ -68,12 +68,6 @@ pub fn pos_vel_update_system(mut query: Query<(&mut Transform, &Velocity)>, time
     for (mut trans, vel) in &mut query {
         trans.global.x += vel.vec.x * time_step.0;
         trans.global.y += vel.vec.y * time_step.0;
-    }
-}
-
-pub fn area_update_system(mut query: Query<(&Transform, &mut Area)>) {
-    for (trans, mut area) in &mut query {
-        area.update_pos(trans.global.x, trans.global.y);
     }
 }
 

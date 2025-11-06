@@ -19,9 +19,10 @@ pub fn steel_sword_spawn(world: &mut World, renderer: &mut Renderer, entity_owne
         sprite,
         WeaponData::new(1, 10.0, 0.2, WeaponState::Owned, WeaponType::SteelSword), 
         SteelSwordTag::default(),
-        Area::new(0.0, 0.0, 10.0, 10.0),
-        // Owner::new(entity_owner),
+        // Area::new(0.0, 0.0, 10.0, 10.0),
         AnimationPlayer::new(WeaponAnim::COUNT),
+        HeldBy(entity_owner),
+        OBB::new(20.0, 20.0, Vector2::zero())
     )).id();
 
     // init animation
@@ -31,13 +32,18 @@ pub fn steel_sword_spawn(world: &mut World, renderer: &mut Renderer, entity_owne
 
     let mut attack_anim = Animation::new(4, 0.05);
     attack_anim.set_frame(0, AnimData::SpriteFrame { value: 0, target: steel_sword_e});
+    attack_anim.set_frame(0, AnimData::OBBOffset { offset: Vector2::new(0.0, -20.0), target: steel_sword_e});
+
     attack_anim.set_frame(1, AnimData::SpriteFrame { value: 1, target: steel_sword_e});
+    attack_anim.set_frame(1, AnimData::OBBOffset { offset: Vector2::new(20.0, -10.0), target: steel_sword_e});
+
     attack_anim.set_frame(2, AnimData::SpriteFrame { value: 2, target: steel_sword_e});
+    attack_anim.set_frame(2, AnimData::OBBOffset { offset: Vector2::new(20.0, 10.0), target: steel_sword_e});
+
     attack_anim.set_frame(3, AnimData::SpriteFrame { value: 3, target: steel_sword_e});
+    attack_anim.set_frame(3, AnimData::OBBOffset { offset: Vector2::new(0.0, 20.0), target: steel_sword_e});
 
     anim_player.add_anim(WeaponAnim::Attack.usize(), attack_anim);
-
-    steelsword_ref.insert(HeldBy(entity_owner));
 
     steel_sword_e
 }

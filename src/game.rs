@@ -56,6 +56,7 @@ impl Game {
             pos_vel_update_system.after(collision_system),
             transform_update_system.after(pos_vel_update_system),
             area_update_system.after(transform_update_system),
+            obb_update_system.after(transform_update_system),
         ));
         self.input_sched.add_systems(player_system_input);
     }
@@ -98,6 +99,7 @@ impl Game {
     pub fn draw(&mut self, renderer: &mut Renderer) {
         chunk_system_draw(&mut self.world, renderer);
         sprite_system_draw(&mut self.world, renderer);
+        render_all_obb(&mut self.world, renderer);
         // debug_draw_entity_areas(&mut self.world, renderer);
     }
 

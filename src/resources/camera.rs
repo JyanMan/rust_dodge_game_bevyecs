@@ -34,4 +34,7 @@ impl Camera {
     pub fn get_pos(&self) -> Vector2 {
         self.pos
     }
+    pub fn get_scale(&self) -> f32 {
+        self.scale
+    }
 }

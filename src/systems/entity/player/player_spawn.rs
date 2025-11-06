@@ -25,9 +25,9 @@ pub fn player_spawn(world: &mut World, renderer: &mut Renderer) -> Entity {
          PlayerTag {},
          PlayerInput::default(),
          WalkerData {
-             run_speed: 200.0,
-             accel: 50.0,
-             jump_force: 300.0,
+             run_speed: 150.0,
+             accel: 30.0,
+             jump_force: 250.0,
              grounded: false,
              state: WalkerState::default()
          },

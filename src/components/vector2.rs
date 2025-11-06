@@ -27,6 +27,10 @@ impl Vector2 {
             y: self.y / len
         }
     }
+
+    pub fn dot(&self, other: Vector2) -> f32 {
+        self.x * other.x + self.y * other.y
+    }
 }
 
 // Arithmetic
