@@ -13,6 +13,7 @@ pub mod vector2;
 pub mod velocity;
 pub mod visible;
 pub mod weapon;
+pub mod quad;
 
 pub use animation::*;
 pub use animation_player::*;
@@ -28,4 +29,6 @@ pub use vector2::*;
 pub use velocity::*;
 pub use visible::*;
 pub use weapon::*;
+pub use quad::*;
+
 

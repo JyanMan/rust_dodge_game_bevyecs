@@ -47,12 +47,4 @@ impl AreaManager {
             area.draw(renderer);
         }
     }
-
-    // pub fn insert_tile_area(&mut self, tile_pos: &Point, area: Area) {
-    //     self.tile_areas.insert(tile_pos.clone(), area);
-    // }
-
-    // pub fn remove_tile_area(&mut self, tile_pos: &Point) {
-    //     self.tile_areas.remove(tile_pos);
-    // }
 }

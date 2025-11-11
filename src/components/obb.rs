@@ -1,6 +1,7 @@
 use bevy_ecs::prelude::*;
 use std::vec::*;
 use sdl2::rect::*;
+use sdl2::pixels::Color;
 
 use crate::components::*;
 use crate::core::Renderer;
@@ -118,6 +119,7 @@ impl OBB {
                 * cam_scale;
             let b = (self.vertices[i] - cam_pos)
                 * cam_scale;
+            renderer.canvas.set_draw_color(Color::RGB(255, 0, 0));
             let _ = renderer.canvas.draw_line(
                 Point::new(a.x.round() as i32, a.y.round() as i32), 
                 Point::new(b.x.round() as i32, b.y.round() as i32)

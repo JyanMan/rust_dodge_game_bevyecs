@@ -23,6 +23,11 @@ impl <'a> Renderer <'a> {
         }
     }
 
+    pub fn get_camera_adjusted_pos(&self, pos: Vector2) -> Vector2 {
+        let cam_scale = self.camera.scale;
+        (pos - self.camera.get_pos()) * cam_scale
+    }
+
     pub fn draw(&mut self, sprite: &Sprite, pos: &Vector2, scale: f32) {
         let cam_scale = self.camera.scale;
         sprite.draw(self, &pos, scale * cam_scale);

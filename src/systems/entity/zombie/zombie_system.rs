@@ -4,6 +4,7 @@ use crate::core::renderer::*;
 use crate::components::*;
 // use crate::ecs::ecs::*;
 use crate::resources::*;
+use crate::math_helper::*;
 
 // pub fn zombie_init(world: &mut World, renderer: &mut Renderer) {
 //     let mut rng = rand::thread_rng(); 
@@ -35,7 +36,8 @@ pub fn zombie_spawn(world: &mut World, renderer: &mut Renderer, speed: f32) {
             state: WalkerState::default(),
         },
         AnimationPlayer::new(WalkerAnim::COUNT),
-        EnemyData { chase_range: 200.0, attack_range: 20.0}
+        EnemyData { chase_range: 200.0, attack_range: 20.0},
+        CellPos(Point::default()),
         // StateMachine::default(),
     )).id();
 

@@ -19,6 +19,7 @@ pub struct Point {
 }
 
 impl Point {
+    pub fn zero() -> Self { Point { x: 0, y: 0 } }
     pub fn new(x: i32, y: i32) -> Self {
         Self {
             x: x, y: y

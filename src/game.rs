@@ -21,7 +21,9 @@ pub struct Game {
 #[allow(dead_code, unused)]
 impl Game {
     fn register_resources(&mut self, renderer: &mut Renderer) {
-        let chunk_m = ChunkManager::new(Vector2::new(0.0, 0.0), &renderer.asset_m, 3);
+        let render_distance: i32 = 3;
+
+        let chunk_m = ChunkManager::new(Vector2::new(0.0, 0.0), &renderer.asset_m, render_distance);
         self.world.insert_resource(chunk_m);
 
         let area_m = AreaManager::new();
@@ -38,11 +40,15 @@ impl Game {
 
         let mouse_input = MouseInput::default();
         self.world.insert_resource(mouse_input);
+
+        let e_quad_map = EntityQuadMap::new(Vector2::new(0.0, 0.0), render_distance);
+        self.world.insert_resource(e_quad_map);
     }
 
     fn register_systems(&mut self, renderer: &mut Renderer) {
         self.update_sched.add_systems((
             chunk_system_update,
+            quad_generation_system,
             player_timer_system,
             animation_player_update,
             walker_animation_update,
@@ -58,6 +64,7 @@ impl Game {
             transform_update_system.after(pos_vel_update_system),
             area_update_system.after(transform_update_system),
             obb_update_system.after(transform_update_system),
+            update_entity_quad_system.after(transform_update_system),
         ));
         self.input_sched.add_systems(player_system_input);
     }
@@ -103,6 +110,7 @@ impl Game {
         chunk_system_draw(&mut self.world, renderer);
         sprite_system_draw(&mut self.world, renderer);
         render_all_obb(&mut self.world, renderer);
+        render_occupied_quad(&mut self.world, renderer);
         // debug_draw_entity_areas(&mut self.world, renderer);
     }
 

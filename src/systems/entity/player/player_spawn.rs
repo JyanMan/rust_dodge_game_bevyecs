@@ -4,6 +4,7 @@ use crate::components::entity::{ WalkerData, WalkerState };
 use crate::components::*;
 use crate::resources::asset_manager::*;
 use crate::components::entity::*;
+use crate::math_helper::*;
 use super::player_animation_init;
 
 pub fn player_spawn(world: &mut World, renderer: &mut Renderer) -> Entity {
@@ -33,6 +34,7 @@ pub fn player_spawn(world: &mut World, renderer: &mut Renderer) -> Entity {
          AnimationPlayer::new(WalkerAnim::COUNT),
          GravityAffected(true),
          Combat::new(2.0),
+         CellPos(Point::default()),
     )).id();
 
     let mut player_ref_mut = world.entity_mut(player_e);

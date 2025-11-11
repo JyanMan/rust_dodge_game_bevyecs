@@ -6,6 +6,7 @@ pub mod area_manager;
 pub mod tile;
 pub mod mouse_input;
 pub mod register_resources;
+pub mod entity_quad_map;
 
 pub use camera::*;
 pub use chunk::*;
@@ -14,6 +15,7 @@ pub use asset_manager::*;
 pub use area_manager::*;
 pub use tile::*;
 pub use mouse_input::*;
+pub use entity_quad_map::*;
 
 use bevy_ecs::prelude::*;
 use std::collections::HashSet;

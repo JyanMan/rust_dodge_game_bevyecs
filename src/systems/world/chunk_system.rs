@@ -16,7 +16,11 @@ use crate::resources::area_manager::*;
 //     ));
 // }
 
-pub fn chunk_system_update(mut chunk_m: ResMut<ChunkManager>, mut area_m: ResMut<AreaManager>, query: Query<&Transform, With<PlayerTag>>){
+pub fn chunk_system_update(
+    mut chunk_m: ResMut<ChunkManager>, 
+    mut area_m: ResMut<AreaManager>, 
+    query: Query<&Transform, With<PlayerTag>>
+){
     for transform in &query {
         chunk_m.generate(&transform.global, &mut area_m);
     }
