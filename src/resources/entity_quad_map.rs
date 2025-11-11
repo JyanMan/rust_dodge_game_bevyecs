@@ -107,6 +107,7 @@ impl EntityQuadMap {
                     // println!("aream size: {}", area_m.tile_areas.len());
                     // chunk.set(c_world_pos, area_m);
                     chunk.pos = c_chunk_pos;
+                    chunk.entities.clear();
                 }
             }
         }
