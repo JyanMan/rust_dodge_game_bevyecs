@@ -8,8 +8,9 @@ use crate::core::Renderer;
 
 const PI: f32 = 3.141592;
 
-/* WARNING: changing pub atts require that you call compute_vertices to apply */
+/* WARNING: changing atts require that you call compute_vertices to apply check fn inside first */
 #[derive(Component)]
+#[component(storage = "Table")]
 pub struct OBB {
     pub center: Vector2,
     pub offset: Vector2,

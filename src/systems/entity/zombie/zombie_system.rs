@@ -6,12 +6,12 @@ use crate::components::*;
 use crate::resources::*;
 use crate::math_helper::*;
 
-// pub fn zombie_init(world: &mut World, renderer: &mut Renderer) {
-//     let mut rng = rand::thread_rng(); 
-//     for _ in 0..0 {
-//         zombie_spawn(world, renderer, rng.gen_range(30..80) as f32);
-//     }
-// }
+pub fn zombie_init(world: &mut World, renderer: &mut Renderer) {
+    let mut rng = rand::thread_rng(); 
+    for _ in 0..1500 {
+        zombie_spawn(world, renderer, rng.gen_range(30..80) as f32);
+    }
+}
 
 pub fn zombie_spawn(world: &mut World, renderer: &mut Renderer, speed: f32) {
     let mut sprite = Sprite::new(&renderer.asset_m, TextureId::Zombie);

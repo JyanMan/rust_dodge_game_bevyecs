@@ -5,13 +5,11 @@ pub mod combat;
 pub mod entity;
 pub mod gravity_affected;
 pub mod register_components;
-pub mod rigidbody;
 pub mod obb;
 pub mod sprite;
 pub mod transform;
 pub mod vector2;
 pub mod velocity;
-pub mod visible;
 pub mod weapon;
 pub mod quad;
 
@@ -21,13 +19,11 @@ pub use area::*;
 pub use combat::*;
 pub use entity::*;
 pub use gravity_affected::*;
-pub use rigidbody::*;
 pub use obb::*;
 pub use sprite::*;
 pub use transform::*;
 pub use vector2::*;
 pub use velocity::*;
-pub use visible::*;
 pub use weapon::*;
 pub use quad::*;
 

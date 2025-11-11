@@ -24,7 +24,7 @@ pub fn main() {
     let timer_subsystem = sdl_context.timer().unwrap();
 
     let window = video_subsystem.window("rust-sdl2 demo", 800, 600)
-        .opengl()
+        // .opengl()
         .position_centered()
         .build()
         .unwrap();
@@ -56,23 +56,22 @@ pub fn main() {
     let mut curr_time;
 
     'running: loop {
-        renderer.canvas.set_draw_color(Color::RGB(100, 100, 100));
-        renderer.canvas.clear();
 
         curr_time = timer_subsystem.performance_counter() as f32;
         delta_time = (curr_time - last_time) / timer_subsystem.performance_frequency() as f32;
-        last_time = timer_subsystem.performance_counter() as f32;
+        last_time = curr_time;
         
-        dt_accumulator += delta_time;
-        while dt_accumulator >= time_step {
-            dt_accumulator -= delta_time;
-            game.fixed_update(time_step);
-        }
-
         let state = game.input(&mut event_pump);
         if !state {
             break 'running;
         }
+        dt_accumulator += delta_time;
+        while dt_accumulator >= time_step {
+            dt_accumulator -= time_step;
+            game.fixed_update(time_step);
+        }
+        renderer.canvas.set_draw_color(Color::RGB(100, 100, 100));
+        renderer.canvas.clear();
         renderer.alpha = dt_accumulator / time_step;
         game.update(delta_time, &mut renderer);
         game.draw(&mut renderer);

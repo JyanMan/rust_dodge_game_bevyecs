@@ -111,6 +111,14 @@ impl Mul<f32> for Vector2 {
         Vector2 { x: self.x * scalar, y: self.y * scalar }
     }
 }
+
+impl Mul<f32> for &Vector2 {
+    type Output = Vector2;
+    fn mul(self, scalar: f32) -> Vector2 {
+        Vector2 { x: &self.x * scalar, y: &self.y * scalar }
+    }
+}
+
 impl Div<f32> for Vector2 {
     type Output = Vector2;
     fn div(self, scalar: f32) -> Vector2 {

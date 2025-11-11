@@ -27,6 +27,7 @@ pub struct EntityQuadMap {
 }
 
 impl EntityQuadMap {
+    /* COPY PASTAD FROM CHUNKMANAGER */
     pub fn new(world_pos: Vector2, h_render_dist: i32) -> Self {
 
         // notice mul by 2, the h_render_dist is only for one side
@@ -48,7 +49,7 @@ impl EntityQuadMap {
             cells_map: cells_map,
             // init values of cells within array
             cells_arr: cells_arr,             
-            center: world_to_chunk(&world_pos),
+            center: world_to_cell(&world_pos),
             new_cell_points: new_cell_points,
         };
 
@@ -57,9 +58,10 @@ impl EntityQuadMap {
         eqm
     }
 
+    /* COPY PASTAD FROM CHUNKMANAGER */
     pub fn generate(&mut self, world_pos: &Vector2) {
 
-        self.center = world_to_chunk(world_pos);
+        self.center = world_to_cell(world_pos);
 
         // new chunk points to save unrendered new chunk positions
         self.new_cell_points.clear();
@@ -101,10 +103,7 @@ impl EntityQuadMap {
                     self.cells_map.remove(&chunk.pos);
                     self.cells_map.insert(c_chunk_pos.clone(), index);
 
-                    /* set new value based on pos
-                    *  note that once you set, the chunk automatically changes its tile frames based
-                    *  on that pos, no need of new tile alloc RECYCLING */
-                    let c_world_pos = chunk_to_world(&c_chunk_pos);
+                    let c_world_pos = cell_to_world(&c_chunk_pos);
                     // println!("aream size: {}", area_m.tile_areas.len());
                     // chunk.set(c_world_pos, area_m);
                     chunk.pos = c_chunk_pos;
@@ -124,7 +123,7 @@ impl EntityQuadMap {
     }
 
     pub fn update_entity_cell(&mut self, e: Entity, trans: Transform, prev_cell_pos: &mut CellPos) {
-        let curr_cell_pos = world_to_chunk(&trans.global); 
+        let curr_cell_pos = world_to_cell(&trans.global); 
 
         if prev_cell_pos.0 != curr_cell_pos {
             if let Some(index) = self.cells_map.get_mut(&prev_cell_pos.0) {
@@ -151,14 +150,14 @@ impl EntityQuadMap {
             if cell.entities.len() == 0 {
                 continue;
             }
-            let world_pos = chunk_to_world(&point);
+            let world_pos = cell_to_world(&point);
             let cam_adjusted_pos = renderer.get_camera_adjusted_pos(world_pos);
             let cam_scale = renderer.camera.scale.round() as i32;
             let cell_rect = Rect::new(
                 cam_adjusted_pos.x.round() as i32, 
                 cam_adjusted_pos.y.round() as i32, 
-                (CHUNK_SIZE * TILE_SIZE * cam_scale) as u32, 
-                (CHUNK_SIZE * TILE_SIZE * cam_scale) as u32, 
+                (CELL_SIZE * cam_scale) as u32, 
+                (CELL_SIZE * cam_scale) as u32, 
             );
             renderer.canvas.set_draw_color(Color::RGB(255, 0, 0));
             let _ = renderer.canvas.draw_rect(cell_rect);

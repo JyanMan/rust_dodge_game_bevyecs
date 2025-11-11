@@ -85,7 +85,8 @@ impl Game {
         let player_e = player_spawn(&mut game.world, renderer);
         steel_sword_spawn(&mut game.world, renderer, player_e);
 
-        zombie_spawn(&mut game.world, renderer, 50.0);
+        zombie_init(&mut game.world, renderer);
+        // zombie_spawn(&mut game.world, renderer, 50.0);
 
         game
     }   

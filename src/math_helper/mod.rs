@@ -48,6 +48,20 @@ impl ops::Mul<f32> for Point {
         }
     }
 }
+#[inline(always)]
+pub fn world_to_cell(world_pos: &Vector2) -> Point {
+    return Point {
+        x: (world_pos.x / (CELL_SIZE as f32)).floor() as i32,
+        y: (world_pos.y / (CELL_SIZE as f32)).floor() as i32
+    };
+}
+#[inline(always)]
+pub fn cell_to_world(chunk_pos: &Point) -> Vector2 {
+    return Vector2 {
+        x: (chunk_pos.x * CELL_SIZE) as f32,
+        y: (chunk_pos.y * CELL_SIZE) as f32,
+    };
+}
 
 #[inline(always)]
 pub fn world_to_chunk(world_pos: &Vector2) -> Point {

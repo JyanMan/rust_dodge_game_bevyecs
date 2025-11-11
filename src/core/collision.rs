@@ -135,7 +135,7 @@ fn aabb_resolve(
     axis_motion: &Vector2, 
     motion: &Vector2, 
     grounded: &mut bool, 
-    area_m: &mut AreaManager
+    area_m: &AreaManager
 ) {
 
     let mut earliest_ct: f32 = 1.0;
@@ -166,8 +166,8 @@ fn aabb_resolve(
     let max_tile = world_to_tile(&Vector2::new(swept.x + swept.w, swept.y + swept.h));
 
     // two is buffer, meaning buffer by two tiles on all dimensions
-    for y in min_tile.y-2..max_tile.y+2 {
-        for x in min_tile.x-2..max_tile.x+2 {
+    for y in min_tile.y..max_tile.y+2 {
+        for x in min_tile.x..max_tile.x+2 {
             let tile_pos = Point::new(x, y);
 
             let tile_area = if let Some(t_area) = area_m.get_tile_area(&tile_pos) {
@@ -241,10 +241,10 @@ fn aabb_resolve(
 pub fn area_colliding_to_tile(
     entity_area: &mut Area,
     entity_pos: &mut Vector2,
-    vel: &mut Vector2, grounded: &mut bool, area_m: &mut AreaManager, time_step: f32
+    vel: &mut Vector2, grounded: &mut bool, area_m: &AreaManager, time_step: f32
 ) {
     *grounded = false;
-    let mut e_motion = vel.clone() * time_step;
+    let mut e_motion = *vel * time_step;
 
     let mut y_motion = Vector2::new(0.0, e_motion.y);
     aabb_resolve(entity_area, entity_pos, vel, &mut y_motion, &mut e_motion, grounded, area_m);

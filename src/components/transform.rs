@@ -3,6 +3,7 @@ use super::Vector2;
 use bevy_ecs::prelude::*;
 
 #[derive(Component, Debug, Copy, Clone, Default, PartialEq)]
+#[component(storage = "Table")]
 pub struct Transform {
     pub global: Vector2,
     pub local: Vector2,

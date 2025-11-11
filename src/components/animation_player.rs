@@ -3,6 +3,7 @@ use bevy_ecs::prelude::*;
 use crate::components::animation::*;
 
 #[derive(Component, Clone, Default)]
+#[component(storage = "Table")]
 pub struct AnimationPlayer {
     playing: bool,
     curr_anim: usize,

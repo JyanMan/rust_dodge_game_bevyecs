@@ -2,6 +2,7 @@ use bevy_ecs::prelude::*;
 use crate::components::*;
 use crate::resources::*;
 
+/* PHYSICS */
 pub fn update_entity_quad_system(
     mut e_quad_map: ResMut<EntityQuadMap>,
     mut query:  Query<(Entity, &mut CellPos, &Transform)>
