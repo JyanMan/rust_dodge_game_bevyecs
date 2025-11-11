@@ -130,6 +130,7 @@ impl OBB {
         let mut rot = self.rotation;
         let mut temp_offset = self.offset;
 
+        // if rotated towards left, mirror the heck out of it
         if self.rotation > ninety_deg || self.rotation < -ninety_deg {
             rot -= PI;
             temp_offset.x = -temp_offset.x;
@@ -138,75 +139,4 @@ impl OBB {
         let new_offset = temp_offset.rotate_around(center, rot);
         self.offset = new_offset;
     }
-
-// for (int i = 0; i < it->count; i++) {
-
-//     ecs_entity_t parent_e = ecs_get_target(it->world, it->entities[i], EcsChildOf, 0);
-
-//     if (parent_e) {
-//         if (!ecs_is_alive(it->world, parent_e)) {
-//             continue;
-//         }
-//         // follow owner pos
-//         const Position *owner_pos = ecs_get(it->world, parent_e, Position);
-//         pos[i].global = vector2_sum(owner_pos->global, pos[i].local);
-
-//         float ninety_deg = PI / 2.0f;
-//         float rotation = obb[i].rotation;
-//         Vector2 temp_offset = obb[i].offset;
-
-//         // if rotated towards left, mirror the heck out of it
-//         if (obb[i].rotation > ninety_deg || obb[i].rotation < -ninety_deg) {
-//             rotation -= (float)PI;
-//             temp_offset.x = -temp_offset.x;
-//         }
-//         // rotate around its center based on offset
-//         Vector2 new_offset = v2_rotate_around(temp_offset, (Vector2){0}, rotation);
-//         obb[i].center = vector2_sum(pos[i].global, new_offset);
-//     }
-//     else {
-//         obb[i].center = vector2_sum(pos[i].global, obb->offset);
-//     }
-//     compute_obb_vertices(&obb[i]);
-//     // rotate around it's parent if it has one
-// }
 }
-
-// void area_manager_draw_obb(AreaManager* am, SDL_Renderer* renderer, OBB* area, const Camera *camera) 
-// {
-//     float cam_scale = camera->scale;
-//     float cam_x = camera->pos.x;
-//     float cam_y = camera->pos.y;
-//     // pos.x -= sm->camera->position.x * cam_scale;
-//     // pos.y -= sm->camera->position.y * cam_scale;
-//     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-//     for (int i = 0; i < 4; i++) {
-//         Vector2 a = vector2_sub(area->vertices[(i+1) % 4], camera->pos);
-//         a = vector2_scale(a, cam_scale);
-// 
-//         Vector2 b = vector2_sub(area->vertices[i], camera->pos);
-//         b = vector2_scale(b, cam_scale);
-// 
-//         SDL_RenderDrawLine(renderer, f_roundtoint(a.x), f_roundtoint(a.y), f_roundtoint(b.x), f_roundtoint(b.y));
-//     }
-// }
-
-
-
-// bool obb_colliding_with_rect(OBB a, Float_Rect b)
-// {
-//     OBB rect_to_obb = {
-//         .vertices = { 
-//             (Vector2) { b.x, b.y},
-//             (Vector2) { b.x, b.y + b.h },
-//             (Vector2) { b.x + b.w, b.y + b.h },
-//             (Vector2) { b.x + b.w, b.y},
-//         },
-//         .rotation = 0,
-//         .width = b.w,
-//         .height = b.h,
-//         .center = (Vector2){b.x + b.w / 2, b.y + b.h / 2}
-//     };
-//     return obb_colliding(a, rect_to_obb);
-// }
-// 

@@ -14,3 +14,7 @@ pub fn obb_update_system(mut query: Query<(&Transform, &mut OBB)>) {
     }
 }
 
+pub fn obb_collision_system() {
+
+}
+
