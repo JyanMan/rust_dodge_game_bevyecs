@@ -13,7 +13,7 @@ pub fn lerp_pos(a: &Vector2, b: &Vector2, t: f32) -> Vector2 {
     }
 }
 
-#[derive(Clone, Hash, PartialEq, Eq, Default)]
+#[derive(Copy, Clone, Hash, PartialEq, Eq, Default)]
 pub struct Point {
     pub x: i32, pub y: i32
 }

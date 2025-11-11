@@ -19,7 +19,7 @@ pub enum TileType {
     Air = 5,
 }
 
-#[derive(Clone, Default)]
+#[derive(Copy, Clone, Default)]
 pub struct Tile {
     tile_pos: Point,
     world_pos: Vector2,

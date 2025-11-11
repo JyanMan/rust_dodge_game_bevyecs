@@ -7,11 +7,12 @@ use crate::resources::tile::*;
 use crate::resources::area_manager::*;
 use fastnoise_lite::*;
 
-#[derive(Default)]
+// #[derive(Default)]
 pub struct Chunk {
     world_pos: Vector2,
     pub chunk_pos: Point,
-    tiles_arr: Vec<Tile>,
+    // tiles_arr: Vec<Tile>,
+    tiles_arr: [Tile; (CHUNK_SIZE * CHUNK_SIZE) as usize],
     max_height: i32,
     min_y: i32,
     pub is_active: bool,
@@ -46,9 +47,9 @@ impl Clone for Chunk {
 impl Chunk {
     pub fn new(world_pos: Vector2) -> Chunk {
         // init tiles_array all empty
-        let tiles_arr: Vec<Tile> = std::iter::repeat_with(|| Tile::new()).
-            take((CHUNK_SIZE * CHUNK_SIZE) as usize).
-            collect();
+        // let tiles_arr: Vec<Tile> = std::iter::repeat_with(|| Tile::new()).
+        //     take((CHUNK_SIZE * CHUNK_SIZE) as usize).
+        //     collect();
 
         let max_height = 200;
         let min_y = -(max_height / 2);
@@ -56,7 +57,7 @@ impl Chunk {
         let chunk = Chunk {
             chunk_pos: world_to_chunk(&world_pos),
             world_pos: world_pos,
-            tiles_arr: tiles_arr,
+            tiles_arr: [Tile::new(); (CHUNK_SIZE * CHUNK_SIZE) as usize],
             min_y: min_y,
             max_height: max_height,
             is_active: true,
