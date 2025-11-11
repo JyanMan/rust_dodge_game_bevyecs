@@ -15,7 +15,6 @@ pub fn player_spawn(world: &mut World, renderer: &mut Renderer) -> Entity {
     );
     area.offset = Vector2::new(0.0, 6.0);
 
-
     let player_e = world.spawn((
          sprite,
          Transform::new(10.0, -1000.0),
@@ -25,7 +24,7 @@ pub fn player_spawn(world: &mut World, renderer: &mut Renderer) -> Entity {
          PlayerTag {},
          PlayerInput::default(),
          WalkerData {
-             run_speed: 150.0,
+             run_speed: 120.0,
              accel: 30.0,
              jump_force: 250.0,
              grounded: false,
@@ -33,7 +32,7 @@ pub fn player_spawn(world: &mut World, renderer: &mut Renderer) -> Entity {
          },
          AnimationPlayer::new(WalkerAnim::COUNT),
          GravityAffected(true),
-         Combat::default(),
+         Combat::new(2.0),
     )).id();
 
     let mut player_ref_mut = world.entity_mut(player_e);

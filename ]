@@ -33,12 +33,11 @@ impl Vector2 {
     }
     
     pub fn rotate_around(&self, center: Vector2, angle_rad: f32) -> Vector2 {
+        let s = angle_rad.sin();
+        let c = angle_rad.cos();
 
         let x = self.x - center.x;
         let y = self.y - center.y;
-
-        let s = angle_rad.sin();
-        let c = angle_rad.cos();
 
         let x_rot = x * c - y * s;
         let y_rot = x * s + y * c;

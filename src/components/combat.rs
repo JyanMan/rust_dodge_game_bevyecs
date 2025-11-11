@@ -4,4 +4,15 @@ use bevy_ecs::prelude::*;
 pub struct Combat {
     pub attacking: bool,
     pub can_attack: bool,
+    damage: f32,
+}
+
+impl Combat {
+    pub fn new(damage: f32) -> Self {
+        Self {
+            attacking: false,
+            can_attack: true,
+            damage,
+        }
+    }
 }

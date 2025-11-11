@@ -51,6 +51,7 @@ impl Game {
         ));
         self.fixed_update_sched.add_systems((
             player_movement_system,
+            zombie_movement_system,
             gravity_system.after(player_movement_system),
             collision_system.after(gravity_system),
             pos_vel_update_system.after(collision_system),
@@ -76,6 +77,8 @@ impl Game {
 
         let player_e = player_spawn(&mut game.world, renderer);
         steel_sword_spawn(&mut game.world, renderer, player_e);
+
+        zombie_spawn(&mut game.world, renderer, 50.0);
 
         game
     }   

@@ -33,15 +33,19 @@ pub fn steel_sword_spawn(world: &mut World, renderer: &mut Renderer, entity_owne
     let mut attack_anim = Animation::new(4, 0.05);
     attack_anim.set_frame(0, AnimData::SpriteFrame { value: 0, target: steel_sword_e});
     attack_anim.set_frame(0, AnimData::OBBOffset { offset: Vector2::new(0.0, -20.0), target: steel_sword_e});
+    attack_anim.set_frame(0, AnimData::OBBUpdate { target: steel_sword_e });
 
     attack_anim.set_frame(1, AnimData::SpriteFrame { value: 1, target: steel_sword_e});
     attack_anim.set_frame(1, AnimData::OBBOffset { offset: Vector2::new(20.0, -10.0), target: steel_sword_e});
+    attack_anim.set_frame(1, AnimData::OBBUpdate { target: steel_sword_e });
 
     attack_anim.set_frame(2, AnimData::SpriteFrame { value: 2, target: steel_sword_e});
     attack_anim.set_frame(2, AnimData::OBBOffset { offset: Vector2::new(20.0, 10.0), target: steel_sword_e});
+    attack_anim.set_frame(2, AnimData::OBBUpdate { target: steel_sword_e });
 
     attack_anim.set_frame(3, AnimData::SpriteFrame { value: 3, target: steel_sword_e});
     attack_anim.set_frame(3, AnimData::OBBOffset { offset: Vector2::new(0.0, 20.0), target: steel_sword_e});
+    attack_anim.set_frame(3, AnimData::OBBUpdate { target: steel_sword_e });
 
     anim_player.add_anim(WeaponAnim::Attack.usize(), attack_anim);
 
@@ -64,8 +68,30 @@ pub fn steel_sword_animation(sprite: &mut Sprite, trans: &mut Transform, attack_
     // adjust sprite angle
     sprite.angle = angle_deg;
 
-    trans.local = attack_dir * 10.0;
+    let attack_range: f32 = 10.0;
+    trans.local = attack_dir * attack_range;
 }
+
+pub fn steel_sword_per_frame_update(world: &mut World, entity: Entity) {
+    let mut e = world.entity_mut(entity);
+    let weapon_d = e.get::<WeaponData>().unwrap();
+    let attack_dir = weapon_d.attack_dir;
+
+    let mut obb = e.get_mut::<OBB>().unwrap();
+    let angle_to_mouse = attack_dir.y.atan2(attack_dir.x);
+
+    obb.rotation = angle_to_mouse;
+    obb.rotate_around(Vector2::zero());
+    obb.compute_vertices();
+}
+
+
+// void steelsword_set_local_pos_to_attack_dir(Position *steelsword_pos, OBB *steelsword_obb, Vector2 mouse_dir) {
+//     float attack_range = 10.0f;
+//     steelsword_pos->local = vector2_scale(mouse_dir, attack_range);
+//     float mouse_dir_rad = atan2(mouse_dir.y, mouse_dir.x);
+//     obb_set_rotation(steelsword_obb, (float)mouse_dir_rad);
+// }
 
 pub fn steel_sword_start_attack_effect(user_vel: &mut Velocity, attack_dir: Vector2, grav_affected: &mut GravityAffected) {
     user_vel.vec = attack_dir * 1000.0;

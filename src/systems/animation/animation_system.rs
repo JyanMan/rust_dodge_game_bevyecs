@@ -4,11 +4,14 @@ use crate::components::animation_player::*;
 use crate::resources::DeltaTime;
 use crate::components::animation::*;
 
-pub fn animation_player_update(mut query: Query<(Entity, &mut AnimationPlayer)>, delta_time: Res<DeltaTime>, mut commands: Commands) {
+pub fn animation_player_update(mut query: Query<(&mut AnimationPlayer)>, delta_time: Res<DeltaTime>, mut commands: Commands) {
     /* bevy disallows the use of mutable world twice... so you separate the update_frame and timer
      * update of animation*/
     let mut anim_frames: Vec<AnimFrame> = Vec::new();
-    for (_e, mut anim_player) in &mut query {
+    for mut anim_player in &mut query {
+        if !anim_player.is_playing() {
+            continue;
+        }
         let curr_anim = anim_player.curr_anim();
         /* only call update frame when timer is reset */
         if curr_anim.play_timer() == 0.0 {

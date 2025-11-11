@@ -5,6 +5,8 @@ use sdl2::rect::*;
 use crate::components::*;
 use crate::core::Renderer;
 
+const PI: f32 = 3.141592;
+
 /* WARNING: changing pub atts require that you call compute_vertices to apply */
 #[derive(Component)]
 pub struct OBB {
@@ -122,6 +124,52 @@ impl OBB {
             );
         }
     }
+
+    pub fn rotate_around(&mut self, center: Vector2) {
+        let ninety_deg = PI / 2.0;
+        let mut rot = self.rotation;
+        let mut temp_offset = self.offset;
+
+        if self.rotation > ninety_deg || self.rotation < -ninety_deg {
+            rot -= PI;
+            temp_offset.x = -temp_offset.x;
+        }
+
+        let new_offset = temp_offset.rotate_around(center, rot);
+        self.offset = new_offset;
+    }
+
+// for (int i = 0; i < it->count; i++) {
+
+//     ecs_entity_t parent_e = ecs_get_target(it->world, it->entities[i], EcsChildOf, 0);
+
+//     if (parent_e) {
+//         if (!ecs_is_alive(it->world, parent_e)) {
+//             continue;
+//         }
+//         // follow owner pos
+//         const Position *owner_pos = ecs_get(it->world, parent_e, Position);
+//         pos[i].global = vector2_sum(owner_pos->global, pos[i].local);
+
+//         float ninety_deg = PI / 2.0f;
+//         float rotation = obb[i].rotation;
+//         Vector2 temp_offset = obb[i].offset;
+
+//         // if rotated towards left, mirror the heck out of it
+//         if (obb[i].rotation > ninety_deg || obb[i].rotation < -ninety_deg) {
+//             rotation -= (float)PI;
+//             temp_offset.x = -temp_offset.x;
+//         }
+//         // rotate around its center based on offset
+//         Vector2 new_offset = v2_rotate_around(temp_offset, (Vector2){0}, rotation);
+//         obb[i].center = vector2_sum(pos[i].global, new_offset);
+//     }
+//     else {
+//         obb[i].center = vector2_sum(pos[i].global, obb->offset);
+//     }
+//     compute_obb_vertices(&obb[i]);
+//     // rotate around it's parent if it has one
+// }
 }
 
 // void area_manager_draw_obb(AreaManager* am, SDL_Renderer* renderer, OBB* area, const Camera *camera) 

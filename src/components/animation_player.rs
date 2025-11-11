@@ -55,4 +55,8 @@ impl AnimationPlayer {
 
         self.anims[index] = anim;
     }
+
+    pub fn is_playing(&self) -> bool {
+        self.playing
+    }
 }
