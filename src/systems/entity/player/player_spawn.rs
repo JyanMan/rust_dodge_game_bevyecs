@@ -21,6 +21,7 @@ pub fn player_spawn(world: &mut World, renderer: &mut Renderer) -> Entity {
          Transform::new(10.0, -1000.0),
          Velocity::new(0.0, 0.0),
          area,
+         OBB::new(10.0, 20.0, Vector2::new(10.0, -1000.0)),
          PlayerData::default(),
          PlayerTag {},
          PlayerInput::default(),

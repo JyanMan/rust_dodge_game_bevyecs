@@ -5,10 +5,10 @@ use crate::resources::*;
 /* PHYSICS */
 pub fn update_entity_quad_system(
     mut e_quad_map: ResMut<EntityQuadMap>,
-    mut query:  Query<(Entity, &mut CellPos, &Transform)>
+    mut query:  Query<(Entity, &mut CellPos, &Transform, &OBB)>
 ) {
-    for (e, mut cell_pos, trans) in &mut query {
-        e_quad_map.update_entity_cell(e, *trans, &mut cell_pos);
+    for (e, mut cell_pos, trans, obb) in &mut query {
+        e_quad_map.update_entity_cell(e, *trans, &mut cell_pos, obb);
     }
 }
 

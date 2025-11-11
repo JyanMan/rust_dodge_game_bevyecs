@@ -39,6 +39,8 @@ impl OBB {
         obb
     }
 
+    pub fn get_vertices(&self) -> &Vec<Vector2> { &self.vertices }
+
     pub fn compute_vertices(&mut self) {
         let c = self.rotation.cos();
         let s = self.rotation.sin();
@@ -100,7 +102,7 @@ impl OBB {
         self.compute_vertices();
     }
 
-    fn project_to_axis(axis: Vector2, vertices: &Vec<Vector2>, num_vertices: i32, min: &mut f32, max: &mut f32) {
+    pub fn project_to_axis(axis: Vector2, vertices: &Vec<Vector2>, num_vertices: i32, min: &mut f32, max: &mut f32) {
         *max = axis.dot(vertices[0]);
         *min = *max;
 

@@ -16,6 +16,21 @@ pub struct Cell {
     is_active: bool,
 }
 
+impl Cell {
+    pub fn contains_pos(&self, p: &Vector2) -> bool {
+        let world_pos = cell_to_world(&self.pos);
+
+        let min_x = world_pos.x;
+        let min_y = world_pos.y;
+
+        let max_x = world_pos.x + CELL_SIZE as f32;
+        let max_y = world_pos.y + CELL_SIZE as f32;
+
+        return p.x > min_x && p.x < max_x &&
+               p.y > min_y && p.y < max_y;
+        }
+}
+
 #[derive(Resource, Default)]
 pub struct EntityQuadMap {
     render_dist: i32,
@@ -119,25 +134,41 @@ impl EntityQuadMap {
         else { None }
     }
 
-    pub fn update_cells() {
-        
+    pub fn obb_overlap_edge_of_cell(cell: &Cell, obb: &OBB) -> bool {
+        for v in obb.get_vertices().iter() {
+            if !cell.contains_pos(v) {
+                return true;
+            }
+        }
+
+        return false
     }
 
-    pub fn update_entity_cell(&mut self, e: Entity, trans: Transform, prev_cell_pos: &mut CellPos) {
+    pub fn update_entity_cell(&mut self, e: Entity, trans: Transform, prev_cell_pos: &mut CellPos, obb: &OBB) {
         let curr_cell_pos = world_to_cell(&trans.global); 
 
         if prev_cell_pos.0 != curr_cell_pos {
             if let Some(index) = self.cells_map.get_mut(&prev_cell_pos.0) {
-                let cell = self.cells_arr.get_mut(*index).unwrap();
-                cell.entities.remove(&e);
+                let prev_cell = self.cells_arr.get_mut(*index).unwrap();
+                prev_cell.entities.remove(&e);
             }
 
             if let Some(index) = self.cells_map.get_mut(&curr_cell_pos) {
-                let cell = self.cells_arr.get_mut(*index).unwrap();
-                cell.entities.insert(e);
+                let curr_cell = self.cells_arr.get_mut(*index).unwrap();
+                curr_cell.entities.insert(e);
+                prev_cell_pos.0 = curr_cell_pos;
+                if Self::obb_overlap_edge_of_cell(&curr_cell, obb) {
+                    println!("outside");
+                }
             }
+            return;
+        }
 
-            prev_cell_pos.0 = curr_cell_pos;
+        if let Some(index) = self.cells_map.get_mut(&curr_cell_pos) {
+            let curr_cell = self.cells_arr.get_mut(*index).unwrap();
+            if Self::obb_overlap_edge_of_cell(&curr_cell, obb) {
+                println!("outside");
+            }
         }
     }
 

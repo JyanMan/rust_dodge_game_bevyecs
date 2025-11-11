@@ -1,4 +1,4 @@
 ## TODO
-1. Rewrite the weapon system
-  * now add hitbox
-2. Rewrite the zombie system
+* Rewrite the weapon system
+* Rewrite the zombie system
+* optimize animation system to use flat arrays instead of vectors
