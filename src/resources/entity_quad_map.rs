@@ -128,12 +128,23 @@ impl EntityQuadMap {
         }
     }
 
-    pub fn obb_entities_at(&self, cell_pos: Point) -> Option<impl Iterator<Item = &Entity>> {
-        if let Some(index) = self.cells_map.get(&cell_pos) {
-            Some(self.cells_arr[*index].entities.iter())
-        }
-        else { None }
-    }
+    // pub fn entity_in_cells(&self, cells: &CellPos) -> Option<Iter<'_, Entity>> {
+    //     cells.0.iter().flat_map(|cell_pos| {
+    //         let test = if let Some(index) = self.cells_map.get(&cell_pos) {
+    //             Some(self.cells_arr[*index].entities.iter())
+    //         }
+    //         else { None };
+    //         
+    //         test
+    //     })
+    // }
+
+    // pub fn obb_entities_at(&self, cell_pos: Point) -> IntoIter<Entity> {
+    //     if let Some(index) = self.cells_map.get(&cell_pos) {
+    //         Some(self.cells_arr[*index].entities.iter())
+    //     }
+    //     else { None }
+    // }
 
     pub fn obb_overlap_edge_of_cell(cell: &Cell, obb: &OBB) -> bool {
         for v in obb.get_vertices().iter() {
@@ -145,7 +156,7 @@ impl EntityQuadMap {
         return false
     }
 
-    pub fn obb_get_overlapping_cells(&self, obb: &OBB) -> Vec<Point> {
+    pub fn obb_get_overlapping_cells(&self, obb: &OBB) -> IntoIter<Point> {
         
         let mut overlapping_points: Vec<Point> = Vec::new();
 
@@ -156,7 +167,7 @@ impl EntityQuadMap {
             }
         }
 
-        overlapping_points
+        overlapping_points.into_iter()
     }
 
     pub fn update_entity_cell(&mut self, e: Entity, trans: Transform, prev_cells: &mut CellPos, obb: &OBB) {
@@ -171,8 +182,8 @@ impl EntityQuadMap {
         }
 
         // add the cells it currently overlaps into
-        for cell_pos in self.obb_get_overlapping_cells(obb).iter() {
-            prev_cells.0.push(*cell_pos);
+        for cell_pos in self.obb_get_overlapping_cells(obb) {
+            prev_cells.0.push(cell_pos);
         }
 
         // insert the entity within those cells

@@ -8,7 +8,7 @@ use crate::math_helper::*;
 
 pub fn zombie_init(world: &mut World, renderer: &mut Renderer) {
     let mut rng = rand::thread_rng(); 
-    for _ in 0..0 {
+    for _ in 0..5 {
         zombie_spawn(world, renderer, rng.gen_range(30..80) as f32);
     }
 }
@@ -36,6 +36,7 @@ pub fn zombie_spawn(world: &mut World, renderer: &mut Renderer, speed: f32) {
             state: WalkerState::default(),
         },
         AnimationPlayer::new(WalkerAnim::COUNT),
+        OBB::new(10.0, 20.0, Vector2::new(10.0, -1000.0)),
         EnemyData { chase_range: 200.0, attack_range: 20.0},
         CellPos(Vec::new()),
         // StateMachine::default(),
