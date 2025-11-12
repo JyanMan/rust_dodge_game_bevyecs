@@ -35,7 +35,7 @@ pub fn player_spawn(world: &mut World, renderer: &mut Renderer) -> Entity {
          AnimationPlayer::new(WalkerAnim::COUNT),
          GravityAffected(true),
          Combat::new(2.0),
-         CellPos(Point::default()),
+         CellPos(Vec::new()),
     )).id();
 
     let mut player_ref_mut = world.entity_mut(player_e);

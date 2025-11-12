@@ -127,6 +127,7 @@ impl EntityQuadMap {
             }
         }
     }
+
     pub fn obb_entities_at(&self, cell_pos: Point) -> Option<impl Iterator<Item = &Entity>> {
         if let Some(index) = self.cells_map.get(&cell_pos) {
             Some(self.cells_arr[*index].entities.iter())
@@ -144,30 +145,41 @@ impl EntityQuadMap {
         return false
     }
 
-    pub fn update_entity_cell(&mut self, e: Entity, trans: Transform, prev_cell_pos: &mut CellPos, obb: &OBB) {
-        let curr_cell_pos = world_to_cell(&trans.global); 
+    pub fn obb_get_overlapping_cells(&self, obb: &OBB) -> Vec<Point> {
+        
+        let mut overlapping_points: Vec<Point> = Vec::new();
 
-        if prev_cell_pos.0 != curr_cell_pos {
-            if let Some(index) = self.cells_map.get_mut(&prev_cell_pos.0) {
+        for vert in obb.get_vertices().iter() {
+            let vert_cell_pos = world_to_cell(vert);
+            if !overlapping_points.contains(&vert_cell_pos) {
+                overlapping_points.push(vert_cell_pos);
+            }
+        }
+
+        overlapping_points
+    }
+
+    pub fn update_entity_cell(&mut self, e: Entity, trans: Transform, prev_cells: &mut CellPos, obb: &OBB) {
+
+        // remove entity from previous cells
+        for _ in 0..prev_cells.0.len() {
+            let cell_pos  = prev_cells.0.pop().unwrap();
+            if let Some(index) = self.cells_map.get_mut(&cell_pos) {
                 let prev_cell = self.cells_arr.get_mut(*index).unwrap();
                 prev_cell.entities.remove(&e);
             }
-
-            if let Some(index) = self.cells_map.get_mut(&curr_cell_pos) {
-                let curr_cell = self.cells_arr.get_mut(*index).unwrap();
-                curr_cell.entities.insert(e);
-                prev_cell_pos.0 = curr_cell_pos;
-                if Self::obb_overlap_edge_of_cell(&curr_cell, obb) {
-                    println!("outside");
-                }
-            }
-            return;
         }
 
-        if let Some(index) = self.cells_map.get_mut(&curr_cell_pos) {
-            let curr_cell = self.cells_arr.get_mut(*index).unwrap();
-            if Self::obb_overlap_edge_of_cell(&curr_cell, obb) {
-                println!("outside");
+        // add the cells it currently overlaps into
+        for cell_pos in self.obb_get_overlapping_cells(obb).iter() {
+            prev_cells.0.push(*cell_pos);
+        }
+
+        // insert the entity within those cells
+        for cell_pos in prev_cells.0.iter() {
+            if let Some(index) = self.cells_map.get_mut(&cell_pos) {
+                let new_cell = self.cells_arr.get_mut(*index).unwrap();
+                new_cell.entities.insert(e);
             }
         }
     }

@@ -37,7 +37,7 @@ pub fn zombie_spawn(world: &mut World, renderer: &mut Renderer, speed: f32) {
         },
         AnimationPlayer::new(WalkerAnim::COUNT),
         EnemyData { chase_range: 200.0, attack_range: 20.0},
-        CellPos(Point::default()),
+        CellPos(Vec::new()),
         // StateMachine::default(),
     )).id();
 
