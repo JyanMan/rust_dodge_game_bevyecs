@@ -63,6 +63,7 @@ impl Game {
             pos_vel_update_system.after(collision_system),
             transform_update_system.after(pos_vel_update_system),
             area_update_system.after(transform_update_system),
+            update_entity_overlapping_obbs.after(transform_update_system),
             obb_update_system.after(transform_update_system),
             update_entity_quad_system.after(transform_update_system),
         ));

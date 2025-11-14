@@ -34,8 +34,10 @@ pub fn player_spawn(world: &mut World, renderer: &mut Renderer) -> Entity {
          },
          AnimationPlayer::new(WalkerAnim::COUNT),
          GravityAffected(true),
+         EntityOverlappingOBBs { entities: Vec::new(), target_tags: vec![EntityTag::Zombie] },
          Combat::new(2.0),
          CellPos(Vec::new()),
+         EntityTagContainer(EntityTag::Player)
     )).id();
 
     let mut player_ref_mut = world.entity_mut(player_e);

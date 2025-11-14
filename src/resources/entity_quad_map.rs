@@ -128,23 +128,23 @@ impl EntityQuadMap {
         }
     }
 
-    // pub fn entity_in_cells(&self, cells: &CellPos) -> Option<Iter<'_, Entity>> {
-    //     cells.0.iter().flat_map(|cell_pos| {
-    //         let test = if let Some(index) = self.cells_map.get(&cell_pos) {
-    //             Some(self.cells_arr[*index].entities.iter())
-    //         }
-    //         else { None };
-    //         
-    //         test
-    //     })
+    // pub fn entity_update_overlapping_obbs(&self, over_obbs: &mut EntityOverlappingOBBs, cells: &CellPos) {
+    //     over_obbs.0 = self.entity_in_cells(cells);
     // }
 
-    // pub fn obb_entities_at(&self, cell_pos: Point) -> IntoIter<Entity> {
-    //     if let Some(index) = self.cells_map.get(&cell_pos) {
-    //         Some(self.cells_arr[*index].entities.iter())
-    //     }
-    //     else { None }
-    // }
+    pub fn entity_in_cells(&self, cells: &CellPos) -> Result<Vec<Entity>> {
+
+        Ok(cells.0.iter().flat_map(|cell_pos| {
+            if let Some(index) = self.cells_map.get(cell_pos) {
+                Some(self.cells_arr[*index].entities.clone().into_iter())
+            }
+            else { None }
+        })
+            .into_iter()
+            .flatten()
+            .collect()
+        )
+    }
 
     pub fn obb_overlap_edge_of_cell(cell: &Cell, obb: &OBB) -> bool {
         for v in obb.get_vertices().iter() {

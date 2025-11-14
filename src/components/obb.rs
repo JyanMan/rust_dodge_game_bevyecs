@@ -8,8 +8,25 @@ use crate::core::Renderer;
 
 const PI: f32 = 3.141592;
 
-/* WARNING: changing atts require that you call compute_vertices to apply check fn inside first */
+#[derive(PartialEq, Eq)]
+pub enum EntityTag {
+    Zombie,
+    Player
+}
+
 #[derive(Component)]
+#[component(storage = "Table")]
+pub struct EntityTagContainer(pub EntityTag);
+
+#[derive(Component)]
+#[component(storage = "Table")]
+pub struct EntityOverlappingOBBs {
+    pub entities: Vec<Entity>,
+    pub target_tags: Vec<EntityTag>
+}
+
+/* WARNING: changing atts require that you call compute_vertices to apply check fn inside first */
+#[derive(Component, Clone)]
 #[component(storage = "Table")]
 pub struct OBB {
     pub center: Vector2,
@@ -63,7 +80,7 @@ impl OBB {
         self.vertices[3] = self.center - (extents[0] - extents[1]);
     }
 
-    pub fn overlapping(&self, other: OBB) -> bool {
+    pub fn overlapping(&self, other: &OBB) -> bool {
         for i in 0..4 {
             let delta = self.vertices[(i+1) % 4] - self.vertices[i];
             let axis = Vector2::new(-delta.y, delta.x).normalize();

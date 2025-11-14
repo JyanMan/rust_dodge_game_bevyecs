@@ -3,5 +3,5 @@ use std::vec::Vec;
 
 use crate::math_helper::*;
 
-#[derive(Component, Default)]
+#[derive(Clone, Component, Default)]
 pub struct CellPos(pub Vec<Point>);

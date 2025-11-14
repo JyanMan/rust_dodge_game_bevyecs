@@ -22,7 +22,9 @@ pub fn steel_sword_spawn(world: &mut World, renderer: &mut Renderer, entity_owne
         // Area::new(0.0, 0.0, 10.0, 10.0),
         AnimationPlayer::new(WeaponAnim::COUNT),
         HeldBy(entity_owner),
-        OBB::new(20.0, 20.0, Vector2::zero())
+        OBB::new(20.0, 20.0, Vector2::zero()),
+        CellPos(Vec::new()),
+        EntityOverlappingOBBs{ entities: Vec::new(), target_tags: vec![EntityTag::Zombie] },
     )).id();
 
     // init animation
