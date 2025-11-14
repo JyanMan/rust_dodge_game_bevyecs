@@ -66,6 +66,7 @@ impl Game {
             update_entity_overlapping_obbs.after(transform_update_system),
             obb_update_system.after(transform_update_system),
             update_entity_quad_system.after(transform_update_system),
+            player_test_overlap,
         ));
         self.input_sched.add_systems(player_system_input);
     }

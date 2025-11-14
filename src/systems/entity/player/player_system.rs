@@ -62,3 +62,13 @@ pub fn player_movement_system(
     }
 }
 
+pub fn player_test_overlap(
+    mut query: Query<(&PlayerTag, &EntityOverlappingOBBs)>, 
+) {
+    for (_p, e_over_obbs) in &mut query {
+        if e_over_obbs.entities.len() != 0 {
+            println!("player is overlapping");
+        }
+    }
+}
+

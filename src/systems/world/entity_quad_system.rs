@@ -28,6 +28,8 @@ pub fn update_entity_overlapping_obbs(
     mut tmp_over_e: Local<Vec<(Entity, Vec<Entity>)>>,
 ) {
     tmp_over_e.clear();
+    let mut q: HashMap<Entity, Vec<Entity>> = HashMap::new();
+
     for (e, obb, cell_pos, _, e_tag_cont) in &e_cells_query {
         let neighbors = e_quad_map.entity_in_cells(cell_pos);
 
@@ -43,6 +45,7 @@ pub fn update_entity_overlapping_obbs(
                         has_tag = true; 
                     }
                 }
+
                 if !has_tag {
                     continue;
                 }
@@ -52,12 +55,19 @@ pub fn update_entity_overlapping_obbs(
                 }
             }
         }
-        tmp_over_e.push((e, tmp_vec_e));
+        q.insert(e, tmp_vec_e.clone());
+        // tmp_over_e.push((e, tmp_vec_e));
     }
 
-    for (e, other_vec_e) in tmp_over_e.iter() {
-        if let Ok((_, _, _, mut e_over_obb, _)) = e_cells_query.get_mut(*e) {
-            e_over_obb.entities = other_vec_e.clone();
+    for (e, _, _, mut other_over_obbs, _) in &mut e_cells_query {
+        if let Some(over_obbs_vec) = q.get(&e) {
+            other_over_obbs.entities = over_obbs_vec.clone();
         }
     }
+
+    // for (e, other_vec_e) in tmp_over_e.iter() {
+    //     if let Ok((_, _, _, mut e_over_obb, _)) = e_cells_query.get_mut(*e) {
+    //         e_over_obb.entities = other_vec_e.clone();
+    //     }
+    // }
 }
