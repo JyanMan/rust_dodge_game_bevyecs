@@ -5,7 +5,6 @@ pub mod asset_manager;
 pub mod area_manager;
 pub mod tile;
 pub mod mouse_input;
-pub mod register_resources;
 pub mod entity_quad_map;
 
 pub use camera::*;

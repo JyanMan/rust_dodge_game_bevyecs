@@ -4,7 +4,6 @@ use bevy_ecs::prelude::*;
 use crate::core::renderer::*;
 use crate::components::entity::{ WalkerData, WalkerState, WalkerAnim, };
 use crate::components::*;
-use crate::ecs::ecs::*;
 use crate::resources::asset_manager::*;
 use crate::resources::*;
 use crate::components::entity::*;

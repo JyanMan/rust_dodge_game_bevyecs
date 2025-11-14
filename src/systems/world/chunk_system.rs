@@ -4,7 +4,6 @@ use bevy_ecs::prelude::*;
 use crate::core::renderer::*;
 use crate::components::Transform;
 use crate::components::entity::*;
-use crate::ecs::ecs::*;
 use crate::resources::chunk_manager::*;
 use crate::resources::area_manager::*;
 

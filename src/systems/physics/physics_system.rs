@@ -5,7 +5,6 @@ use crate::components::area::*;
 use crate::components::entity::{ WalkerData, WalkerState };
 use crate::components::{ Transform, Velocity };
 use crate::core::collision::*;
-use crate::ecs::ecs::*;
 use crate::resources::area_manager::*;
 use crate::resources::*;
 

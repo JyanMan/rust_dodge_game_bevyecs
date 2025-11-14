@@ -1,5 +1,4 @@
 use bevy_ecs::prelude::*;
-use crate::ecs::ecs::*;
 use crate::components::*;
 use crate::components::item_handle::*;
 use crate::resources::*;

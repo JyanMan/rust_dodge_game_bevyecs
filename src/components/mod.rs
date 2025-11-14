@@ -5,7 +5,6 @@ pub mod combat;
 pub mod entity;
 pub mod gravity_affected;
 pub mod health;
-pub mod register_components;
 pub mod obb;
 pub mod sprite;
 pub mod transform;

@@ -1,7 +1,6 @@
 use bevy_ecs::prelude::*;
 use std::vec::Vec;
 
-use crate::ecs::ecs::ECS;
 use crate::components::*;
 
 pub fn transform_update_system(

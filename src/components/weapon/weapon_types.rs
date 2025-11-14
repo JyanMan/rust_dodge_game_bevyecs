@@ -2,7 +2,6 @@ use bevy_ecs::prelude::*;
 
 use crate::components::*;
 use crate::resources::*;
-use crate::ecs::ecs::*;
 use crate::systems::weapon::*;
 
 #[derive(Clone, Default)]

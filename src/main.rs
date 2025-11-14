@@ -10,7 +10,6 @@ mod systems;
 mod resources;
 mod components;
 mod math_helper;
-mod ecs;
 mod tests;
 
 use crate::game::*;
