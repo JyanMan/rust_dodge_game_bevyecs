@@ -9,6 +9,7 @@ use crate::core::*;
 use crate::config::*;
 use crate::math_helper::*;
 
+
 #[derive(Clone)]
 pub struct Cell {
     pos: Point, // chunk size

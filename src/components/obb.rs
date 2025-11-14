@@ -9,10 +9,7 @@ use crate::core::Renderer;
 const PI: f32 = 3.141592;
 
 #[derive(PartialEq, Eq)]
-pub enum EntityTag {
-    Zombie,
-    Player
-}
+pub enum EntityTag { Zombie, Enemy, Player, Weapon }
 
 #[derive(Component)]
 #[component(storage = "Table")]
@@ -20,10 +17,11 @@ pub struct EntityTagContainer(pub EntityTag);
 
 #[derive(Component)]
 #[component(storage = "Table")]
-pub struct EntityOverlappingOBBs {
-    pub entities: Vec<Entity>,
-    pub target_tags: Vec<EntityTag>
-}
+pub struct TargetEntityTags(pub Vec<EntityTag>);
+
+#[derive(Component)]
+#[component(storage = "Table")]
+pub struct EntityOverlappingOBBs(pub Vec<Entity>);
 
 /* WARNING: changing atts require that you call compute_vertices to apply check fn inside first */
 #[derive(Component, Clone)]
@@ -36,11 +34,11 @@ pub struct OBB {
     width: f32,
     height: f32,
     half_extents: Vector2,
-    disabled: bool
+    pub disabled: bool
 }
 
 impl OBB {
-    pub fn new(width: f32, height: f32, center: Vector2) -> Self {
+    pub fn new(width: f32, height: f32, center: Vector2, disabled: bool) -> Self {
         let mut obb = Self {
             center,
             offset: Vector2::zero(),
@@ -49,7 +47,7 @@ impl OBB {
             width,
             height,
             half_extents: Vector2::zero(),
-            disabled: false,
+            disabled,
         };
         obb.compute_vertices();
 

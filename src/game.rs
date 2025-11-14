@@ -63,10 +63,11 @@ impl Game {
             pos_vel_update_system.after(collision_system),
             transform_update_system.after(pos_vel_update_system),
             area_update_system.after(transform_update_system),
-            update_entity_overlapping_obbs.after(transform_update_system),
             obb_update_system.after(transform_update_system),
             update_entity_quad_system.after(transform_update_system),
-            player_test_overlap,
+            update_entity_overlapping_obbs.after(update_entity_quad_system),
+            steel_sword_test_overlap.after(update_entity_overlapping_obbs),
+            // player_test_overlap,
         ));
         self.input_sched.add_systems(player_system_input);
     }

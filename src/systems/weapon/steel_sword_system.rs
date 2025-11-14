@@ -22,9 +22,11 @@ pub fn steel_sword_spawn(world: &mut World, renderer: &mut Renderer, entity_owne
         // Area::new(0.0, 0.0, 10.0, 10.0),
         AnimationPlayer::new(WeaponAnim::COUNT),
         HeldBy(entity_owner),
-        OBB::new(20.0, 20.0, Vector2::zero()),
+        OBB::new(20.0, 20.0, Vector2::zero(), true),
         CellPos(Vec::new()),
-        EntityOverlappingOBBs{ entities: Vec::new(), target_tags: vec![EntityTag::Zombie] },
+        EntityOverlappingOBBs(Vec::new()),
+        TargetEntityTags(vec![EntityTag::Zombie]),
+        EntityTagContainer(EntityTag::Weapon),
     )).id();
 
     // init animation
@@ -87,14 +89,6 @@ pub fn steel_sword_per_frame_update(world: &mut World, entity: Entity) {
     obb.compute_vertices();
 }
 
-
-// void steelsword_set_local_pos_to_attack_dir(Position *steelsword_pos, OBB *steelsword_obb, Vector2 mouse_dir) {
-//     float attack_range = 10.0f;
-//     steelsword_pos->local = vector2_scale(mouse_dir, attack_range);
-//     float mouse_dir_rad = atan2(mouse_dir.y, mouse_dir.x);
-//     obb_set_rotation(steelsword_obb, (float)mouse_dir_rad);
-// }
-
 pub fn steel_sword_start_attack_effect(user_vel: &mut Velocity, attack_dir: Vector2, grav_affected: &mut GravityAffected) {
     user_vel.vec = attack_dir * 1000.0;
     grav_affected.0 = false;
@@ -103,4 +97,14 @@ pub fn steel_sword_start_attack_effect(user_vel: &mut Velocity, attack_dir: Vect
 pub fn steel_sword_end_attack_effect(user_vel: &mut Velocity, grav_affected: &mut GravityAffected) {
     user_vel.vec = Vector2::zero();
     grav_affected.0 = true;
+}
+
+pub fn steel_sword_test_overlap(
+    mut query: Query<(&SteelSwordTag, &EntityOverlappingOBBs)>, 
+) {
+    for (_e, e_over_obbs) in &mut query {
+        if e_over_obbs.0.len() != 0 {
+            println!("sword is overlapping");
+        }
+    }
 }
