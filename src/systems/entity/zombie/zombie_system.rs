@@ -8,9 +8,30 @@ use crate::math_helper::*;
 
 pub fn zombie_init(world: &mut World, renderer: &mut Renderer) {
     let mut rng = rand::thread_rng(); 
-    for _ in 0..50 {
+    for _ in 0..5 {
         zombie_spawn(world, renderer, rng.gen_range(30..80) as f32);
     }
+}
+
+#[derive(Bundle)]
+struct ZombieBundle {
+    zom_tag: ZombieTag,
+    enemy_tag: EnemyTag,
+    trans: Transform,
+    grav_affected: GravityAffected,
+    vel: Velocity,
+    area: Area,
+    sprite: Sprite,
+    walker_d: WalkerData,
+    anim_player: AnimationPlayer,
+    health: Health,
+    obb: OBB,
+    enemy_d: EnemyData,
+    cell_pos: CellPos,
+    e_over_obbs: EntityOverlappingOBBs,
+    target_e_tags: TargetEntityTags,
+    tag_container: EntityTagContainer,
+    knock: KnockbackTrigger
 }
 
 pub fn zombie_spawn(world: &mut World, renderer: &mut Renderer, speed: f32) {
@@ -21,30 +42,32 @@ pub fn zombie_spawn(world: &mut World, renderer: &mut Renderer, speed: f32) {
         10.0, -1000.0, 10.0, 20.0
     );
     area.offset = Vector2::new(0.0, 6.0);
-    let zombie_e = world.spawn((
-        ZombieTag {},
-        Transform::new(10.0, -1000.0),
-        GravityAffected(true),
-        Velocity::zero(),
+    let zombie_e = world.spawn(ZombieBundle {
+        zom_tag: ZombieTag {},
+        enemy_tag: EnemyTag {},
+        trans: Transform::new(10.0, -1000.0),
+        grav_affected: GravityAffected(true),
+        vel: Velocity::zero(),
         area,
         sprite,
-        WalkerData {
+        walker_d: WalkerData {
             grounded: false,
             jump_force: 200.0,
             run_speed: speed,
             accel: speed / 10.0,
             state: WalkerState::default(),
         },
-        AnimationPlayer::new(WalkerAnim::COUNT),
-        Health::new(10),
-        OBB::new(10.0, 20.0, Vector2::new(10.0, -1000.0), false),
-        EnemyData { chase_range: 200.0, attack_range: 20.0},
-        CellPos(Vec::new()),
-        EntityOverlappingOBBs(Vec::new()),
-        TargetEntityTags(vec![EntityTag::Player, EntityTag::Weapon]),
-        EntityTagContainer(EntityTag::Zombie),
+        anim_player: AnimationPlayer::new(WalkerAnim::COUNT),
+        health: Health::new(10),
+        obb: OBB::new(10.0, 20.0, Vector2::new(10.0, -1000.0), false),
+        enemy_d: EnemyData { chase_range: 200.0, attack_range: 20.0},
+        cell_pos: CellPos(Vec::new()),
+        e_over_obbs: EntityOverlappingOBBs(Vec::new()),
+        target_e_tags: TargetEntityTags(vec![EntityTag::Player, EntityTag::Weapon]),
+        tag_container: EntityTagContainer(EntityTag::Zombie),
+        knock: KnockbackTrigger::default()
         // StateMachine::default(),
-    )).id();
+    }).id();
 
     let mut zombie_ref = world.entity_mut(zombie_e);
     let mut anim_player = zombie_ref.get_mut::<AnimationPlayer>().unwrap();
@@ -53,13 +76,14 @@ pub fn zombie_spawn(world: &mut World, renderer: &mut Renderer, speed: f32) {
 
 pub fn zombie_movement_system(
     player_query: Query<(&PlayerTag, &Transform)>, 
-    mut query: Query<(&Transform, &mut Velocity, &ZombieTag, &mut WalkerData,  &EnemyData)>,
+    mut query: Query<(&Transform, &mut Velocity, &ZombieTag, &mut WalkerData,  &EnemyData, &KnockbackTrigger)>,
 ) {
     let mut p_trans = Transform::zero();
     for (_p_tag, trans) in &player_query {
         p_trans = *trans;
     }
-    for (trans, mut vel, _z_tag, mut walker_d, enemy_d) in &mut query {
+    for (trans, mut vel, _z_tag, mut walker_d, enemy_d, knock) in &mut query {
+        if knock.knocked { continue; }
         // jump ai
         if vel.vec.x.abs() <= 0.001 && walker_d.state == WalkerState::Running {
             vel.vec.y -= walker_d.jump_force;

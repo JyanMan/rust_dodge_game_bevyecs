@@ -94,24 +94,21 @@ impl Animation {
     pub fn update_frame(world: &mut World, anim_frame: &AnimFrame) {
         for anim_data in anim_frame.data.iter() {
             match *anim_data {
-                // AnimData::Integer { value, target } => unsafe { *target = value; },
                 AnimData::SpriteFrame { value, target } => {
-                    let mut e = world.entity_mut(target);
-                    let mut sprite = e.get_mut::<Sprite>().expect("entity does not have sprite component");
-                    sprite.frame = value;
+                    if let Ok(mut e) = world.get_entity_mut(target) {
+                        let mut sprite = e.get_mut::<Sprite>().expect("entity does not have sprite component");
+                        sprite.frame = value;
+                    }
                 },
                 AnimData::OBBOffset { offset, target } => {
-                    let mut e = world.entity_mut(target);
-                    let mut obb = e.get_mut::<OBB>().expect("entity does not have sprite component");
-                    obb.offset = offset;
+                    if let Ok(mut e) = world.get_entity_mut(target) {
+                        let mut obb = e.get_mut::<OBB>().expect("entity does not have sprite component");
+                        obb.offset = offset;
+                    }
                     // obb.compute_vertices();
                 },
                 AnimData::OBBUpdate { target } => {
                     steel_sword_per_frame_update(world, target);
-                    // let mut e = world.entity_mut(target);
-                    // let mut obb = e.get_mut::<OBB>().expect("entity does not have sprite component");
-                    // obb.offset = offset;
-                    // obb.compute_vertices();
                 },
                 // AnimData::Float { value, target } => unsafe { *target = value; },
                 // AnimData::Bool { value, target } => unsafe { *target = value; },

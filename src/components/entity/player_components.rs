@@ -1,28 +1,4 @@
-//#[derive(Clone, Default)]
-//pub struct PlayerState(u8);
-
-//impl PlayerState {
-//    pub fn has(&self, state: PState) -> bool {
-//        self.0 & state.bit() != 0
-//    }
-//
-//    pub fn set(&mut self, state: PState) {
-//        self.0 |= state.bit();
-//    }
-//
-//    pub fn clear(&mut self, state: PState) {
-//        self.0 &= !state.bit();
-//    }
-//
-//    pub fn raw(&self) -> u8 {
-//        self.0 as u8
-//    }
-//}
-
 use bevy_ecs::prelude::*;
-
-#[derive(Component)]
-pub struct PlayerTag {}
 
 #[repr(u8)]
 #[derive(Clone, PartialEq)]
@@ -32,17 +8,9 @@ pub enum PlayerState {
     Lerping
 }
 
-//impl PState {
-//    pub fn bit(self) -> u8 {
-//        1 << (self as u8)
-//    }
-//}
-
 #[derive(Component, Clone)]
 pub struct PlayerData {
     pub state: PlayerState,
-
-
     pub can_jump: bool,
     pub can_jump_timer: f32,
     pub jump_delay: f32,

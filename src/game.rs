@@ -53,7 +53,9 @@ impl Game {
             animation_player_update,
             walker_animation_update,
             weapon_system_animation_update,
-            weapon_attack_timer_and_signal_update
+            weapon_attack_timer_and_signal_update,
+            health_knock_timer,
+            health_update,
         ));
         self.fixed_update_sched.add_systems((
             player_movement_system,
@@ -61,12 +63,13 @@ impl Game {
             gravity_system.after(player_movement_system),
             collision_system.after(gravity_system),
             pos_vel_update_system.after(collision_system),
+            update_entity_quad_system.after(gravity_system),
+            update_entity_overlapping_obbs.after(update_entity_quad_system),
             transform_update_system.after(pos_vel_update_system),
             area_update_system.after(transform_update_system),
             obb_update_system.after(transform_update_system),
-            update_entity_quad_system.after(transform_update_system),
-            update_entity_overlapping_obbs.after(update_entity_quad_system),
-            steel_sword_test_overlap.after(update_entity_overlapping_obbs),
+            enemy_hit_update.after(update_entity_overlapping_obbs),
+            // steel_sword_test_overlap.after(update_entity_overlapping_obbs),
             // player_test_overlap,
         ));
         self.input_sched.add_systems(player_system_input);
@@ -114,7 +117,7 @@ impl Game {
         chunk_system_draw(&mut self.world, renderer);
         sprite_system_draw(&mut self.world, renderer);
         render_all_obb(&mut self.world, renderer);
-        render_occupied_quad(&mut self.world, renderer);
+        // render_occupied_quad(&mut self.world, renderer);
         // debug_draw_entity_areas(&mut self.world, renderer);
     }
 

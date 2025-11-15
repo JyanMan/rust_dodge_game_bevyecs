@@ -8,7 +8,7 @@ use crate::core::Renderer;
 
 const PI: f32 = 3.141592;
 
-#[derive(PartialEq, Eq)]
+#[derive(PartialEq, Eq, Clone, Debug)]
 pub enum EntityTag { Zombie, Enemy, Player, Weapon }
 
 #[derive(Component)]
@@ -21,7 +21,7 @@ pub struct TargetEntityTags(pub Vec<EntityTag>);
 
 #[derive(Component)]
 #[component(storage = "Table")]
-pub struct EntityOverlappingOBBs(pub Vec<Entity>);
+pub struct EntityOverlappingOBBs(pub Vec<(Entity, EntityTag)>);
 
 /* WARNING: changing atts require that you call compute_vertices to apply check fn inside first */
 #[derive(Component, Clone)]

@@ -17,12 +17,12 @@ pub fn steel_sword_spawn(world: &mut World, renderer: &mut Renderer, entity_owne
     let steel_sword_e = world.spawn((
         Transform::zero(),
         sprite,
-        WeaponData::new(1, 10.0, 0.2, WeaponState::Owned, WeaponType::SteelSword), 
+        WeaponData::new(2, 1500.0, 0.2, WeaponState::Owned, WeaponType::SteelSword), 
         SteelSwordTag::default(),
         // Area::new(0.0, 0.0, 10.0, 10.0),
         AnimationPlayer::new(WeaponAnim::COUNT),
         HeldBy(entity_owner),
-        OBB::new(20.0, 20.0, Vector2::zero(), true),
+        OBB::new(30.0, 30.0, Vector2::zero(), true),
         CellPos(Vec::new()),
         EntityOverlappingOBBs(Vec::new()),
         TargetEntityTags(vec![EntityTag::Zombie]),
@@ -72,21 +72,22 @@ pub fn steel_sword_animation(sprite: &mut Sprite, trans: &mut Transform, attack_
     // adjust sprite angle
     sprite.angle = angle_deg;
 
-    let attack_range: f32 = 10.0;
+    let attack_range: f32 = 3.0;
     trans.local = attack_dir * attack_range;
 }
 
 pub fn steel_sword_per_frame_update(world: &mut World, entity: Entity) {
-    let mut e = world.entity_mut(entity);
-    let weapon_d = e.get::<WeaponData>().unwrap();
-    let attack_dir = weapon_d.attack_dir;
+    if let Ok(mut e) = world.get_entity_mut(entity) {
+        let weapon_d = e.get::<WeaponData>().unwrap();
+        let attack_dir = weapon_d.attack_dir;
 
-    let mut obb = e.get_mut::<OBB>().unwrap();
-    let angle_to_mouse = attack_dir.y.atan2(attack_dir.x);
+        let mut obb = e.get_mut::<OBB>().unwrap();
+        let angle_to_mouse = attack_dir.y.atan2(attack_dir.x);
 
-    obb.rotation = angle_to_mouse;
-    obb.rotate_around(Vector2::zero());
-    obb.compute_vertices();
+        obb.rotation = angle_to_mouse;
+        obb.rotate_around(Vector2::zero());
+        obb.compute_vertices();
+    }
 }
 
 pub fn steel_sword_start_attack_effect(user_vel: &mut Velocity, attack_dir: Vector2, grav_affected: &mut GravityAffected) {
