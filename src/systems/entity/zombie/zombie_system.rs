@@ -8,7 +8,7 @@ use crate::math_helper::*;
 
 pub fn zombie_init(world: &mut World, renderer: &mut Renderer) {
     let mut rng = rand::thread_rng(); 
-    for _ in 0..150 {
+    for _ in 0..200 {
         zombie_spawn(world, renderer, rng.gen_range(30..80) as f32);
     }
 }

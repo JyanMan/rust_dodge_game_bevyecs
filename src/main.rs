@@ -67,7 +67,7 @@ pub fn main() {
         dt_accumulator += delta_time;
         while dt_accumulator >= time_step {
             dt_accumulator -= time_step;
-            game.fixed_update(time_step);
+            game.fixed_update(time_step, &mut renderer);
         }
         renderer.canvas.set_draw_color(Color::RGB(100, 100, 100));
         renderer.canvas.clear();

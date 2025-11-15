@@ -47,20 +47,18 @@ impl Game {
 
     fn register_systems(&mut self, renderer: &mut Renderer) {
         self.update_sched.add_systems((
-            chunk_system_update,
-            quad_generation_system,
             player_timer_system,
-            animation_player_update,
-            walker_animation_update,
-            weapon_system_animation_update,
             weapon_attack_timer_and_signal_update,
             health_knock_timer,
-            health_update,
+            animation_player_update,
         ));
         self.fixed_update_sched.add_systems((
-            player_movement_system,
-            zombie_movement_system,
-            gravity_system.after(player_movement_system),
+
+            player_movement_system.before(gravity_system),
+            zombie_movement_system.before(gravity_system),
+
+            //PHYSICS
+            gravity_system,
             collision_system.after(gravity_system),
             pos_vel_update_system.after(collision_system),
             update_entity_quad_system.after(gravity_system),
@@ -71,6 +69,12 @@ impl Game {
             enemy_hit_update.after(update_entity_overlapping_obbs),
             // steel_sword_test_overlap.after(update_entity_overlapping_obbs),
             // player_test_overlap,
+
+            walker_animation_update.after(transform_update_system),
+            chunk_system_update,
+            quad_generation_system,
+            weapon_system_animation_update,
+            health_update,
         ));
         self.input_sched.add_systems(player_system_input);
     }
@@ -102,15 +106,14 @@ impl Game {
         delta_time_res.0 = delta_time;
 
         self.update_sched.run(&mut self.world);
-
-        camera_system_update(&mut self.world, renderer);
     }
 
-    pub fn fixed_update(&mut self, time_step: f32) {
+    pub fn fixed_update(&mut self, time_step: f32, renderer: &mut Renderer) {
         let mut time_step_res = self.world.get_resource_mut::<TimeStep>().unwrap();
         time_step_res.0 = time_step;
 
-        self.fixed_update_sched.run(&mut self.world)
+        self.fixed_update_sched.run(&mut self.world);
+        camera_system_update(&mut self.world, renderer);
     }
 
     pub fn draw(&mut self, renderer: &mut Renderer) {

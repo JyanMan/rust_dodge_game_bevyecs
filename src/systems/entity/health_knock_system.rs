@@ -23,19 +23,12 @@ pub fn health_knock_timer(
 
 pub fn health_update(
     mut query: Query<(Entity, &mut Health)>,
-    mut dead_e: Local<Vec<Entity>>,
     mut commands: Commands
 ) {
 
-    dead_e.clear();
-
     for (e, health) in &mut query {
         if health.current <= 0 {
-            dead_e.push(e);
+            commands.entity(e).despawn();
         }
-    }
-
-    for e in dead_e.drain(..) {
-        commands.entity(e).despawn();
     }
 }
