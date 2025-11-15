@@ -15,7 +15,6 @@ impl KnockbackTrigger {
         self.knocked_force = knock_force;
         self.knocked = true;
         self.dir = knock_dir;
-        println!("knocked");
     }
 
     pub fn timer(&mut self, delta_time: f32) -> bool {

@@ -31,7 +31,4 @@ pub fn enemy_hit_update(
             }
         }
     }
-
-    // use e to fetch transform, then calculate for attack_direction
-
 }
