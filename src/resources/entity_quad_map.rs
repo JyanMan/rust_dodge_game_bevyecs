@@ -140,12 +140,12 @@ impl EntityQuadMap {
     //     }
     // }
 
-    pub fn entity_in_cells(&self, cells: &CellPos) -> Result<Vec<Entity>> {
+    pub fn entity_in_cells(&self, cells: &CellPos) -> Result<Vec<&Entity>> {
         let mut result = Vec::new();
 
         for cell_pos in &cells.0 {
             if let Some(index) = self.cells_map.get(cell_pos) {
-                for &e in &self.cells_arr[*index].entities {
+                for e in &self.cells_arr[*index].entities {
                     result.push(e);
                 }
             }

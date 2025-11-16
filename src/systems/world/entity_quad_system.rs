@@ -62,7 +62,7 @@ pub fn update_entity_overlapping_obbs(
         let neighbors = e_quad_map.entity_in_cells(cell_pos);
 
         for other_e in neighbors.unwrap() {
-            if other_e == *e {
+            if other_e == e {
                 continue;
             }
 
@@ -90,7 +90,7 @@ pub fn update_entity_overlapping_obbs(
 
                 if has_tag && obb.overlapping(other_obb) {
                     // println!("asdfa");
-                    tmp_vec_e.push((other_e, other_tag.0.clone()));
+                    tmp_vec_e.push((*other_e, other_tag.0.clone()));
                 }
             }
         }
