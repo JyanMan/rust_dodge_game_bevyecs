@@ -20,8 +20,8 @@ impl AnimationPlayer {
         Self {
             playing: false,
             curr_anim: 0,
-            num_anims: num_anims,
-            anims: anims
+            num_anims,
+            anims
         }
     }
     pub fn play(&mut self, index: usize) {
@@ -41,11 +41,16 @@ impl AnimationPlayer {
         self.anims[self.curr_anim].stop();
     }
 
-    pub fn update_timer(&mut self, delta_time: f32) {
+    /* false: no frame update just timer incrementation
+        true: frame is incremented */
+    pub fn update_timer(&mut self, delta_time: f32) -> bool {
         if self.playing {
-            self.anims[self.curr_anim].play(delta_time);
+            return self.anims[self.curr_anim].play(delta_time);
         }
+        false
     }
+
+    pub fn curr_frame(&self) -> usize { self.curr_anim }
 
     pub fn curr_anim(&self) -> &Animation {
         &self.anims[self.curr_anim] 

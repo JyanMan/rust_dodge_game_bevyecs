@@ -6,6 +6,9 @@ pub fn render_all_obb(world: &mut World, renderer: &mut Renderer) {
     let mut query = world.query::<&OBB>();
 
     for obb in query.iter(world) {
+        if obb.disabled {
+            continue;
+        }
         // renderer.camera.set_target(trans.global);
         obb.draw(renderer);
     }
