@@ -4,11 +4,10 @@ use crate::core::renderer::*;
 use crate::components::*;
 // use crate::ecs::ecs::*;
 use crate::resources::*;
-use crate::math_helper::*;
 
 pub fn zombie_init(world: &mut World, renderer: &mut Renderer) {
     let mut rng = rand::thread_rng(); 
-    for _ in 0..1 {
+    for _ in 0..100 {
         zombie_spawn(world, renderer, rng.gen_range(30..80) as f32);
     }
 }
@@ -120,28 +119,31 @@ pub fn zombie_movement_system(
 }
 
 pub fn zombie_animation_init(anim_player: &mut AnimationPlayer, zombie_e: Entity) {
-    let mut idle_anim = Animation::new(3, 0.2);
-    idle_anim.set_frame(0, AnimData::SpriteFrame { value: 0, target: zombie_e});
-    idle_anim.set_frame(1, AnimData::SpriteFrame { value: 1, target: zombie_e});
-    idle_anim.set_frame(2, AnimData::SpriteFrame { value: 2, target: zombie_e});
+    let idle_anim = Animation::new(3, 0.2, Box::new([
+        AnimFrame { data: Box::new([ AnimData::SpriteFrame { value: 0, target: zombie_e}, ])},
+        AnimFrame { data: Box::new([ AnimData::SpriteFrame { value: 1, target: zombie_e}, ])},
+        AnimFrame { data: Box::new([ AnimData::SpriteFrame { value: 2, target: zombie_e}, ])},
+    ]));
 
-    let mut run_anim = Animation::new(5, 0.1);
-    run_anim.set_frame(0, AnimData::SpriteFrame { value: 3, target: zombie_e});
-    run_anim.set_frame(1, AnimData::SpriteFrame { value: 4, target: zombie_e});
-    run_anim.set_frame(2, AnimData::SpriteFrame { value: 5, target: zombie_e});
-    run_anim.set_frame(3, AnimData::SpriteFrame { value: 6, target: zombie_e});
-    run_anim.set_frame(4, AnimData::SpriteFrame { value: 7, target: zombie_e});
+    let run_anim = Animation::new(5, 0.1, Box::new([
+        AnimFrame { data: Box::new([ AnimData::SpriteFrame { value: 3, target: zombie_e}, ])},
+        AnimFrame { data: Box::new([ AnimData::SpriteFrame { value: 4, target: zombie_e}, ])},
+        AnimFrame { data: Box::new([ AnimData::SpriteFrame { value: 5, target: zombie_e}, ])},
+        AnimFrame { data: Box::new([ AnimData::SpriteFrame { value: 6, target: zombie_e}, ])},
+        AnimFrame { data: Box::new([ AnimData::SpriteFrame { value: 7, target: zombie_e}, ])},
+    ]));
 
-    let mut rise_anim = Animation::new(1, 0.2);
-    rise_anim.set_frame(0, AnimData::SpriteFrame { value: 8, target: zombie_e});
+    let rise_anim = Animation::new(1, 0.2, Box::new([
+        AnimFrame { data: Box::new([ AnimData::SpriteFrame { value: 8, target: zombie_e}, ])},
+    ]));
 
-    let mut fall_anim = Animation::new(1, 0.2);
-    fall_anim.set_frame(0, AnimData::SpriteFrame { value: 9, target: zombie_e});
+    let fall_anim = Animation::new(1, 0.2, Box::new([
+        AnimFrame { data: Box::new([ AnimData::SpriteFrame { value: 9, target: zombie_e}, ])},
+    ]));
 
     anim_player.add_anim(WalkerAnim::Idle.usize(), idle_anim);
     anim_player.add_anim(WalkerAnim::Run.usize(), run_anim);
     anim_player.add_anim(WalkerAnim::Rise.usize(), rise_anim);
     anim_player.add_anim(WalkerAnim::Fall.usize(), fall_anim);
-    // anim_player.play(PAnims::Run.usize());
 }
 
