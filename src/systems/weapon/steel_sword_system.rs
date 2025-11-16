@@ -1,11 +1,9 @@
 use bevy_ecs::prelude::*;
+use std::f64::consts::PI;
 
-// use crate::ecs::ecs::*;
-// use crate::ecs::entity::*;
 use crate::core::renderer::*;
 use crate::resources::asset_manager::*;
 use crate::components::*;
-use std::f64::consts::PI;
 
 pub fn steel_sword_spawn(world: &mut World, renderer: &mut Renderer, entity_owner: Entity) -> Entity {
     let mut sprite = Sprite::new(&renderer.asset_m, TextureId::SteelSword);
@@ -33,22 +31,6 @@ pub fn steel_sword_spawn(world: &mut World, renderer: &mut Renderer, entity_owne
     // do this separately as the pointer to sprite is moved on spawn
     let mut steelsword_ref = world.entity_mut(steel_sword_e);
     let mut anim_player = steelsword_ref.get_mut::<AnimationPlayer>().unwrap();
-    // let attack_anim = Animation::new(4, 0.05);
-    // attack_anim.set_frame(0, AnimData::SpriteFrame { value: 0, target: steel_sword_e});
-    // attack_anim.set_frame(0, AnimData::OBBOffset { offset: Vector2::new(0.0, -20.0), target: steel_sword_e});
-    // attack_anim.set_frame(0, AnimData::OBBUpdate { target: steel_sword_e });
-
-    // attack_anim.set_frame(1, AnimData::SpriteFrame { value: 0, target: steel_sword_e});
-    // attack_anim.set_frame(1, AnimData::OBBOffset { offset: Vector2::new(20.0, -10.0), target: steel_sword_e});
-    // attack_anim.set_frame(1, AnimData::OBBUpdate { target: steel_sword_e });
-
-    // attack_anim.set_frame(2, AnimData::SpriteFrame { value: 1, target: steel_sword_e});
-    // attack_anim.set_frame(2, AnimData::OBBOffset { offset: Vector2::new(20.0, 10.0), target: steel_sword_e});
-    // attack_anim.set_frame(2, AnimData::OBBUpdate { target: steel_sword_e });
-
-    // attack_anim.set_frame(3, AnimData::SpriteFrame { value: 1, target: steel_sword_e});
-    // attack_anim.set_frame(3, AnimData::OBBOffset { offset: Vector2::new(0.0, 20.0), target: steel_sword_e});
-    // attack_anim.set_frame(3, AnimData::OBBUpdate { target: steel_sword_e });
 
     let mut attack_anim = Animation::new(8, attack_dur / 8.0);
     attack_anim.set_frame(0, AnimData::SpriteFrame { value: 0, target: steel_sword_e});
@@ -60,19 +42,19 @@ pub fn steel_sword_spawn(world: &mut World, renderer: &mut Renderer, entity_owne
     attack_anim.set_frame(1, AnimData::OBBUpdate { target: steel_sword_e });
 
     attack_anim.set_frame(2, AnimData::SpriteFrame { value: 1, target: steel_sword_e});
-    attack_anim.set_frame(2, AnimData::OBBOffset { offset: Vector2::new(13.0, -6.0), target: steel_sword_e});
+    attack_anim.set_frame(2, AnimData::OBBOffset { offset: Vector2::new(14.0, -6.0), target: steel_sword_e});
     attack_anim.set_frame(2, AnimData::OBBUpdate { target: steel_sword_e });
 
     attack_anim.set_frame(3, AnimData::SpriteFrame { value: 1, target: steel_sword_e});
-    attack_anim.set_frame(3, AnimData::OBBOffset { offset: Vector2::new(15.0, 0.0), target: steel_sword_e});
+    attack_anim.set_frame(3, AnimData::OBBOffset { offset: Vector2::new(18.0, 0.0), target: steel_sword_e});
     attack_anim.set_frame(3, AnimData::OBBUpdate { target: steel_sword_e });
 
     attack_anim.set_frame(4, AnimData::SpriteFrame { value: 2, target: steel_sword_e});
-    attack_anim.set_frame(4, AnimData::OBBOffset { offset: Vector2::new(15.0, 0.0), target: steel_sword_e});
+    attack_anim.set_frame(4, AnimData::OBBOffset { offset: Vector2::new(18.0, 0.0), target: steel_sword_e});
     attack_anim.set_frame(4, AnimData::OBBUpdate { target: steel_sword_e });
 
     attack_anim.set_frame(5, AnimData::SpriteFrame { value: 2, target: steel_sword_e});
-    attack_anim.set_frame(5, AnimData::OBBOffset { offset: Vector2::new(13.0, 6.0), target: steel_sword_e});
+    attack_anim.set_frame(5, AnimData::OBBOffset { offset: Vector2::new(14.0, 6.0), target: steel_sword_e});
     attack_anim.set_frame(5, AnimData::OBBUpdate { target: steel_sword_e });
 
     attack_anim.set_frame(6, AnimData::SpriteFrame { value: 3, target: steel_sword_e});
