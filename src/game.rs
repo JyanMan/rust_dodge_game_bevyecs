@@ -58,8 +58,8 @@ impl Game {
             zombie_movement_system.before(gravity_system),
             //PHYSICS
             gravity_system,
-            collision_system.after(gravity_system),
-            pos_vel_update_system.after(collision_system),
+            walker_collision_system.after(gravity_system),
+            pos_vel_update_system.after(walker_collision_system),
             update_entity_quad_system.after(gravity_system),
             update_entity_overlapping_obbs.after(update_entity_quad_system),
             transform_update_system.after(pos_vel_update_system),

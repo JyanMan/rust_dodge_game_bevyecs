@@ -13,7 +13,7 @@ const MAX_GRAVITY: f32 = 500.0;
 
 pub fn gravity_system(mut query: Query<(&mut Velocity, &GravityAffected)>) {
     query.par_iter_mut().for_each(|(mut vel, grav_affected)| {
-        if grav_affected.0 == false {
+        if !grav_affected.0 {
             return;
         }
         //GRAVITY
@@ -24,26 +24,19 @@ pub fn gravity_system(mut query: Query<(&mut Velocity, &GravityAffected)>) {
     });
 }
 
-pub fn collision_system(
+pub fn walker_collision_system(
     area_m: Res<AreaManager>, 
     time_step: Res<TimeStep>, 
-    mut query: Query<(&mut Transform, &mut Velocity, &mut Area, Option<&mut WalkerData>)>
+    mut query: Query<(&mut Transform, &mut Velocity, &mut Area, &mut WalkerData)>
 ) {
     // let mut area_m = ecs.get_resource_mut::<AreaManager>();
     query.par_iter_mut().for_each(|(mut trans, mut vel, mut area, mut walker_d)| {
-        let mut dummy_grounded = false;
-        let grounded: &mut bool = match &mut walker_d {
-            Some(wd) => &mut wd.grounded,
-            None => &mut dummy_grounded
-        };
 
         // pass area_m as &AreaManager
-        area_colliding_to_tile(&mut area, &mut trans.global, &mut vel.vec, grounded, &area_m, time_step.0);
+        area_colliding_to_tile(&mut area, &mut trans.global, &mut vel.vec, &mut walker_d.grounded, &area_m, time_step.0);
 
-        if let Some(wd) = &mut walker_d {
-            if !wd.grounded {
-                wd.state = WalkerState::Aired;
-            }
+        if !walker_d.grounded {
+            walker_d.state = WalkerState::Aired;
         }
     });
 }

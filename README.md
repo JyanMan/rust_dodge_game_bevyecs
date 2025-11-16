@@ -1,6 +1,10 @@
 ## TODO
+* add zombie hit animation
+* add hit particle like blood or something
+* add damage text or something
+* add player attack combos (different animation for some key combos)
+  - hold dodge before attacking to do dodge attack (allows dodge attack)
+    - cannot dodge while attacking
+  - slam attack
 * fix frame flutter bug
-* Rewrite the weapon system
-* Rewrite the zombie system
 * optimize entity_quad fetching for entities overlapping
-* optimize animation system to use flat arrays instead of vectors
