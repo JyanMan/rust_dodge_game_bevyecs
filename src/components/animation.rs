@@ -110,8 +110,6 @@ impl Animation {
                 AnimData::OBBUpdate { target } => {
                     steel_sword_per_frame_update(world, target);
                 },
-                // AnimData::Float { value, target } => unsafe { *target = value; },
-                // AnimData::Bool { value, target } => unsafe { *target = value; },
             }
         }
     }

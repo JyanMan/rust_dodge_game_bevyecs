@@ -1,13 +1,13 @@
 use bevy_ecs::prelude::*;
 
+use crate::components::Vector2;
+use crate::core::renderer::*;
+use crate::resources::*;
+use crate::systems::world::*;
+use crate::systems::*;
 use sdl2::EventPump;
 use sdl2::event::Event;
 use sdl2::keyboard::*;
-use crate::core::renderer::*;
-use crate::systems::world::*;
-use crate::resources::*;
-use crate::components::Vector2;
-use crate::systems::*;
 
 #[allow(dead_code)]
 pub struct Game {
@@ -53,10 +53,8 @@ impl Game {
             animation_player_update,
         ));
         self.fixed_update_sched.add_systems((
-
             player_movement_system.before(gravity_system),
             zombie_movement_system.before(gravity_system),
-
             //PHYSICS
             gravity_system,
             collision_system.after(gravity_system),
@@ -69,7 +67,6 @@ impl Game {
             enemy_hit_update.after(update_entity_overlapping_obbs),
             // steel_sword_test_overlap.after(update_entity_overlapping_obbs),
             // player_test_overlap,
-
             walker_animation_update.after(transform_update_system),
             chunk_system_update,
             quad_generation_system,
@@ -80,9 +77,8 @@ impl Game {
     }
 
     pub fn new(renderer: &mut Renderer) -> Self {
-
         let mut game = Self {
-            world: World::new(), 
+            world: World::new(),
             update_sched: Schedule::default(),
             fixed_update_sched: Schedule::default(),
             draw_sched: Schedule::default(),
@@ -99,7 +95,7 @@ impl Game {
         // zombie_spawn(&mut game.world, renderer, 50.0);
 
         game
-    }   
+    }
 
     pub fn update(&mut self, delta_time: f32, renderer: &mut Renderer) {
         let mut delta_time_res = self.world.get_resource_mut::<DeltaTime>().unwrap();
@@ -119,7 +115,7 @@ impl Game {
     pub fn draw(&mut self, renderer: &mut Renderer) {
         chunk_system_draw(&mut self.world, renderer);
         sprite_system_draw(&mut self.world, renderer);
-        // render_all_obb(&mut self.world, renderer);
+        render_all_obb(&mut self.world, renderer);
         // render_occupied_quad(&mut self.world, renderer);
         // debug_draw_entity_areas(&mut self.world, renderer);
     }
@@ -128,16 +124,20 @@ impl Game {
         let mut user_input_res = self.world.get_resource_mut::<KeyInput>().unwrap();
         for event in event_pump.poll_iter() {
             match event {
-                Event::Quit {..} => {
+                Event::Quit { .. } => {
                     return false;
-                },
-                Event::KeyDown { keycode: Some(s), .. } => {
-                    if (s == Keycode::Escape)  {
+                }
+                Event::KeyDown {
+                    keycode: Some(s), ..
+                } => {
+                    if (s == Keycode::Escape) {
                         return false;
                     }
                     user_input_res.0.insert(s);
-                },
-                Event::KeyUp { keycode: Some(s), .. } => {
+                }
+                Event::KeyUp {
+                    keycode: Some(s), ..
+                } => {
                     user_input_res.0.remove(&s);
                 }
                 _ => {}
@@ -146,12 +146,10 @@ impl Game {
 
         let mut mouse_input = self.world.get_resource_mut::<MouseInput>().unwrap();
         let mouse_state = event_pump.mouse_state();
-        mouse_input.pos = Vector2::new(
-            mouse_state.x() as f32, mouse_state.y() as f32
-        );
+        mouse_input.pos = Vector2::new(mouse_state.x() as f32, mouse_state.y() as f32);
 
         self.input_sched.run(&mut self.world);
 
-        return true;
+        true
     }
 }
