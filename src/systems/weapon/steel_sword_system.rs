@@ -5,8 +5,6 @@ use bevy_ecs::prelude::*;
 use crate::core::renderer::*;
 use crate::resources::asset_manager::*;
 use crate::components::*;
-use crate::resources::*;
-use crate::resources::MouseInput;
 use std::f64::consts::PI;
 
 pub fn steel_sword_spawn(world: &mut World, renderer: &mut Renderer, entity_owner: Entity) -> Entity {
@@ -117,11 +115,12 @@ pub fn steel_sword_end_attack_effect(user_vel: &mut Velocity, grav_affected: &mu
     grav_affected.0 = true;
 }
 
+#[allow(dead_code)]
 pub fn steel_sword_test_overlap(
     mut query: Query<(&SteelSwordTag, &EntityOverlappingOBBs)>, 
 ) {
     for (_e, e_over_obbs) in &mut query {
-        if e_over_obbs.0.len() != 0 {
+        if !e_over_obbs.0.is_empty() {
             println!("sword is overlapping");
         }
     }
