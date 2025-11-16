@@ -2,6 +2,7 @@ use crate::components::*;
 use crate::resources::*;
 use bevy_ecs::prelude::*;
 use std::collections::HashMap;
+use xsparseset::*;
 
 /* PHYSICS */
 pub fn update_entity_quad_system(
@@ -22,6 +23,8 @@ pub fn quad_generation_system(
     }
 }
 
+type EOverResult <'a> = (Entity, &'a OBB, &'a CellPos, &'a EntityTagContainer, &'a TargetEntityTags);
+
 pub fn update_entity_overlapping_obbs(
     mut e_cells_query: Query<(
         Entity,
@@ -37,14 +40,13 @@ pub fn update_entity_overlapping_obbs(
 ) {
     tmp_entity_map.clear();
 
-    let mut tmp_results: HashMap<Entity, (&OBB, &CellPos, &EntityTagContainer, &TargetEntityTags)> =
-        HashMap::new();
+    let mut sparse_set: SparseSet<usize, EOverResult, VecStorage<usize>> = SparseSet::default();
 
     for (e, obb, cell_pos, _, tag, target_tags) in &e_cells_query {
-        tmp_results.insert(e, (obb, cell_pos, tag, target_tags));
+        sparse_set.insert(e.index() as usize, (e, obb, cell_pos, tag, target_tags));
     }
 
-    for (e, (obb, cell_pos, _, target_tags)) in &tmp_results {
+    for (e, obb, cell_pos, _, target_tags) in sparse_set.data() {
         if obb.disabled {
             continue;
         }
@@ -58,7 +60,7 @@ pub fn update_entity_overlapping_obbs(
                 continue;
             }
 
-            if let Some((other_obb, _, other_tag, _)) = tmp_results.get(&other_e) {
+            if let Some((_, other_obb, _, other_tag, _)) = sparse_set.get(other_e.index() as usize) {
                 if other_obb.disabled {
                     continue;
                 }
@@ -71,11 +73,12 @@ pub fn update_entity_overlapping_obbs(
                 }
 
                 if has_tag && obb.overlapping(other_obb) {
+                    // println!("asdfa");
                     tmp_vec_e.push((other_e, other_tag.0.clone()));
                 }
             }
         }
-        if tmp_vec_e.is_empty() {
+        if !tmp_vec_e.is_empty() {
             tmp_entity_map.insert(*e, tmp_vec_e.clone());
         }
     }

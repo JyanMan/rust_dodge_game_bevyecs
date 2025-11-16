@@ -337,6 +337,7 @@ dependencies = [
  "paste",
  "rand",
  "sdl2",
+ "xsparseset",
 ]
 
 [[package]]
@@ -1092,6 +1093,12 @@ name = "wit-bindgen"
 version = "0.46.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f17a85883d4e6d00e8a97c586de764dabcc06133f7f1d55dce5cdc070ad7fe59"
+
+[[package]]
+name = "xsparseset"
+version = "0.2.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b709d09acccc1f8733e77b228d65550534b6d2d7cabff84670b0d4b5d2599935"
 
 [[package]]
 name = "zerocopy"
