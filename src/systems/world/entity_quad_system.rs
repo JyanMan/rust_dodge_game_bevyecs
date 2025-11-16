@@ -23,13 +23,15 @@ pub fn quad_generation_system(
     }
 }
 
-type EOverResult <'a> = (Entity, &'a OBB, &'a CellPos, &'a EntityTagContainer, &'a TargetEntityTags);
+struct LastChecked(i32);
+
+type EOverResult <'a> = (Entity, &'a OBB, &'a CellPos, &'a EntityTagContainer, &'a TargetEntityTags, LastChecked);
 type EntityTagVec = Vec<(Entity, EntityTag)>;
 
 pub fn update_entity_overlapping_obbs(
     mut e_cells_query: Query<(
         Entity,
-        &mut OBB,
+        &OBB,
         &CellPos,
         &mut EntityOverlappingOBBs,
         &EntityTagContainer,
@@ -44,10 +46,13 @@ pub fn update_entity_overlapping_obbs(
     let mut tmp_result_set: SparseSet<usize, EOverResult, VecStorage<usize>> = SparseSet::default();
 
     for (e, obb, cell_pos, _, tag, target_tags) in &e_cells_query {
-        tmp_result_set.insert(e.index() as usize, (e, obb, cell_pos, tag, target_tags));
+        tmp_result_set.insert(e.index() as usize, (e, obb, cell_pos, tag, target_tags, LastChecked(0)));
     }
 
-    for (e, obb, cell_pos, _, target_tags) in tmp_result_set.data() {
+    // used to track duplicate
+    let mut frame: i32 = 1;
+
+    for (e, obb, cell_pos, _, target_tags, _) in tmp_result_set.data() {
         if obb.disabled {
             continue;
         }
@@ -61,10 +66,20 @@ pub fn update_entity_overlapping_obbs(
                 continue;
             }
 
-            if let Some((_, other_obb, _, other_tag, _)) = tmp_result_set.get(other_e.index() as usize) {
+            if let Some((_, other_obb, _, other_tag, _, last_check)) = tmp_result_set.get(other_e.index() as usize) {
                 if other_obb.disabled {
                     continue;
                 }
+
+                // skip duplicates
+                if last_check.0 == frame { continue; }
+                // UNSAFE: increment counter to prevent future duplicate
+                unsafe {
+                    let raw_ptr: *const LastChecked = last_check;
+                    let raw_mut: *mut LastChecked = raw_ptr as *mut LastChecked;
+                    (*raw_mut).0 = frame;
+                }
+
 
                 let mut has_tag = false;
                 for tag in target_tags.0.iter() {
@@ -82,13 +97,17 @@ pub fn update_entity_overlapping_obbs(
         if !tmp_vec_e.is_empty() {
             tmp_entity_set.insert(e.index() as usize, tmp_vec_e.clone());
         }
+
+        frame += 1;
     }
 
     for (e, _, _, mut over_obbs, _, _) in &mut e_cells_query {
-        if let Some(over_obbs_vec) = tmp_entity_set.get(e.index() as usize) {
-            over_obbs.0 = over_obbs_vec.clone();
-            continue;
-        }
         over_obbs.0.clear();
+        if let Some(over_obbs_vec) = tmp_entity_set.get(e.index() as usize) {
+            for (e, tag) in over_obbs_vec.iter() {
+                over_obbs.0.push((*e, tag.clone()));
+            }
+            // over_obbs.0 = over_obbs_vec.clone();
+        }
     }
 }

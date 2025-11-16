@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use std::collections::HashSet;
 use std::iter::*;
 use std::vec::*;
+use xsparseset::*;
 
 use crate::components::*;
 use crate::config::*;
@@ -30,12 +31,15 @@ impl Cell {
     }
 }
 
+type ENeighbors = SparseSet<usize, Entity, VecStorage<usize>>;
+
 #[derive(Resource, Default)]
 pub struct EntityQuadMap {
     render_dist: i32,
     cells_map: HashMap<Point, usize>,
     cells_arr: Vec<Cell>,
     new_cell_points: Vec<Point>,
+    entity_neighbors: SparseSet<usize, ENeighbors, VecStorage<usize>>,
     // obb_map: HashMap<Point, Cell>,
     center: Point,
 }
@@ -71,6 +75,7 @@ impl EntityQuadMap {
             // init values of cells within array
             cells_arr,
             center: world_to_cell(&world_pos),
+            entity_neighbors: SparseSet::default(),
             new_cell_points,
         }
     }
@@ -126,17 +131,27 @@ impl EntityQuadMap {
         }
     }
 
+    // pub fn entity_in_cells(&self, e: Entity) -> &[Entity] {
+    //     if let Some(neighbors) = self.entity_neighbors.get(e.index() as usize) {
+    //         return neighbors.data();            
+    //     }
+    //     else {
+    //         return &[];
+    //     }
+    // }
+
     pub fn entity_in_cells(&self, cells: &CellPos) -> Result<Vec<Entity>> {
-        Ok(cells
-            .0
-            .iter()
-            .flat_map(|cell_pos| {
-                self.cells_map
-                    .get(cell_pos)
-                    .map(|index| self.cells_arr[*index].entities.clone().into_iter())
-            })
-            .flatten()
-            .collect())
+        let mut result = Vec::new();
+
+        for cell_pos in &cells.0 {
+            if let Some(index) = self.cells_map.get(cell_pos) {
+                for &e in &self.cells_arr[*index].entities {
+                    result.push(e);
+                }
+            }
+        }
+
+        Ok(result)
     }
 
     pub fn obb_overlap_edge_of_cell(cell: &Cell, obb: &OBB) -> bool {
@@ -183,6 +198,23 @@ impl EntityQuadMap {
                 new_cell.entities.insert(e);
             }
         }
+
+        // let neighbors = if let Some(neighbors) = self.entity_neighbors.get_mut(e.index() as usize) { neighbors }
+        // else {
+        //     let new_set: SparseSet<usize, Entity, VecStorage<usize>> = SparseSet::default();
+        //     self.entity_neighbors.insert(e.index() as usize, new_set);
+        //     self.entity_neighbors.get_mut(e.index() as usize).unwrap()
+        // };
+        // neighbors.clear();
+        // for cell_pos in prev_cells.0.iter() {
+        //     if let Some(index) = self.cells_map.get(cell_pos) {
+        //         let cell = &self.cells_arr[*index];
+        //         for &e in cell.entities.iter() {
+        //             neighbors.insert(e.index() as usize, e);
+        //         }
+
+        //     }
+        // }
     }
 
     /* debug purposes */

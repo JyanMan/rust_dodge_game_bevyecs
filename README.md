@@ -1,4 +1,5 @@
 ## TODO
+* benchmark the unsafe and without it in entity_quad_system
 * add zombie hit animation
 * add hit particle like blood or something
 * add damage text or something

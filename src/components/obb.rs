@@ -23,6 +23,10 @@ pub struct TargetEntityTags(pub Vec<EntityTag>);
 #[component(storage = "Table")]
 pub struct EntityOverlappingOBBs(pub Vec<(Entity, EntityTag)>);
 
+#[derive(Component)]
+#[component(storage = "Table")]
+pub struct OBBCheckedOverlap(pub bool);
+
 /* WARNING: changing atts require that you call compute_vertices to apply check fn inside first */
 #[derive(Component, Clone)]
 #[component(storage = "Table")]
