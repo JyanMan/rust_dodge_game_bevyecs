@@ -1,13 +1,15 @@
 use bevy_ecs::prelude::*;
+use sdl2::EventPump;
+use sdl2::event::Event;
+use sdl2::keyboard::*;
 
 use crate::components::Vector2;
 use crate::core::renderer::*;
 use crate::resources::*;
 use crate::systems::world::*;
 use crate::systems::*;
-use sdl2::EventPump;
-use sdl2::event::Event;
-use sdl2::keyboard::*;
+use crate::config::*;
+
 
 #[allow(dead_code)]
 pub struct Game {
@@ -102,6 +104,8 @@ impl Game {
         delta_time_res.0 = delta_time;
 
         self.update_sched.run(&mut self.world);
+
+        assert!(self.world.entities().len() <= MAX_ENTITIES as u32, "INTERNAL ERROR: number of entities exceeds MAX_ENTITIES");
     }
 
     pub fn fixed_update(&mut self, time_step: f32, renderer: &mut Renderer) {
