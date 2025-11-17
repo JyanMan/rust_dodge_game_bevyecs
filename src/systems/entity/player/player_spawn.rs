@@ -4,7 +4,6 @@ use crate::components::entity::{ WalkerData, WalkerState };
 use crate::components::*;
 use crate::resources::asset_manager::*;
 use crate::components::entity::*;
-use crate::math_helper::*;
 use super::player_animation_init;
 
 #[derive(Bundle)]
@@ -24,7 +23,9 @@ struct PlayerBundle {
     e_over_obbs: EntityOverlappingOBBs,
     target_e_tags: TargetEntityTags,
     cell_pos: CellPos,
-    e_tag_container: EntityTagContainer
+    e_tag_container: EntityTagContainer,
+    health: Health,
+    knock: KnockbackTrigger
 }
 
 pub fn player_spawn(world: &mut World, renderer: &mut Renderer) -> Entity {
@@ -37,10 +38,10 @@ pub fn player_spawn(world: &mut World, renderer: &mut Renderer) -> Entity {
     area.offset = Vector2::new(0.0, 6.0);
 
     let player_e = world.spawn(PlayerBundle {
-         sprite: sprite,
+         sprite,
          trans: Transform::new(10.0, -1000.0),
          vel: Velocity::new(0.0, 0.0),
-         area: area,
+         area,
          obb: OBB::new(10.0, 20.0, Vector2::new(10.0, -1000.0), false),
          player_d: PlayerData::default(),
          tag: PlayerTag {},
@@ -56,9 +57,11 @@ pub fn player_spawn(world: &mut World, renderer: &mut Renderer) -> Entity {
          grav_affected: GravityAffected(true),
          combat: Combat::new(2.0),
          e_over_obbs: EntityOverlappingOBBs(Vec::new()),
-         target_e_tags: TargetEntityTags(vec![EntityTag::Zombie]),
+         target_e_tags: TargetEntityTags(vec![EntityTag::EnemyWeapon]),
          cell_pos: CellPos(Vec::new()),
-         e_tag_container: EntityTagContainer(EntityTag::Player)
+         e_tag_container: EntityTagContainer(EntityTag::Player),
+         health: Health::new(100),
+         knock: KnockbackTrigger::default(),
     }).id();
 
     let mut player_ref_mut = world.entity_mut(player_e);

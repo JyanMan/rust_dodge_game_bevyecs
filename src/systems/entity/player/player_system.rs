@@ -39,7 +39,7 @@ pub fn player_movement_system(
             p_data.can_dodge = true; 
         }
         if p_data.state == P::Dodging {
-            let dodge_dir = get_dodge_dir(mouse_pos, &mut p_data);
+            let dodge_dir = get_dodge_dir(mouse_pos, &p_data);
             player_dodging(dodge_dir, &mut p_data, &mut vel);
             return;
         } 

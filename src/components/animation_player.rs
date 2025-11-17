@@ -50,8 +50,6 @@ impl AnimationPlayer {
         false
     }
 
-    pub fn curr_frame(&self) -> usize { self.curr_anim }
-
     pub fn curr_anim(&self) -> &Animation {
         &self.anims[self.curr_anim] 
     }

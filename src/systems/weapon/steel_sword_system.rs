@@ -6,6 +6,16 @@ use crate::resources::asset_manager::*;
 use crate::components::*;
 
 pub fn steel_sword_spawn(world: &mut World, renderer: &mut Renderer, entity_owner: Entity) -> Entity {
+
+    let owner_ref = world.entity(entity_owner);
+    let owner_tag = owner_ref.get::<EntityTagContainer>().unwrap();
+    let entity_tag_container = EntityTagContainer(match owner_tag.0 {
+        EntityTag::Zombie => EntityTag::EnemyWeapon,
+        EntityTag::Player => EntityTag::PlayerWeapon,
+        _ => EntityTag::Weapon,
+    });
+
+    
     let mut sprite = Sprite::new(&renderer.asset_m, TextureId::SteelSword);
     sprite.set_sprite_sheet(4, 2);
     sprite.visible = true;
@@ -17,14 +27,15 @@ pub fn steel_sword_spawn(world: &mut World, renderer: &mut Renderer, entity_owne
         sprite,
         WeaponData::new(1, 800.0, attack_dur, WeaponState::Owned, WeaponType::SteelSword), 
         SteelSwordTag::default(),
-        // Area::new(0.0, 0.0, 10.0, 10.0),
         AnimationPlayer::new(WeaponAnim::COUNT),
         HeldBy(entity_owner),
         OBB::new(30.0, 30.0, Vector2::zero(), true),
         CellPos(Vec::new()),
         EntityOverlappingOBBs(Vec::new()),
-        TargetEntityTags(vec![EntityTag::Zombie]),
-        EntityTagContainer(EntityTag::Weapon),
+        // target_entity_tags,
+        TargetEntityTags(vec![]),
+        entity_tag_container,
+        // EntityTagContainer(EntityTag::Weapon),
     )).id();
 
     // init animation
@@ -32,55 +43,55 @@ pub fn steel_sword_spawn(world: &mut World, renderer: &mut Renderer, entity_owne
     let mut steelsword_ref = world.entity_mut(steel_sword_e);
     let mut anim_player = steelsword_ref.get_mut::<AnimationPlayer>().unwrap();
 
-    let attack_anim = Animation::new(8, attack_dur / 8.0, Box::new([
-        AnimFrame { data: Box::new([
+    let attack_anim = Animation::new(attack_dur / 8.0, &[
+        AnimFrame::new(&[
             AnimData::SpriteFrame { value: 0, target: steel_sword_e},
             AnimData::OBBOffset { offset: Vector2::new(0.0, -20.0), target: steel_sword_e},
             AnimData::OBBUpdate { target: steel_sword_e },
-        ])},
+        ]),
         
-        AnimFrame { data: Box::new([
+        AnimFrame::new(&[
             AnimData::SpriteFrame { value: 0, target: steel_sword_e},
             AnimData::OBBOffset { offset: Vector2::new(8.0, -13.0), target: steel_sword_e},
             AnimData::OBBUpdate { target: steel_sword_e },
-        ])},
+        ]),
         
-        AnimFrame { data: Box::new([
+        AnimFrame::new(&[
             AnimData::SpriteFrame { value: 1, target: steel_sword_e},
             AnimData::OBBOffset { offset: Vector2::new(14.0, -6.0), target: steel_sword_e},
             AnimData::OBBUpdate { target: steel_sword_e },
-        ])},
+        ]),
         
-        AnimFrame { data: Box::new([
+        AnimFrame::new(&[
             AnimData::SpriteFrame { value: 1, target: steel_sword_e},
             AnimData::OBBOffset { offset: Vector2::new(18.0, 0.0), target: steel_sword_e},
             AnimData::OBBUpdate { target: steel_sword_e },
-        ])},
+        ]),
         
-        AnimFrame { data: Box::new([
+        AnimFrame::new(&[
             AnimData::SpriteFrame { value: 2, target: steel_sword_e},
             AnimData::OBBOffset { offset: Vector2::new(18.0, 0.0), target: steel_sword_e},
             AnimData::OBBUpdate { target: steel_sword_e },
-        ])},
+        ]),
         
-        AnimFrame { data: Box::new([
+        AnimFrame::new(&[
             AnimData::SpriteFrame { value: 2, target: steel_sword_e},
             AnimData::OBBOffset { offset: Vector2::new(14.0, 6.0), target: steel_sword_e},
             AnimData::OBBUpdate { target: steel_sword_e },
-        ])},
+        ]),
         
-        AnimFrame { data: Box::new([
+        AnimFrame::new(&[
             AnimData::SpriteFrame { value: 3, target: steel_sword_e},
             AnimData::OBBOffset { offset: Vector2::new(8.0, 13.0), target: steel_sword_e},
             AnimData::OBBUpdate { target: steel_sword_e },
-        ])},
+        ]),
         
-        AnimFrame { data: Box::new([
+        AnimFrame::new(&[
             AnimData::SpriteFrame { value: 3, target: steel_sword_e},
             AnimData::OBBOffset { offset: Vector2::new(0.0, 20.0), target: steel_sword_e},
             AnimData::OBBUpdate { target: steel_sword_e },
-        ])},
-    ]));
+        ]),
+    ]);
 
     anim_player.add_anim(WeaponAnim::Attack.usize(), attack_anim);
 

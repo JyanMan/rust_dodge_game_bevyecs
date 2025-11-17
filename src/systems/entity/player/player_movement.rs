@@ -72,7 +72,7 @@ pub fn get_dodge_dir(mouse_pos: Vector2, p_data: &PlayerData) -> Vector2 {
     else if  mouse_delta_len >= p_data.dodge_max {
         mouse_delta = mouse_dir * p_data.dodge_max;
     }
-    return mouse_delta;
+    mouse_delta
 }
 
 pub fn player_dodging(dodge_dir: Vector2, p_data: &mut PlayerData, vel: &mut Velocity) {

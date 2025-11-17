@@ -52,7 +52,8 @@ impl Game {
             player_timer_system,
             weapon_attack_timer_and_signal_update,
             health_knock_timer,
-            weapon_system_animation_update.before(animation_player_update),
+            player_weapon_system_animation_update.before(animation_player_update),
+            enemy_weapon_system_animation_update.before(animation_player_update),
             animation_player_update,
         ));
         self.fixed_update_sched.add_systems((

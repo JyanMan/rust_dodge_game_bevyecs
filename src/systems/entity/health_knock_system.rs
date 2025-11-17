@@ -28,6 +28,7 @@ pub fn health_update(
 
     for (e, health) in &mut query {
         if health.current <= 0 {
+            println!("DEAD ENTITYnum: {}", e.index() as i32);
             commands.entity(e).despawn();
         }
     }

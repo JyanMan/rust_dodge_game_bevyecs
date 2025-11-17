@@ -60,7 +60,7 @@ pub fn update_entity_overlapping_obbs(
     let mut frame: i32 = 1;
 
     for (e, obb, cell_pos, _, target_tags, _) in tmp_result_set.data() {
-        if obb.disabled {
+        if obb.disabled || target_tags.0.is_empty() {
             continue;
         }
 

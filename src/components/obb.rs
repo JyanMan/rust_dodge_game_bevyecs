@@ -9,7 +9,7 @@ use crate::core::Renderer;
 const PI: f32 = 3.141592;
 
 #[derive(PartialEq, Eq, Clone, Debug)]
-pub enum EntityTag { Zombie, Enemy, Player, Weapon }
+pub enum EntityTag { Zombie, Enemy, EnemyWeapon, Player, PlayerWeapon, Weapon }
 
 #[derive(Component)]
 #[component(storage = "Table")]

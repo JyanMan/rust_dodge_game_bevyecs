@@ -27,6 +27,13 @@ pub struct AnimFrame {
     // frame: i32,
 }
 
+impl AnimFrame {
+    pub fn new(data_slice: &[AnimData]) -> Self {
+        let data = data_slice.to_vec().into_boxed_slice();
+        Self { data }
+    }
+}
+
 #[derive(Clone, Default)]
 pub struct Animation {
     frames: Box<[AnimFrame]>,
@@ -38,28 +45,16 @@ pub struct Animation {
 }
 
 impl Animation {
-    pub fn new(frame_num: usize, s_per_frame: f32, frames: Box<[AnimFrame]>) -> Self {
-        // let mut new_frames_vec = Vec::new();
-
-        // for _ in 0..frame_num {
-        //     new_frames_vec.push(AnimFrame { data: Vec::new() });
-        // }
-
-        assert!(frame_num > 0);
+    pub fn new(s_per_frame: f32, frame_slice: &[AnimFrame]) -> Self {
+        let frames = frame_slice.to_vec().into_boxed_slice();
         Self {
-            frame_num,
+            frame_num: frames.len(),
             frames,
             s_per_frame,
             curr_frame: 0,
             play_timer: 0.0,
         }
     }
-    // pub fn set_frame(&mut self, frame: usize, anim_data: AnimData) {
-    //     // if at index frame there's anim_frame, insert animdata there
-    //     if let Some(anim_frame) = self.frames.get_mut(frame) {
-    //         anim_frame.data.push(anim_data);
-    //     }
-    // }
 
     pub fn stop(&mut self) {
         self.play_timer = 0.0;
@@ -70,11 +65,11 @@ impl Animation {
         // self play timer is zero if a new animation is played
         if self.frame_num == 0 { return false; }
         
+        // consider updated if a new animation is set (play_timer == 0)
         let mut updated = self.play_timer == 0.0;
 
         while self.play_timer >= self.s_per_frame {
             self.curr_frame = (self.curr_frame + 1) % (self.frame_num);
-            // println!("AFTER WHILE: curr_frame: {}, delta_time: {}, play_timer: {}, s_per_frame: {}", self.curr_frame, delta_time, self.play_timer, self.s_per_frame);
             self.play_timer -= self.s_per_frame;
             updated = true;
         }
