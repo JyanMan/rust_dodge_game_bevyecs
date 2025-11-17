@@ -11,6 +11,7 @@ mod resources;
 mod components;
 mod math_helper;
 mod tests;
+mod events;
 
 use crate::game::*;
 use crate::core::renderer::*;

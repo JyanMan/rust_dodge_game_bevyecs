@@ -1,4 +1,5 @@
 ## TODO
+* now make the weapon have a chance to drop
 * add zombie hit animation
 * add hit particle like blood or something
 * add damage text or something

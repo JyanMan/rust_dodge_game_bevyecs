@@ -9,6 +9,7 @@ use crate::resources::*;
 use crate::systems::world::*;
 use crate::systems::*;
 use crate::config::*;
+use crate::events::*;
 
 
 #[allow(dead_code)]
@@ -47,6 +48,12 @@ impl Game {
         self.world.insert_resource(e_quad_map);
     }
 
+    fn register_observers(&mut self) {
+        // self.world.add_observer(|event: On<Died>| {
+        //     println!("somebody died"); 
+        // });
+    }
+
     fn register_systems(&mut self, renderer: &mut Renderer) {
         self.update_sched.add_systems((
             player_timer_system,
@@ -55,6 +62,7 @@ impl Game {
             player_weapon_system_animation_update.before(animation_player_update),
             enemy_weapon_system_animation_update.before(animation_player_update),
             animation_player_update,
+            weapon_lost_owner,
         ));
         self.fixed_update_sched.add_systems((
             player_movement_system.before(gravity_system),
@@ -90,6 +98,7 @@ impl Game {
 
         game.register_systems(renderer);
         game.register_resources(renderer);
+        game.register_observers();
 
         let player_e = player_spawn(&mut game.world, renderer);
         steel_sword_spawn(&mut game.world, renderer, player_e);

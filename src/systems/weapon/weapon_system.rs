@@ -82,11 +82,9 @@ pub fn weapon_attack_timer_and_signal_update(
         }
     }
 }
-// so you have a weapon data
-    // to which all weapon entities have one
-// you also have handle component
-    // to which all players and entities that can attack has one
-// I query pos sprite and weapondata,
-    // check if it has handle, that means, it is owned
-    // if it is owned, check if the handle is on state, USING
-    // this means weapon is being used to attack
+
+pub fn weapon_lost_owner(mut removed: RemovedComponents<HeldBy>, mut commands: Commands) {
+    removed.read().for_each(|e| {
+        commands.entity(e).despawn();
+    });
+}
