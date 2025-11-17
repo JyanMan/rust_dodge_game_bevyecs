@@ -57,7 +57,6 @@ impl EntityQuadMap {
         let cells_arr = vec![
             Cell {
                 pos: Point::zero(),
-                // entities: HashSet::new(),
                 entities: SparseSet::default(),
                 is_active: false
             };

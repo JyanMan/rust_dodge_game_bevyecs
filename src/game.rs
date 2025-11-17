@@ -23,7 +23,7 @@ pub struct Game {
 #[allow(dead_code, unused)]
 impl Game {
     fn register_resources(&mut self, renderer: &mut Renderer) {
-        let render_distance: i32 = 3;
+        let render_distance: i32 = 5;
 
         let chunk_m = ChunkManager::new(Vector2::new(0.0, 0.0), &renderer.asset_m, render_distance);
         self.world.insert_resource(chunk_m);
