@@ -44,10 +44,17 @@ pub fn update_entity_overlapping_obbs(
     tmp_entity_set.clear();
 
     let mut tmp_result_set: SparseSet<usize, EOverResult, VecStorage<usize>> = SparseSet::default();
+    let query_size = e_cells_query.iter().len();
+    // preallocate to allow batch insertion
+    let mut entities: Vec<usize> = Vec::with_capacity(query_size);
+    let mut e_immuts: Vec<EOverResult> = Vec::with_capacity(query_size);
 
     for (e, obb, cell_pos, _, tag, target_tags) in &e_cells_query {
-        tmp_result_set.insert(e.index() as usize, (e, obb, cell_pos, tag, target_tags, LastChecked(0)));
+        // tmp_result_set.insert(e.index() as usize, (e, obb, cell_pos, tag, target_tags, LastChecked(0)));
+        entities.push(e.index() as usize);
+        e_immuts.push((e, obb, cell_pos, tag, target_tags, LastChecked(0)));
     }
+    tmp_result_set.insert_batch(&mut entities, &mut e_immuts);
 
     // used to track duplicate
     let mut frame: i32 = 1;
@@ -61,8 +68,8 @@ pub fn update_entity_overlapping_obbs(
 
         let neighbors = e_quad_map.entity_in_cells(cell_pos);
 
-        for other_e in neighbors.unwrap() {
-            if other_e == e {
+        for other_e in neighbors {
+            if other_e == *e {
                 continue;
             }
 
@@ -90,7 +97,7 @@ pub fn update_entity_overlapping_obbs(
 
                 if has_tag && obb.overlapping(other_obb) {
                     // println!("asdfa");
-                    tmp_vec_e.push((*other_e, other_tag.0.clone()));
+                    tmp_vec_e.push((other_e, other_tag.0.clone()));
                 }
             }
         }

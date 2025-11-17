@@ -13,7 +13,8 @@ use crate::math_helper::*;
 #[derive(Clone)]
 pub struct Cell {
     pos: Point, // chunk size
-    entities: HashSet<Entity>,
+    // entities: HashSet<Entity>,
+    entities: SparseSet<usize, Entity, VecStorage<usize>>,
     is_active: bool,
 }
 
@@ -39,7 +40,7 @@ pub struct EntityQuadMap {
     cells_map: HashMap<Point, usize>,
     cells_arr: Vec<Cell>,
     new_cell_points: Vec<Point>,
-    entity_neighbors: SparseSet<usize, ENeighbors, VecStorage<usize>>,
+    // entity_neighbors: SparseSet<usize, ENeighbors, VecStorage<usize>>,
     // obb_map: HashMap<Point, Cell>,
     center: Point,
 }
@@ -61,7 +62,8 @@ impl EntityQuadMap {
         let cells_arr = vec![
             Cell {
                 pos: Point::zero(),
-                entities: HashSet::new(),
+                // entities: HashSet::new(),
+                entities: SparseSet::default(),
                 is_active: false
             };
             size as usize
@@ -75,7 +77,7 @@ impl EntityQuadMap {
             // init values of cells within array
             cells_arr,
             center: world_to_cell(&world_pos),
-            entity_neighbors: SparseSet::default(),
+            // entity_neighbors: SparseSet::default(),
             new_cell_points,
         }
     }
@@ -140,18 +142,16 @@ impl EntityQuadMap {
     //     }
     // }
 
-    pub fn entity_in_cells(&self, cells: &CellPos) -> Result<Vec<&Entity>> {
+    pub fn entity_in_cells(&self, cells: &CellPos) -> Vec<Entity> {
         let mut result = Vec::new();
 
         for cell_pos in &cells.0 {
             if let Some(index) = self.cells_map.get(cell_pos) {
-                for e in &self.cells_arr[*index].entities {
-                    result.push(e);
-                }
+                result = [result.as_slice(), self.cells_arr[*index].entities.data()].concat();
             }
         }
 
-        Ok(result)
+        result
     }
 
     pub fn obb_overlap_edge_of_cell(cell: &Cell, obb: &OBB) -> bool {
@@ -182,7 +182,8 @@ impl EntityQuadMap {
             let cell_pos = prev_cells.0.pop().unwrap();
             if let Some(index) = self.cells_map.get_mut(&cell_pos) {
                 let prev_cell = self.cells_arr.get_mut(*index).unwrap();
-                prev_cell.entities.remove(&e);
+                prev_cell.entities.swap_remove_by_index(e.index() as usize);
+                // prev_cell.entities.remove(&e);
             }
         }
 
@@ -195,7 +196,8 @@ impl EntityQuadMap {
         for cell_pos in prev_cells.0.iter() {
             if let Some(index) = self.cells_map.get_mut(cell_pos) {
                 let new_cell = self.cells_arr.get_mut(*index).unwrap();
-                new_cell.entities.insert(e);
+                new_cell.entities.insert(e.index() as usize, e);
+                // new_cell.entities.insert(e);
             }
         }
 
@@ -224,10 +226,10 @@ impl EntityQuadMap {
 
         for (point, index) in self.cells_map.iter() {
             let cell = self.cells_arr.get(*index).unwrap();
-            if cell.entities.len() == 0 {
+            if cell.entities.is_empty() {
                 continue;
             }
-            let world_pos = cell_to_world(&point);
+            let world_pos = cell_to_world(point);
             let cam_adjusted_pos = renderer.get_camera_adjusted_pos(world_pos);
             let cam_scale = renderer.camera.scale.round() as i32;
             let cell_rect = Rect::new(
@@ -242,3 +244,4 @@ impl EntityQuadMap {
         }
     }
 }
+
