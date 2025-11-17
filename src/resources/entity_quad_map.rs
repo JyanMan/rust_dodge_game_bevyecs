@@ -1,6 +1,5 @@
 use bevy_ecs::prelude::*;
 use std::collections::HashMap;
-use std::collections::HashSet;
 use std::iter::*;
 use std::vec::*;
 use xsparseset::*;
@@ -32,16 +31,12 @@ impl Cell {
     }
 }
 
-type ENeighbors = SparseSet<usize, Entity, VecStorage<usize>>;
-
 #[derive(Resource, Default)]
 pub struct EntityQuadMap {
     render_dist: i32,
     cells_map: HashMap<Point, usize>,
     cells_arr: Vec<Cell>,
     new_cell_points: Vec<Point>,
-    // entity_neighbors: SparseSet<usize, ENeighbors, VecStorage<usize>>,
-    // obb_map: HashMap<Point, Cell>,
     center: Point,
 }
 
@@ -133,16 +128,9 @@ impl EntityQuadMap {
         }
     }
 
-    // pub fn entity_in_cells(&self, e: Entity) -> &[Entity] {
-    //     if let Some(neighbors) = self.entity_neighbors.get(e.index() as usize) {
-    //         return neighbors.data();            
-    //     }
-    //     else {
-    //         return &[];
-    //     }
-    // }
-
-    pub fn entity_in_cells(&self, cells: &CellPos) -> Vec<Entity> {
+    // returns all the entities the player is within the sames cells in
+    // this does not ignore duplicates, duplicate skip is done within entity_quad_system
+    pub fn entity_in_cells(&self, cells: &CellPos) -> IntoIter<Entity> {
         let mut result = Vec::new();
 
         for cell_pos in &cells.0 {
@@ -151,23 +139,27 @@ impl EntityQuadMap {
             }
         }
 
-        result
+        result.into_iter()
     }
 
     pub fn obb_overlap_edge_of_cell(cell: &Cell, obb: &OBB) -> bool {
-        for v in obb.get_vertices().iter() {
-            if !cell.contains_pos(v) {
+        // checks if any vertex is out current cell
+        for vertex in obb.get_vertices().iter() {
+            if !cell.contains_pos(vertex) {
                 return true;
             }
         }
         false
     }
 
+    // computes all the cell positions the obb occupies
+    // cell pos is not world pos
     pub fn obb_get_overlapping_cells(&self, obb: &OBB) -> IntoIter<Point> {
         let mut overlapping_points: Vec<Point> = Vec::new();
 
         for vert in obb.get_vertices().iter() {
-            let vert_cell_pos = world_to_cell(vert);
+            let vert_cell_pos = world_to_cell(vert);  // all cell_pos obb occupies
+            // skip duplicates
             if !overlapping_points.contains(&vert_cell_pos) {
                 overlapping_points.push(vert_cell_pos);
             }
@@ -176,6 +168,7 @@ impl EntityQuadMap {
         overlapping_points.into_iter()
     }
 
+    // updates the occupied cell positions of entity
     pub fn update_entity_cell(&mut self, e: Entity, prev_cells: &mut CellPos, obb: &OBB) {
         // remove entity from previous cells
         for _ in 0..prev_cells.0.len() {
@@ -200,23 +193,6 @@ impl EntityQuadMap {
                 // new_cell.entities.insert(e);
             }
         }
-
-        // let neighbors = if let Some(neighbors) = self.entity_neighbors.get_mut(e.index() as usize) { neighbors }
-        // else {
-        //     let new_set: SparseSet<usize, Entity, VecStorage<usize>> = SparseSet::default();
-        //     self.entity_neighbors.insert(e.index() as usize, new_set);
-        //     self.entity_neighbors.get_mut(e.index() as usize).unwrap()
-        // };
-        // neighbors.clear();
-        // for cell_pos in prev_cells.0.iter() {
-        //     if let Some(index) = self.cells_map.get(cell_pos) {
-        //         let cell = &self.cells_arr[*index];
-        //         for &e in cell.entities.iter() {
-        //             neighbors.insert(e.index() as usize, e);
-        //         }
-
-        //     }
-        // }
     }
 
     /* debug purposes */
