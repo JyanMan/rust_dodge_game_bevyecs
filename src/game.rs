@@ -131,7 +131,7 @@ impl Game {
         chunk_system_draw(&mut self.world, renderer);
         sprite_system_draw(&mut self.world, renderer);
         // render_all_obb(&mut self.world, renderer);
-        // render_occupied_quad(&mut self.world, renderer);
+        render_occupied_quad(&mut self.world, renderer);
         // debug_draw_entity_areas(&mut self.world, renderer);
     }
 

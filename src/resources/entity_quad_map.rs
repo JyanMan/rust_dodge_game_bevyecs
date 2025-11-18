@@ -174,7 +174,7 @@ impl EntityQuadMap {
             let cell_pos = prev_cells.0.pop().unwrap();
             if let Some(index) = self.cells_map.get_mut(&cell_pos) {
                 let prev_cell = self.cells_arr.get_mut(*index).unwrap();
-                prev_cell.entities.swap_remove_by_index(e.index() as usize);
+                prev_cell.entities.swap_remove_by_id(e.index() as usize);
                 // prev_cell.entities.remove(&e);
             }
         }
@@ -201,7 +201,7 @@ impl EntityQuadMap {
 
         for (point, index) in self.cells_map.iter() {
             let cell = self.cells_arr.get(*index).unwrap();
-            if cell.entities.is_empty() {
+            if cell.entities.data().is_empty() {
                 continue;
             }
             let world_pos = cell_to_world(point);

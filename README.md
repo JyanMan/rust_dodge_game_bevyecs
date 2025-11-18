@@ -1,4 +1,5 @@
 ## TODO
+* fix up when entity dies, it stays on the entity_quads
 * now make the weapon have a chance to drop
 * add zombie hit animation
 * add hit particle like blood or something
