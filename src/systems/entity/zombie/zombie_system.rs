@@ -113,12 +113,14 @@ pub fn zombie_movement_system(
             walker_d.state = WalkerState::Running;
             vel.vec.x += x_dir * walker_d.accel;
         }
-        else {
+        else if dist <= enemy_d.attack_range {
             // attack
             if walker_d.grounded {
                 combat.attacking = true;
                 combat.attack_dir = dir_to_player;
             }
+        }
+        else {
             walker_d.state = WalkerState::Idle;
             vel.vec.x -= x_dir.copysign(vel.vec.x) * walker_d.accel;
             if vel.vec.x.abs() <= walker_d.accel {

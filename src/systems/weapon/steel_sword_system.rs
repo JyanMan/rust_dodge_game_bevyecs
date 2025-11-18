@@ -5,6 +5,15 @@ use crate::core::renderer::*;
 use crate::resources::asset_manager::*;
 use crate::components::*;
 
+#[derive(Bundle)]
+struct SteelSwordBundle {
+    trans: Transform,
+    sprite: Sprite,
+    weapon_d: WeaponData,
+    tag: SteelSwordTag,
+    anim_player: AnimationPlayer,
+}
+
 pub fn steel_sword_spawn(world: &mut World, renderer: &mut Renderer, entity_owner: Entity) -> Entity {
 
     let owner_ref = world.entity(entity_owner);
