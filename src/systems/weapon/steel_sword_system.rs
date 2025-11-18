@@ -151,23 +151,23 @@ pub fn steel_sword_per_frame_update(weapon_d: &WeaponData, obb: &mut OBB) {
 }
 
 pub fn steel_sword_while_attacking(
-    weapon_d: &mut WeaponData,
-    grav_affected: &mut GravityAffected,
+    _: &mut WeaponData,
+    _: &mut GravityAffected,
     user_vel: &mut Velocity,
-    combat: &mut Combat,
-    sprite: &mut Sprite,
-    trans: &mut Transform
+    _: &mut Combat,
+    _: &mut Sprite,
+    _: &mut Transform
     // attack_dir: Vector2,
 ) {
     user_vel.vec = user_vel.vec * 0.5;
 }
 pub fn steel_sword_after_effect(
-    weapon_d: &mut WeaponData,
-    grav_affected: &mut GravityAffected,
+    _: &mut WeaponData,
+    _: &mut GravityAffected,
     user_vel: &mut Velocity,
-    combat: &mut Combat,
-    sprite: &mut Sprite,
-    trans: &mut Transform
+    _: &mut Combat,
+    _: &mut Sprite,
+    _: &mut Transform
     // attack_dir: Vector2,
 ) {
     user_vel.vec = user_vel.vec * 0.2;
@@ -193,12 +193,12 @@ pub fn steel_sword_start_attack(
 }
 
 pub fn steel_sword_end_attack(
-    weapon_d: &mut WeaponData,
+    _: &mut WeaponData,
     grav_affected: &mut GravityAffected,
     user_vel: &mut Velocity,
     combat: &mut Combat,
-    sprite: &mut Sprite,
-    trans: &mut Transform
+    _: &mut Sprite,
+    _: &mut Transform
 ) {
     user_vel.vec = Vector2::zero();
     grav_affected.0 = true;
