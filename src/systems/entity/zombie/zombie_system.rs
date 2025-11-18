@@ -8,7 +8,7 @@ use crate::systems::*;
 
 pub fn zombie_init(world: &mut World, renderer: &mut Renderer) {
     let mut rng = rand::thread_rng(); 
-    for _ in 0..300 {
+    for _ in 0..1 {
         let z = zombie_spawn(world, renderer, rng.gen_range(30..80) as f32);
         steel_sword_spawn(world, renderer, z);
     }
@@ -64,7 +64,7 @@ pub fn zombie_spawn(world: &mut World, renderer: &mut Renderer, speed: f32) -> E
         obb: OBB::new(10.0, 20.0, Vector2::new(10.0, -1000.0), false),
         enemy_d: EnemyData { chase_range: 200.0, attack_range: 20.0},
         cell_pos: CellPos(Vec::new()),
-        combat: Combat::new(1.0),
+        combat: Combat::new(1.0, 0.2),
         e_over_obbs: EntityOverlappingOBBs(Vec::new()),
         target_e_tags: TargetEntityTags(vec![EntityTag::PlayerWeapon]),
         tag_container: EntityTagContainer(EntityTag::Zombie),
@@ -87,8 +87,9 @@ pub fn zombie_movement_system(
     for (_p_tag, trans) in &player_query {
         p_trans = *trans;
     }
-    for (trans, mut vel, _z_tag, mut walker_d, enemy_d, knock, mut combat) in &mut query {
+    for (trans, mut vel, _, mut walker_d, enemy_d, knock, mut combat) in &mut query {
         if knock.knocked { continue; }
+        if combat.attacking { continue; }
         // jump ai
         if vel.vec.x.abs() <= 0.001 && walker_d.state == WalkerState::Running {
             vel.vec.y -= walker_d.jump_force;
@@ -108,23 +109,25 @@ pub fn zombie_movement_system(
         let dir_to_player = Vector2::new(x_trans, y_trans).normalize();
         let x_dir = (1.0 as f32).copysign(x_trans);
 
-        combat.attacking = false;
-        if dist <= enemy_d.chase_range && dist >= enemy_d.attack_range {
-            walker_d.state = WalkerState::Running;
-            vel.vec.x += x_dir * walker_d.accel;
-        }
-        else if dist <= enemy_d.attack_range {
+        if dist < enemy_d.attack_range {
             // attack
             if walker_d.grounded {
-                combat.attacking = true;
-                combat.attack_dir = dir_to_player;
+                let attack_dir = dir_to_player;
+                combat.attack(attack_dir);
             }
         }
         else {
-            walker_d.state = WalkerState::Idle;
-            vel.vec.x -= x_dir.copysign(vel.vec.x) * walker_d.accel;
-            if vel.vec.x.abs() <= walker_d.accel {
-                vel.vec.x = 0.0;
+            combat.not_attack();
+            if dist <= enemy_d.chase_range {
+                walker_d.state = WalkerState::Running;
+                vel.vec.x += x_dir * walker_d.accel;
+            }
+            else {
+                walker_d.state = WalkerState::Idle;
+                vel.vec.x -= x_dir.copysign(vel.vec.x) * walker_d.accel;
+                if vel.vec.x.abs() <= walker_d.accel {
+                    vel.vec.x = 0.0;
+                }
             }
         }
         if vel.vec.x.abs() >= walker_d.run_speed {

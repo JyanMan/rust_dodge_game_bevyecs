@@ -9,14 +9,14 @@ use std::collections::HashSet;
 
 pub fn player_system_input(mut query: Query<(&mut PlayerInput, &mut Combat)>, user_input_res: Res<KeyInput>) {
     for (mut input, mut combat) in &mut query {
-        if user_input_res.0.contains(&Keycode::Space) { input.jump = true; } else { input.jump = false; }
+        input.jump = user_input_res.0.contains(&Keycode::Space);
 
-        if user_input_res.0.contains(&Keycode::A) { input.left = true; } else { input.left = false; }
+        input.left = user_input_res.0.contains(&Keycode::A);
 
-        if user_input_res.0.contains(&Keycode::D) { input.right = true; } else { input.right = false; }
+        input.right = user_input_res.0.contains(&Keycode::D);
 
-        if user_input_res.0.contains(&Keycode::Q) { input.dodge = true; } else { input.dodge = false; }
+        input.dodge = user_input_res.0.contains(&Keycode::Q);
 
-        if user_input_res.0.contains(&Keycode::E) { combat.attacking = true } else { combat.attacking = false }
+        input.attack = user_input_res.0.contains(&Keycode::E);
     }
 }

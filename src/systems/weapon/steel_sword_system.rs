@@ -12,6 +12,13 @@ struct SteelSwordBundle {
     weapon_d: WeaponData,
     tag: SteelSwordTag,
     anim_player: AnimationPlayer,
+    held: HeldBy,
+    obb: OBB,
+    cell_pos: CellPos,
+    over_obbs: EntityOverlappingOBBs,
+    target_tags: TargetEntityTags,
+    tag_container: EntityTagContainer,
+    funcs: WeaponFns,
 }
 
 pub fn steel_sword_spawn(world: &mut World, renderer: &mut Renderer, entity_owner: Entity) -> Entity {
@@ -31,21 +38,27 @@ pub fn steel_sword_spawn(world: &mut World, renderer: &mut Renderer, entity_owne
 
     let attack_dur = 0.2;
 
-    let steel_sword_e = world.spawn((
-        Transform::zero(),
+    let steel_sword_e = world.spawn(SteelSwordBundle {
+        trans: Transform::zero(),
         sprite,
-        WeaponData::new(1, 800.0, attack_dur, WeaponState::Owned, WeaponType::SteelSword), 
-        SteelSwordTag::default(),
-        AnimationPlayer::new(WeaponAnim::COUNT),
-        HeldBy(entity_owner),
-        OBB::new(30.0, 30.0, Vector2::zero(), true),
-        CellPos(Vec::new()),
-        EntityOverlappingOBBs(Vec::new()),
+        weapon_d: WeaponData::new(1, 800.0, attack_dur, 0.2, 0.1, WeaponState::Owned, WeaponType::SteelSword), 
+        tag: SteelSwordTag::default(),
+        anim_player: AnimationPlayer::new(WeaponAnim::COUNT),
+        held: HeldBy(entity_owner),
+        obb: OBB::new(30.0, 30.0, Vector2::zero(), true),
+        cell_pos: CellPos(Vec::new()),
+        over_obbs: EntityOverlappingOBBs(Vec::new()),
         // target_entity_tags,
-        TargetEntityTags(vec![]),
-        entity_tag_container,
+        target_tags: TargetEntityTags(vec![]),
+        tag_container: entity_tag_container,
+        funcs: WeaponFns {
+            start_attack: steel_sword_start_attack,
+            while_attacking: steel_sword_while_attacking,
+            after_effect: steel_sword_after_effect,
+            end_attack: steel_sword_end_attack,
+        }
         // EntityTagContainer(EntityTag::Weapon),
-    )).id();
+    }).id();
 
     // init animation
     // do this separately as the pointer to sprite is moved on spawn
@@ -137,14 +150,59 @@ pub fn steel_sword_per_frame_update(weapon_d: &WeaponData, obb: &mut OBB) {
     obb.compute_vertices();
 }
 
-pub fn steel_sword_start_attack_effect(user_vel: &mut Velocity, attack_dir: Vector2, grav_affected: &mut GravityAffected) {
-    user_vel.vec = attack_dir * 1000.0;
-    grav_affected.0 = false;
+pub fn steel_sword_while_attacking(
+    weapon_d: &mut WeaponData,
+    grav_affected: &mut GravityAffected,
+    user_vel: &mut Velocity,
+    combat: &mut Combat,
+    sprite: &mut Sprite,
+    trans: &mut Transform
+    // attack_dir: Vector2,
+) {
+    user_vel.vec = user_vel.vec * 0.5;
+}
+pub fn steel_sword_after_effect(
+    weapon_d: &mut WeaponData,
+    grav_affected: &mut GravityAffected,
+    user_vel: &mut Velocity,
+    combat: &mut Combat,
+    sprite: &mut Sprite,
+    trans: &mut Transform
+    // attack_dir: Vector2,
+) {
+    user_vel.vec = user_vel.vec * 0.2;
 }
 
-pub fn steel_sword_end_attack_effect(user_vel: &mut Velocity, grav_affected: &mut GravityAffected) {
+// fn(&mut WeaponData, &mut GravityAffected, &mut Velocity, &mut Combat, &mut Sprite, &mut Transform)
+pub fn steel_sword_start_attack(
+    weapon_d: &mut WeaponData,
+    grav_affected: &mut GravityAffected,
+    user_vel: &mut Velocity,
+    combat: &mut Combat,
+    sprite: &mut Sprite,
+    trans: &mut Transform
+    // attack_dir: Vector2,
+) {
+    let attack_dir = combat.attack_dir;
+    steel_sword_animation(sprite, trans, attack_dir);
+
+    weapon_d.attack_dir = attack_dir;
+    user_vel.vec = attack_dir * 1000.0;
+    grav_affected.0 = false;
+    combat.attacking = true;
+}
+
+pub fn steel_sword_end_attack(
+    weapon_d: &mut WeaponData,
+    grav_affected: &mut GravityAffected,
+    user_vel: &mut Velocity,
+    combat: &mut Combat,
+    sprite: &mut Sprite,
+    trans: &mut Transform
+) {
     user_vel.vec = Vector2::zero();
     grav_affected.0 = true;
+    combat.attacking = false;
 }
 
 #[allow(dead_code)]

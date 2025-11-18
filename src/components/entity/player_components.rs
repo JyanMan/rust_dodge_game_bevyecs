@@ -55,4 +55,5 @@ pub struct PlayerInput {
     pub jump: bool,
     pub left: bool,
     pub right: bool,
+    pub attack: bool,
 }

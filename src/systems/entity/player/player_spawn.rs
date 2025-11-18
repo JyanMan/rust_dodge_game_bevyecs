@@ -55,7 +55,7 @@ pub fn player_spawn(world: &mut World, renderer: &mut Renderer) -> Entity {
          },
          anim_player: AnimationPlayer::new(WalkerAnim::COUNT),
          grav_affected: GravityAffected(true),
-         combat: Combat::new(2.0),
+         combat: Combat::new(2.0, 0.1),
          e_over_obbs: EntityOverlappingOBBs(Vec::new()),
          target_e_tags: TargetEntityTags(vec![EntityTag::EnemyWeapon]),
          cell_pos: CellPos(Vec::new()),

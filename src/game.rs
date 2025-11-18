@@ -9,7 +9,7 @@ use crate::resources::*;
 use crate::systems::world::*;
 use crate::systems::*;
 use crate::config::*;
-use crate::events::*;
+// use crate::events::*;
 
 
 #[allow(dead_code)]
@@ -59,8 +59,9 @@ impl Game {
             player_timer_system,
             weapon_attack_timer_and_signal_update,
             health_knock_timer,
-            player_weapon_system_animation_update.before(animation_player_update),
-            enemy_weapon_system_animation_update.before(animation_player_update),
+            player_weapon_signal_update,
+            weapon_system_animation_update.before(animation_player_update),
+            // enemy_weapon_system_animation_update.before(animation_player_update),
             animation_player_update,
             weapon_lost_owner,
         ));
