@@ -107,7 +107,7 @@ pub fn zombie_movement_system(
 
         // get the direction on x axis
         let dir_to_player = Vector2::new(x_trans, y_trans).normalize();
-        let x_dir = (1.0 as f32).copysign(x_trans);
+        let x_dir = (1.0_f32).copysign(x_trans);
 
         if dist < enemy_d.attack_range {
             // attack
