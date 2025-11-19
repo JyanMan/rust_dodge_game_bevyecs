@@ -59,9 +59,9 @@ impl Game {
             player_timer_system,
             player_health_bar_update,
             player_weapon_signal_update,
-            weapon_attack_timer_and_signal_update,
             health_knock_timer,
-            weapon_system_animation_update.before(animation_player_update),
+            weapon_attack_timer_and_signal_update.before(weapon_system_animation_update),
+            weapon_system_animation_update.after(weapon_attack_timer_and_signal_update),
             // enemy_weapon_system_animation_update.before(animation_player_update),
             animation_player_update,
             weapon_lost_owner,
@@ -133,7 +133,7 @@ impl Game {
     pub fn draw(&mut self, renderer: &mut Renderer) {
         chunk_system_draw(&mut self.world, renderer);
         sprite_system_draw(&mut self.world, renderer);
-        sprite_system_draw_health_bar(&mut self.world, renderer);
+        health_bar_system_draw(&mut self.world, renderer);
         // render_all_obb(&mut self.world, renderer);
         // render_occupied_quad(&mut self.world, renderer);
         // debug_draw_entity_areas(&mut self.world, renderer);

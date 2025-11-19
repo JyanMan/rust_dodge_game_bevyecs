@@ -28,11 +28,15 @@ impl Health {
             self.immune = false;
             return true;
         }
-        return false;
+        false
+    }
+
+    pub fn set_immune(&mut self) {
+       self.immune = true; 
     }
 
     pub fn hit_and_immune(&mut self, damage: i32) {
         self.current -= damage; 
-        self.immune = true;
+        self.set_immune();
     }
 }

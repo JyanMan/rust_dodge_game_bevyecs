@@ -1,11 +1,5 @@
 use crate::components::entity::{PlayerData, PlayerInput, PlayerState};
-use crate::components::{
-    WalkerData,
-    WalkerState,
-    Velocity,
-    Vector2,
-    Transform,
-};
+use crate::components::*;
 use crate::config::*;
 use crate::resources::MouseInput;
 
@@ -75,9 +69,10 @@ pub fn get_dodge_dir(mouse_pos: Vector2, p_data: &PlayerData) -> Vector2 {
     mouse_delta
 }
 
-pub fn player_dodging(dodge_dir: Vector2, p_data: &mut PlayerData, vel: &mut Velocity) {
+pub fn player_dodging(dodge_dir: Vector2, p_data: &mut PlayerData, vel: &mut Velocity, health: &mut Health) {
     vel.vec = Vector2::zero();
     vel.vec = vel.vec + (dodge_dir * p_data.dodge_speed);
+    health.set_immune();
 }
 
 pub fn player_lerping(vel: &mut Velocity) {

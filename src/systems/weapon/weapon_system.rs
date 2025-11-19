@@ -17,10 +17,10 @@ pub fn player_weapon_signal_update(
 }
 
 pub fn weapon_system_animation_update(
-    mut query: Query<(&mut WeaponData, &mut Sprite, &mut Transform, &HeldBy, &WeaponFns)>, 
+    mut query: Query<(&mut WeaponData, &mut Sprite, &mut Transform, &HeldBy, &WeaponFns, &mut AnimationPlayer)>, 
     mut owner_query: Query<(&mut Combat, &mut Velocity, &mut GravityAffected), (With<HeldItem>, Without<HeldBy>)>, 
 ) {
-    for (mut weapon_d, mut sprite, mut trans, owned_by, weapon_fns) in &mut query {
+    for (mut weapon_d, mut sprite, mut trans, owned_by, weapon_fns, mut anim_player) in &mut query {
         if weapon_d.state == WeaponState::Unowned {
             return;
         }
@@ -35,23 +35,22 @@ pub fn weapon_system_animation_update(
 
             match weapon_d.state {
                 WeaponState::StartAttack => {
-                    weapon_d.attack_dir = owner_combat.attack_dir;
                     weapon_d.state = WeaponState::Attacking;
                     let start_attack = weapon_fns.start_attack;
-                    start_attack(&mut weapon_d, &mut grav_affected, &mut vel, &mut owner_combat, &mut sprite, &mut trans);
+                    start_attack(&mut weapon_d, &mut grav_affected, &mut vel, &mut owner_combat, &mut sprite, &mut trans, &mut anim_player);
                 },
                 WeaponState::Attacking => {
                     let while_attacking = weapon_fns.while_attacking;
-                    while_attacking(&mut weapon_d, &mut grav_affected, &mut vel, &mut owner_combat, &mut sprite, &mut trans);
+                    while_attacking(&mut weapon_d, &mut grav_affected, &mut vel, &mut owner_combat, &mut sprite, &mut trans, &mut anim_player);
                 },
                 WeaponState::AfterEffectAttack => {
                     let after_effect_attack = weapon_fns.after_effect;
-                    after_effect_attack(&mut weapon_d, &mut grav_affected, &mut vel, &mut owner_combat, &mut sprite, &mut trans);
+                    after_effect_attack(&mut weapon_d, &mut grav_affected, &mut vel, &mut owner_combat, &mut sprite, &mut trans, &mut anim_player);
                 }
                 WeaponState::EndAttack => {
-                    let end_attack = weapon_fns.end_attack;
-                    end_attack(&mut weapon_d, &mut grav_affected, &mut vel, &mut owner_combat, &mut sprite, &mut trans);
                     weapon_d.state = WeaponState::Idle;
+                    let end_attack = weapon_fns.end_attack;
+                    end_attack(&mut weapon_d, &mut grav_affected, &mut vel, &mut owner_combat, &mut sprite, &mut trans, &mut anim_player);
                 },
                 _ => {}
             }
@@ -60,24 +59,20 @@ pub fn weapon_system_animation_update(
 }
 
 pub fn weapon_attack_timer_and_signal_update(
-    mut query: Query<(&mut Sprite, &mut WeaponData, &mut AnimationPlayer, &mut OBB), With<HeldBy>>,
+    mut query: Query<(&mut Sprite, &mut WeaponData, &mut OBB), With<HeldBy>>,
     delta_time: Res<DeltaTime>
 ) {
-    for (mut sprite, mut weapon_d, mut anim_player, mut obb) in &mut query {
+    for (mut sprite, mut weapon_d, mut obb) in &mut query {
         if weapon_d.attacking {
             obb.disabled = false;
             sprite.visible = true;
-            anim_player.play(WeaponAnim::Attack.usize());
+            // anim_player.play(WeaponAnim::Attack.usize());
             weapon_d.attack_timer(delta_time.0);
         }
         else {
             obb.disabled = true;
             sprite.visible = false;
-            anim_player.stop();
-        }
-
-        // cooldown
-        if !weapon_d.attacking {
+            // cooldown
             if !weapon_d.can_attack {
                 weapon_d.attack_cd_timer(delta_time.0);
             }

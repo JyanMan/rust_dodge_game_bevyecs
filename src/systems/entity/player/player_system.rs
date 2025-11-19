@@ -21,14 +21,14 @@ pub fn player_timer_system(mut query: Query<(&mut PlayerData, &mut WalkerData)>,
 }
 
 pub fn player_movement_system(
-    mut query: Query<(&mut PlayerData, &mut WalkerData, &mut Velocity, &PlayerInput, &Combat)>, 
+    mut query: Query<(&mut PlayerData, &mut WalkerData, &mut Velocity, &mut Health, &PlayerInput, &Combat)>, 
     mouse_input: Res<MouseInput>
 ) {
     use super::player_movement::*;
 
     let mouse_pos = mouse_input.pos;
 
-    for (mut p_data, mut walker_d, mut vel, input, combat) in &mut query {
+    for (mut p_data, mut walker_d, mut vel, mut health, input, combat) in &mut query {
         if input.dodge && p_data.can_dodge {
             player_dodge(&mut p_data);
         }
@@ -40,7 +40,7 @@ pub fn player_movement_system(
         }
         if p_data.state == P::Dodging {
             let dodge_dir = get_dodge_dir(mouse_pos, &p_data);
-            player_dodging(dodge_dir, &mut p_data, &mut vel);
+            player_dodging(dodge_dir, &mut p_data, &mut vel, &mut health);
             return;
         } 
         if p_data.state == P::Lerping {

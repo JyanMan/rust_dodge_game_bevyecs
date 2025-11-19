@@ -17,10 +17,10 @@ pub enum WeaponState {
 
 #[derive(Component)]
 pub struct WeaponFns {
-    pub start_attack: fn(&mut WeaponData, &mut GravityAffected, &mut Velocity, &mut Combat, &mut Sprite, &mut Transform),
-    pub while_attacking: fn(&mut WeaponData, &mut GravityAffected, &mut Velocity, &mut Combat, &mut Sprite, &mut Transform),
-    pub after_effect: fn(&mut WeaponData, &mut GravityAffected, &mut Velocity, &mut Combat, &mut Sprite, &mut Transform),
-    pub end_attack: fn(&mut WeaponData, &mut GravityAffected, &mut Velocity, &mut Combat, &mut Sprite, &mut Transform),
+    pub start_attack: fn(&mut WeaponData, &mut GravityAffected, &mut Velocity, &mut Combat, &mut Sprite, &mut Transform, &mut AnimationPlayer),
+    pub while_attacking: fn(&mut WeaponData, &mut GravityAffected, &mut Velocity, &mut Combat, &mut Sprite, &mut Transform, &mut AnimationPlayer),
+    pub after_effect: fn(&mut WeaponData, &mut GravityAffected, &mut Velocity, &mut Combat, &mut Sprite, &mut Transform, &mut AnimationPlayer),
+    pub end_attack: fn(&mut WeaponData, &mut GravityAffected, &mut Velocity, &mut Combat, &mut Sprite, &mut Transform, &mut AnimationPlayer),
 }
 
 #[derive(Component, Clone)]

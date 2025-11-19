@@ -156,9 +156,11 @@ pub fn steel_sword_while_attacking(
     user_vel: &mut Velocity,
     _: &mut Combat,
     _: &mut Sprite,
-    _: &mut Transform
+    _: &mut Transform,
+    anim_player: &mut AnimationPlayer
     // attack_dir: Vector2,
 ) {
+    anim_player.play(WeaponAnim::Attack.usize());
     user_vel.vec = user_vel.vec * 0.5;
 }
 pub fn steel_sword_after_effect(
@@ -167,10 +169,11 @@ pub fn steel_sword_after_effect(
     user_vel: &mut Velocity,
     _: &mut Combat,
     _: &mut Sprite,
-    _: &mut Transform
-    // attack_dir: Vector2,
+    _: &mut Transform,
+    anim_player: &mut AnimationPlayer
 ) {
     user_vel.vec = user_vel.vec * 0.2;
+    anim_player.stop();
 }
 
 // fn(&mut WeaponData, &mut GravityAffected, &mut Velocity, &mut Combat, &mut Sprite, &mut Transform)
@@ -180,11 +183,13 @@ pub fn steel_sword_start_attack(
     user_vel: &mut Velocity,
     combat: &mut Combat,
     sprite: &mut Sprite,
-    trans: &mut Transform
+    trans: &mut Transform,
+    anim_player: &mut AnimationPlayer
     // attack_dir: Vector2,
 ) {
     let attack_dir = combat.attack_dir;
     steel_sword_animation(sprite, trans, attack_dir);
+    anim_player.play(WeaponAnim::Attack.usize());
 
     weapon_d.attack_dir = attack_dir;
     user_vel.vec = attack_dir * 1000.0;
@@ -198,8 +203,10 @@ pub fn steel_sword_end_attack(
     user_vel: &mut Velocity,
     combat: &mut Combat,
     _: &mut Sprite,
-    _: &mut Transform
+    _: &mut Transform,
+    _: &mut AnimationPlayer
 ) {
+    // anim_player.stop();
     user_vel.vec = Vector2::zero();
     grav_affected.0 = true;
     combat.attacking = false;
