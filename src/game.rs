@@ -57,9 +57,10 @@ impl Game {
     fn register_systems(&mut self, renderer: &mut Renderer) {
         self.update_sched.add_systems((
             player_timer_system,
+            player_health_bar_update,
+            player_weapon_signal_update,
             weapon_attack_timer_and_signal_update,
             health_knock_timer,
-            player_weapon_signal_update,
             weapon_system_animation_update.before(animation_player_update),
             // enemy_weapon_system_animation_update.before(animation_player_update),
             animation_player_update,
@@ -101,6 +102,8 @@ impl Game {
         game.register_resources(renderer);
         game.register_observers();
 
+        player_health_bar_spawn(&mut game.world, renderer);
+
         let player_e = player_spawn(&mut game.world, renderer);
         steel_sword_spawn(&mut game.world, renderer, player_e);
 
@@ -130,8 +133,9 @@ impl Game {
     pub fn draw(&mut self, renderer: &mut Renderer) {
         chunk_system_draw(&mut self.world, renderer);
         sprite_system_draw(&mut self.world, renderer);
+        sprite_system_draw_health_bar(&mut self.world, renderer);
         // render_all_obb(&mut self.world, renderer);
-        render_occupied_quad(&mut self.world, renderer);
+        // render_occupied_quad(&mut self.world, renderer);
         // debug_draw_entity_areas(&mut self.world, renderer);
     }
 

@@ -8,7 +8,7 @@ use crate::systems::*;
 
 pub fn zombie_init(world: &mut World, renderer: &mut Renderer) {
     let mut rng = rand::thread_rng(); 
-    for _ in 0..300 {
+    for _ in 0..400 {
         let z = zombie_spawn(world, renderer, rng.gen_range(30..80) as f32);
         steel_sword_spawn(world, renderer, z);
     }
@@ -111,10 +111,10 @@ pub fn zombie_movement_system(
 
         if dist < enemy_d.attack_range {
             // attack
-            if walker_d.grounded {
+            // if walker_d.grounded {
                 let attack_dir = dir_to_player;
                 combat.attack(attack_dir);
-            }
+            // }
         }
         else {
             combat.not_attack();

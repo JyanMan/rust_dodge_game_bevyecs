@@ -9,7 +9,8 @@ pub enum TextureId {
     Player,
     TileAtlas,
     Zombie,
-    SteelSword
+    SteelSword,
+    HealthBar
 }
 
 pub struct AssetManager <'a> {
@@ -17,6 +18,7 @@ pub struct AssetManager <'a> {
     zombie_t: Rc<Texture<'a>>,
     tile_atlas_t: Rc<Texture<'a>>,
     steel_sword_t: Rc<Texture<'a>>,
+    health_bar_clear_t: Rc<Texture<'a>>,
 }
 
 impl <'a> AssetManager <'a> {
@@ -28,12 +30,14 @@ impl <'a> AssetManager <'a> {
         let zombie_t = Rc::new(t_creator.load_texture("assets/zombie.png").unwrap());
         let tile_atlas_t = Rc::new(t_creator.load_texture("assets/tile_atlas.png").unwrap());
         let steel_sword_t = Rc::new(t_creator.load_texture("assets/steel_sword.png").unwrap());
+        let health_bar_clear_t= Rc::new(t_creator.load_texture("assets/health_bar.png").unwrap());
 
         Self {
-            player_t: player_t,
-            tile_atlas_t: tile_atlas_t,
-            zombie_t: zombie_t,
-            steel_sword_t: steel_sword_t
+            player_t,
+            tile_atlas_t,
+            zombie_t,
+            steel_sword_t,
+            health_bar_clear_t
         }
     }
 
@@ -43,6 +47,7 @@ impl <'a> AssetManager <'a> {
             TextureId::TileAtlas => self.tile_atlas_t.clone(),
             TextureId::Zombie => self.zombie_t.clone(),
             TextureId::SteelSword => self.steel_sword_t.clone(),
+            TextureId::HealthBar=> self.health_bar_clear_t.clone(),
         }
     }
 }

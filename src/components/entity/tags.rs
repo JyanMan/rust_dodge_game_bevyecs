@@ -8,3 +8,9 @@ pub struct ZombieTag {}
 
 #[derive(Component, Clone, Default)]
 pub struct EnemyTag {}
+
+#[derive(Component, Clone, Default)]
+pub struct HealthBarTag{}
+
+#[derive(Component, Clone, Default)]
+pub struct HealthBarFillTag{}
