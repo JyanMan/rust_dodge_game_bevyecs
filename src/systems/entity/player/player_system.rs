@@ -1,13 +1,8 @@
-use sdl2::EventPump;
-use sdl2::keyboard::*;
 use bevy_ecs::prelude::*;
-use crate::core::renderer::*;
-use crate::components::entity::{ WalkerData, WalkerState, WalkerAnim, };
+use crate::components::entity::WalkerData;
 use crate::components::*;
-use crate::resources::asset_manager::*;
 use crate::resources::*;
 use crate::components::entity::*;
-use crate::systems::weapon::*;
 
 use PlayerState as P;
 
@@ -53,7 +48,7 @@ pub fn player_movement_system(
             return;
         }
 
-        player_left_right_motion(&mut p_data, &mut walker_d, &mut vel, input);
+        player_left_right_motion(&mut walker_d, &mut vel, input);
 
         if input.jump && p_data.can_jump {
             player_jump(&mut p_data, &mut walker_d, &mut vel);
@@ -61,6 +56,7 @@ pub fn player_movement_system(
     }
 }
 
+#[allow(dead_code)]
 pub fn player_test_overlap(
     mut query: Query<(&PlayerTag, &EntityOverlappingOBBs)>, 
 ) {

@@ -1,5 +1,4 @@
 use bevy_ecs::prelude::*;
-use std::vec::Vec;
 
 use crate::components::*;
 

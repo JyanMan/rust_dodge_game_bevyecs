@@ -1,6 +1,5 @@
 use bevy_ecs::prelude::*;
 use crate::components::*;
-use crate::components::item_handle::*;
 use crate::resources::*;
 
 pub fn player_weapon_signal_update(

@@ -1,8 +1,4 @@
-use bevy_ecs::prelude::*;
 
-use crate::components::*;
-use crate::resources::*;
-use crate::systems::weapon::*;
 
 #[derive(Clone, Default)]
 pub enum WeaponType {

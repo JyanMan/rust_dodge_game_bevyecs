@@ -1,7 +1,6 @@
 use crate::components::*;
 use crate::resources::*;
 use bevy_ecs::prelude::*;
-use std::collections::HashMap;
 use xsparseset::*;
 
 /* PHYSICS */

@@ -1,4 +1,3 @@
-use std::any::TypeId;
 use bevy_ecs::prelude::*;
 
 use crate::core::renderer::*;

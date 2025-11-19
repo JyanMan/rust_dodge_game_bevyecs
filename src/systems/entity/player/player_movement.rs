@@ -1,12 +1,10 @@
 use crate::components::entity::{PlayerData, PlayerInput, PlayerState};
 use crate::components::*;
-use crate::config::*;
 use crate::resources::MouseInput;
 
 use PlayerState as P;
 
 pub fn player_left_right_motion(
-    p_data: &mut PlayerData, 
     walker_d: &mut WalkerData, 
     vel: &mut Velocity,
     input: &PlayerInput

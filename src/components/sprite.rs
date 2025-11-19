@@ -1,7 +1,5 @@
-use sdl2::render::*;
 use sdl2::rect::*;
 use sdl2::pixels::Color;
-use std::rc::Rc;
 use bevy_ecs::prelude::*;
 
 use crate::core::renderer::*;

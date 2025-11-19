@@ -1,4 +1,3 @@
-use std::ops::*;
 use super::Vector2;
 use bevy_ecs::prelude::*;
 

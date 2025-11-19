@@ -1,6 +1,5 @@
 use bevy_ecs::prelude::*;
 
-use std::ops::*;
 use super::Vector2;
 
 #[derive(Component, Debug, Copy, Clone, Default, PartialEq)]

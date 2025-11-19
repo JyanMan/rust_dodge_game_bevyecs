@@ -6,6 +6,5 @@ pub mod tags;
 
 pub use player_components::*;
 pub use enemy_components::*;
-pub use zombie_components::*;
 pub use walker_components::*;
 pub use tags::*;

@@ -1,23 +1,15 @@
 use bevy_ecs::prelude::*;
 use std::ptr::*;
-use std::any::*;
 
 use crate::components::{ Sprite, Vector2, OBB };
-use crate::systems::*;
 
-pub trait AnimationSet {
-    fn get(&mut self, name: &str) -> Option<&mut Animation>;
-}
-
+#[allow(dead_code)]
 #[derive(Clone)]
 pub enum AnimData {
-    //Integer { value: i32, target: *mut i32 },
     SpriteFrame { value: i32, target: Entity },
     OBBOffset { offset: Vector2, target: Entity },
     Debug { msg: String },
     OBBUpdate { target: Entity }
-    // Float { value: f32, target: *mut f32 },
-    // Bool { value: bool, target: *mut bool },
 }
 
 #[derive(Clone)]
@@ -79,35 +71,5 @@ impl Animation {
         updated
     }
 
-    pub fn play_timer(&self) -> f32 { self.play_timer }
-
     pub fn curr_frame(&self) -> &AnimFrame { &self.frames[self.curr_frame] }
-
-    pub fn curr_frame_index(&self) -> usize { self.curr_frame }
-
-    pub fn update_frame(world: &mut World, anim_frame: &AnimFrame) {
-        for anim_data in anim_frame.data.iter() {
-            match anim_data {
-                AnimData::SpriteFrame { value, target } => {
-                    if let Ok(mut e) = world.get_entity_mut(*target) {
-                        let mut sprite = e.get_mut::<Sprite>().expect("entity does not have sprite component");
-                        sprite.frame = *value;
-                    }
-                },
-                AnimData::OBBOffset { offset, target } => {
-                    if let Ok(mut e) = world.get_entity_mut(*target) {
-                        let mut obb = e.get_mut::<OBB>().expect("entity does not have sprite component");
-                        obb.offset = *offset;
-                    }
-                    // obb.compute_vertices();
-                },
-                AnimData::OBBUpdate { target } => {
-                    // steel_sword_per_frame_update(world, *target);
-                },
-                AnimData::Debug{ msg } => {
-                    // println!("ANIM_DEBUG: {}", msg);
-                },
-            }
-        }
-    }
 }

@@ -7,9 +7,7 @@ pub mod world;
 pub mod weapon;
 
 pub use animation::*;
-pub use debug::*;
 pub use entity::*;
 pub use physics::*;
 pub use render::*;
-pub use world::*;
 pub use weapon::*;
