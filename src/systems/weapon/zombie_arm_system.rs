@@ -30,9 +30,8 @@ pub fn zombie_arm_spawn(world: &mut World, renderer: &mut Renderer, entity_owner
         EntityTag::Player => EntityTag::PlayerWeapon,
         _ => EntityTag::Weapon,
     });
-
     
-    let mut sprite = Sprite::new(&renderer.asset_m, TextureId::SteelSword);
+    let mut sprite = Sprite::new(&renderer.asset_m, TextureId::ZombieArm);
     sprite.set_sprite_sheet(4, 2);
     sprite.visible = true;
 

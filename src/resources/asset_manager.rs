@@ -21,6 +21,7 @@ pub enum TextureId {
     TileAtlas,
     Zombie,
     SteelSword,
+    ZombieArm,
     HealthBar
 }
 impl TextureId {
@@ -36,11 +37,6 @@ pub enum FontId {
 }
 
 pub struct AssetManager <'a> {
-    // player_t: Rc<Texture<'a>>,
-    // zombie_t: Rc<Texture<'a>>,
-    // tile_atlas_t: Rc<Texture<'a>>,
-    // steel_sword_t: Rc<Texture<'a>>,
-    // pub health_bar_clear_t: Rc<Texture<'a>>,
     pub open_sans_bold: Rc<Font<'a, 'a>>,
     pub fonts_map: HashMap<String, Texture<'a>>,
     pub text_texture_set: SparseSet<TextId, Texture<'a>, VecStorage<TextId>>,
@@ -71,16 +67,12 @@ impl <'a> AssetManager <'a> {
         Self::new_texture(&mut texture_set, t_creator, "assets/zombie.png", TextureId::Zombie);
         Self::new_texture(&mut texture_set, t_creator, "assets/tile_atlas.png", TextureId::TileAtlas);
         Self::new_texture(&mut texture_set, t_creator, "assets/steel_sword.png", TextureId::SteelSword);
+        Self::new_texture(&mut texture_set, t_creator, "assets/steel_sword.png", TextureId::ZombieArm);
         Self::new_texture(&mut texture_set, t_creator, "assets/health_bar.png", TextureId::HealthBar);
         
         let open_sans_bold = Rc::new(ttf_ctx.load_font("assets/fonts/OpenSans-Bold.ttf", 18).unwrap());
 
         Self {
-            // player_t,
-            // tile_atlas_t,
-            // zombie_t,
-            // steel_sword_t,
-            // health_bar_clear_t,
             open_sans_bold,
             fonts_map: HashMap::new(),
             text_texture_set: SparseSet::default(),
@@ -92,13 +84,6 @@ impl <'a> AssetManager <'a> {
 
     pub fn get_texture(&'a self, id: TextureId) -> &'a Texture<'a> {
         self.texture_set.get(id.as_usize()).unwrap()
-        // match t_id {
-        //     TextureId::Player => self.player_t.clone(),
-        //     TextureId::TileAtlas => self.tile_atlas_t.clone(),
-        //     TextureId::Zombie => self.zombie_t.clone(),
-        //     TextureId::SteelSword => self.steel_sword_t.clone(),
-        //     TextureId::HealthBar => self.health_bar_clear_t.clone(),
-        // }
     }
 }
 
