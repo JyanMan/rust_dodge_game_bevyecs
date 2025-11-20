@@ -2,7 +2,6 @@ use bevy_ecs::prelude::*;
 
 use sdl2::keyboard::*;
 use crate::components::entity::{PlayerInput};
-use crate::components::Combat;
 use crate::resources::*;
 
 pub fn player_system_input(mut query: Query<&mut PlayerInput>, user_input_res: Res<KeyInput>) {

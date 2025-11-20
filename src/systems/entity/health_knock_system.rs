@@ -2,6 +2,7 @@ use bevy_ecs::prelude::*;
 use crate::components::*;
 use crate::resources::*;
 use crate::core::*;
+use crate::systems::*;
 
 pub fn player_health_bar_spawn(world: &mut World, renderer: &mut Renderer) {
     let mut sprite_health= Sprite::new(&renderer.asset_m, TextureId::HealthBar);
@@ -21,12 +22,19 @@ pub fn player_health_bar_spawn(world: &mut World, renderer: &mut Renderer) {
         Transform::new(0.0, 0.0),
         HealthBarTag::default()
     ));
+
+    let text_str = format!("Hp: {} / {}", 0, 0);
+    let text_e = spawn_text(world, renderer, text_str.as_str(), 8, Vector2::new(0.0, 30.0));
+    let mut text_ref = world.entity_mut(text_e);
+    text_ref.insert(HealthBarTextTag::default());
+
 }
 
 pub fn player_health_bar_update(
     mut query: Query<(&HealthBarFillTag, &mut Sprite)>,
     health_clear_query: Query<(&HealthBarTag, &mut Sprite), Without<HealthBarFillTag>>,
     player_health_query: Query<&Health, With<PlayerTag>>,
+    mut health_bar_text_query: Query<&mut TextObject, With<HealthBarTextTag>>,
 ) {
 
     let mut health: Option<&Health> = None;
@@ -34,6 +42,10 @@ pub fn player_health_bar_update(
 
     for p_health in player_health_query.iter() {
         health = Some(p_health); 
+        for mut text in &mut health_bar_text_query {
+            let text_str = format!("Hp: {} / {}", p_health.current, p_health.max);
+            text.set_content(text_str.as_str()); 
+        }
     }
 
     for (_, sprite) in health_clear_query.iter() {

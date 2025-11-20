@@ -14,3 +14,9 @@ pub struct HealthBarTag{}
 
 #[derive(Component, Clone, Default)]
 pub struct HealthBarFillTag{}
+
+#[derive(Component, Clone, Default)]
+pub struct HealthBarTextTag{}
+
+#[derive(Component, Clone, Default)]
+pub struct SteelSwordTag { }

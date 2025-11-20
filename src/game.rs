@@ -7,6 +7,7 @@ use crate::components::Vector2;
 use crate::core::renderer::*;
 use crate::resources::*;
 use crate::systems::world::*;
+use crate::systems::render::*;
 use crate::systems::*;
 use crate::config::*;
 // use crate::events::*;
@@ -104,6 +105,7 @@ impl Game {
 
         player_health_bar_spawn(&mut game.world, renderer);
 
+
         let player_e = player_spawn(&mut game.world, renderer);
         steel_sword_spawn(&mut game.world, renderer, player_e);
 
@@ -134,6 +136,10 @@ impl Game {
         chunk_system_draw(&mut self.world, renderer);
         sprite_system_draw(&mut self.world, renderer);
         health_bar_system_draw(&mut self.world, renderer);
+        text_system_draw(&mut self.world, renderer);
+
+        // renderer.render_text(FontId::OpenSansBold, "hello brad", 20);
+        
         // render_all_obb(&mut self.world, renderer);
         // render_occupied_quad(&mut self.world, renderer);
         // debug_draw_entity_areas(&mut self.world, renderer);

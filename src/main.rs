@@ -1,4 +1,5 @@
 use sdl2::pixels::Color;
+use sdl2::ttf::*;
 
 mod game;
 mod config;
@@ -32,10 +33,12 @@ pub fn main() {
         build().
         unwrap();
 
+    let ttf_ctx = sdl2::ttf::init().unwrap();
+
     let t_creator = canvas.texture_creator();
     let mut renderer = Renderer::new(
         canvas,
-        AssetManager::new(&t_creator),
+        AssetManager::new(&t_creator, &ttf_ctx),
         Camera::new(),
     );
 

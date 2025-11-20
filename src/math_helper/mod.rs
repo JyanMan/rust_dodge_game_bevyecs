@@ -21,9 +21,7 @@ pub struct Point {
 impl Point {
     pub fn zero() -> Self { Point { x: 0, y: 0 } }
     pub fn new(x: i32, y: i32) -> Self {
-        Self {
-            x: x, y: y
-        }
+        Self { x, y }
     }
 }
 
@@ -50,51 +48,48 @@ impl ops::Mul<f32> for Point {
 }
 #[inline(always)]
 pub fn world_to_cell(world_pos: &Vector2) -> Point {
-    return Point {
+     Point {
         x: (world_pos.x / (CELL_SIZE as f32)).floor() as i32,
         y: (world_pos.y / (CELL_SIZE as f32)).floor() as i32
-    };
+    }
 }
 #[inline(always)]
 pub fn cell_to_world(chunk_pos: &Point) -> Vector2 {
-    return Vector2 {
+     Vector2 {
         x: (chunk_pos.x * CELL_SIZE) as f32,
         y: (chunk_pos.y * CELL_SIZE) as f32,
-    };
+    }
 }
 
 #[inline(always)]
 pub fn world_to_chunk(world_pos: &Vector2) -> Point {
-    return Point {
+     Point {
         x: (world_pos.x / ((CHUNK_SIZE * TILE_SIZE) as f32)).floor() as i32,
         y: (world_pos.y / ((CHUNK_SIZE * TILE_SIZE) as f32)).floor() as i32
-    };
+    }
 }
 
 #[inline(always)]
 pub fn chunk_to_world(chunk_pos: &Point) -> Vector2 {
-    return Vector2 {
+     Vector2 {
         x: (chunk_pos.x * CHUNK_SIZE * TILE_SIZE) as f32,
         y: (chunk_pos.y * CHUNK_SIZE * TILE_SIZE) as f32,
-    };
+    }
 }
 
 #[inline(always)]
 pub fn world_to_tile(world_pos: &Vector2) -> Point {
-    return Point {
+     Point {
         x: (world_pos.x / ((TILE_SIZE) as f32)).floor() as i32,
         y: (world_pos.y / ((TILE_SIZE) as f32)).floor() as i32
-    };
+    }
 }
 
 #[inline(always)]
 pub fn tile_to_world(tile_pos: &Point) -> Vector2 {
-    return Vector2 {
+     Vector2 {
         x: (tile_pos.x * TILE_SIZE) as f32,
         y: (tile_pos.y * TILE_SIZE) as f32,
-    };
+    }
 }
 
-pub fn pos_to_point(vec: Vector2) -> Point {
-    return Point { x: vec.x as i32, y: vec.y as i32 };
-}

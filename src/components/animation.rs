@@ -1,7 +1,7 @@
 use bevy_ecs::prelude::*;
 use std::ptr::*;
 
-use crate::components::{ Sprite, Vector2, OBB };
+use crate::components::Vector2;
 
 #[allow(dead_code)]
 #[derive(Clone)]

@@ -1,9 +1,11 @@
 use sdl2::render::*;
 use bevy_ecs::prelude::*;
+use sdl2::pixels::*;
+use sdl2::rect::*;
 
-use crate::resources::AssetManager;
-use crate::resources::Camera;
-use crate::components::{ Vector2, Sprite };
+use crate::resources::*;
+use crate::components::{ Vector2, Sprite, TextObject };
+
 
 #[derive(Resource)]
 pub struct Renderer <'a> {
@@ -50,5 +52,49 @@ impl <'a> Renderer <'a> {
         // let adjusted_pos = (pos - self.camera.get_pos()) * cam_scale;
         // sprite.draw(self, &adjusted_pos, scale * cam_scale);
     }
+    
+    pub fn render_text(&mut self, text: &mut TextObject) {
+
+        let id = text.id();
+        
+        if text.changed() {
+            text.mark_unchanged();
+            let part_render = self.asset_m.open_sans_bold.render(text.content()); 
+            let surface = part_render.solid(Color::RGB(255, 255, 255)).unwrap();
+            let new_texture = self.asset_m.t_creator.create_texture_from_surface(surface).unwrap(); 
+            self.asset_m.text_set.insert(id, new_texture);
+        }
+        if let Some(texture) = self.asset_m.text_set.get(id) {
+            self.canvas.set_draw_color(Color::WHITE);
+            let x_len = text.content().len() as i32 * text.size;
+            let y_len = text.size * 2;
+            let dest_rect = Rect::new( text.pos().x.round() as i32, text.pos().y.round() as i32, x_len as u32, y_len as u32 );
+            let _ = self.canvas.copy_ex( texture, None, dest_rect, 0.0, None, false, false, );
+        }
+    }
+
+
+    // pub fn render_text(&mut self, id: FontId, str: &str, size: i32)  {
+    //     let string = String::from(str);
+    //     match id {
+    //         FontId::OpenSansBold => {
+    //             if let Some(text) = self.asset_m.fonts_map.get(&string) {
+    //                 self.canvas.set_draw_color(Color::WHITE);
+
+    //                 let x_len = str.len() as i32 * size;
+    //                 let y_len = size * 2;
+    //                 let dest_rect = Rect::new( 0, 20, x_len as u32, y_len as u32 );
+                    
+    //                 let _ = self.canvas.copy_ex( text, None, dest_rect, 0.0, None, false, false, );
+    //             }
+    //             else {
+    //                 let part_render = self.asset_m.open_sans_bold.render(str); 
+    //                 let surface = part_render.solid(Color::RGB(255, 255, 255)).unwrap();
+    //                 let text = self.asset_m.t_creator.create_texture_from_surface(surface).unwrap(); 
+    //                 self.asset_m.fonts_map.insert(string, text);
+    //             }
+    //         }
+    //     }
+    // }
 }
 
