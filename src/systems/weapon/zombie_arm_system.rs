@@ -6,11 +6,11 @@ use crate::resources::asset_manager::*;
 use crate::components::*;
 
 #[derive(Bundle)]
-struct SteelSwordBundle {
+struct ZombieArmBundle {
     trans: Transform,
     sprite: Sprite,
     weapon_d: WeaponData,
-    tag: SteelSwordTag,
+    tag: ZombieArmTag,
     anim_player: AnimationPlayer,
     held: HeldBy,
     obb: OBB,
@@ -21,7 +21,7 @@ struct SteelSwordBundle {
     funcs: WeaponFns,
 }
 
-pub fn steel_sword_spawn(world: &mut World, renderer: &mut Renderer, entity_owner: Entity) -> Entity {
+pub fn zombie_arm_spawn(world: &mut World, renderer: &mut Renderer, entity_owner: Entity) -> Entity {
 
     let owner_ref = world.entity(entity_owner);
     let owner_tag = owner_ref.get::<EntityTagContainer>().unwrap();
@@ -38,11 +38,11 @@ pub fn steel_sword_spawn(world: &mut World, renderer: &mut Renderer, entity_owne
 
     let attack_dur = 0.2;
 
-    let steel_sword_e = world.spawn(SteelSwordBundle {
+    let zombie_arm_e = world.spawn(ZombieArmBundle {
         trans: Transform::zero(),
         sprite,
-        weapon_d: WeaponData::new(5, 800.0, attack_dur, 0.2, 0.1, WeaponState::Owned, WeaponType::SteelSword), 
-        tag: SteelSwordTag::default(),
+        weapon_d: WeaponData::new(2, 800.0, attack_dur, 0.2, 0.1, WeaponState::Owned, WeaponType::ZombieArm), 
+        tag: ZombieArmTag::default(),
         anim_player: AnimationPlayer::new(WeaponAnim::COUNT),
         held: HeldBy(entity_owner),
         obb: OBB::new(30.0, 30.0, Vector2::zero(), true),
@@ -52,75 +52,75 @@ pub fn steel_sword_spawn(world: &mut World, renderer: &mut Renderer, entity_owne
         target_tags: TargetEntityTags(vec![]),
         tag_container: entity_tag_container,
         funcs: WeaponFns {
-            start_attack: steel_sword_start_attack,
-            while_attacking: steel_sword_while_attacking,
-            after_effect: steel_sword_after_effect,
-            end_attack: steel_sword_end_attack,
+            start_attack: zombie_arm_start_attack,
+            while_attacking: zombie_arm_while_attacking,
+            after_effect: zombie_arm_after_effect,
+            end_attack: zombie_arm_end_attack,
         }
         // EntityTagContainer(EntityTag::Weapon),
     }).id();
 
     // init animation
     // do this separately as the pointer to sprite is moved on spawn
-    let mut steelsword_ref = world.entity_mut(steel_sword_e);
+    let mut steelsword_ref = world.entity_mut(zombie_arm_e);
     let mut anim_player = steelsword_ref.get_mut::<AnimationPlayer>().unwrap();
 
     let attack_anim = Animation::new(attack_dur / 8.0, &[
         AnimFrame::new(&[
-            AnimData::SpriteFrame { value: 0, target: steel_sword_e},
-            AnimData::OBBOffset { offset: Vector2::new(0.0, -20.0), target: steel_sword_e},
-            AnimData::OBBUpdate { target: steel_sword_e },
+            AnimData::SpriteFrame { value: 0, target: zombie_arm_e},
+            AnimData::OBBOffset { offset: Vector2::new(0.0, -20.0), target: zombie_arm_e},
+            AnimData::OBBUpdate { target: zombie_arm_e },
         ]),
         
         AnimFrame::new(&[
-            AnimData::SpriteFrame { value: 0, target: steel_sword_e},
-            AnimData::OBBOffset { offset: Vector2::new(8.0, -13.0), target: steel_sword_e},
-            AnimData::OBBUpdate { target: steel_sword_e },
+            AnimData::SpriteFrame { value: 0, target: zombie_arm_e},
+            AnimData::OBBOffset { offset: Vector2::new(8.0, -13.0), target: zombie_arm_e},
+            AnimData::OBBUpdate { target: zombie_arm_e },
         ]),
         
         AnimFrame::new(&[
-            AnimData::SpriteFrame { value: 1, target: steel_sword_e},
-            AnimData::OBBOffset { offset: Vector2::new(14.0, -6.0), target: steel_sword_e},
-            AnimData::OBBUpdate { target: steel_sword_e },
+            AnimData::SpriteFrame { value: 1, target: zombie_arm_e},
+            AnimData::OBBOffset { offset: Vector2::new(14.0, -6.0), target: zombie_arm_e},
+            AnimData::OBBUpdate { target: zombie_arm_e },
         ]),
         
         AnimFrame::new(&[
-            AnimData::SpriteFrame { value: 1, target: steel_sword_e},
-            AnimData::OBBOffset { offset: Vector2::new(18.0, 0.0), target: steel_sword_e},
-            AnimData::OBBUpdate { target: steel_sword_e },
+            AnimData::SpriteFrame { value: 1, target: zombie_arm_e},
+            AnimData::OBBOffset { offset: Vector2::new(18.0, 0.0), target: zombie_arm_e},
+            AnimData::OBBUpdate { target: zombie_arm_e },
         ]),
         
         AnimFrame::new(&[
-            AnimData::SpriteFrame { value: 2, target: steel_sword_e},
-            AnimData::OBBOffset { offset: Vector2::new(18.0, 0.0), target: steel_sword_e},
-            AnimData::OBBUpdate { target: steel_sword_e },
+            AnimData::SpriteFrame { value: 2, target: zombie_arm_e},
+            AnimData::OBBOffset { offset: Vector2::new(18.0, 0.0), target: zombie_arm_e},
+            AnimData::OBBUpdate { target: zombie_arm_e },
         ]),
         
         AnimFrame::new(&[
-            AnimData::SpriteFrame { value: 2, target: steel_sword_e},
-            AnimData::OBBOffset { offset: Vector2::new(14.0, 6.0), target: steel_sword_e},
-            AnimData::OBBUpdate { target: steel_sword_e },
+            AnimData::SpriteFrame { value: 2, target: zombie_arm_e},
+            AnimData::OBBOffset { offset: Vector2::new(14.0, 6.0), target: zombie_arm_e},
+            AnimData::OBBUpdate { target: zombie_arm_e },
         ]),
         
         AnimFrame::new(&[
-            AnimData::SpriteFrame { value: 3, target: steel_sword_e},
-            AnimData::OBBOffset { offset: Vector2::new(8.0, 13.0), target: steel_sword_e},
-            AnimData::OBBUpdate { target: steel_sword_e },
+            AnimData::SpriteFrame { value: 3, target: zombie_arm_e},
+            AnimData::OBBOffset { offset: Vector2::new(8.0, 13.0), target: zombie_arm_e},
+            AnimData::OBBUpdate { target: zombie_arm_e },
         ]),
         
         AnimFrame::new(&[
-            AnimData::SpriteFrame { value: 3, target: steel_sword_e},
-            AnimData::OBBOffset { offset: Vector2::new(0.0, 20.0), target: steel_sword_e},
-            AnimData::OBBUpdate { target: steel_sword_e },
+            AnimData::SpriteFrame { value: 3, target: zombie_arm_e},
+            AnimData::OBBOffset { offset: Vector2::new(0.0, 20.0), target: zombie_arm_e},
+            AnimData::OBBUpdate { target: zombie_arm_e },
         ]),
     ]);
 
     anim_player.add_anim(WeaponAnim::Attack.usize(), attack_anim);
 
-    steel_sword_e
+    zombie_arm_e
 }
 
-pub fn steel_sword_animation(sprite: &mut Sprite, trans: &mut Transform, attack_dir: Vector2) {
+pub fn zombie_arm_animation(sprite: &mut Sprite, trans: &mut Transform, attack_dir: Vector2) {
     // flip y if left side 
     // this allows animation to be consistent not flipped on another direction
     if attack_dir.x < 0.0 {
@@ -140,7 +140,7 @@ pub fn steel_sword_animation(sprite: &mut Sprite, trans: &mut Transform, attack_
     trans.local = attack_dir * attack_range;
 }
 
-pub fn steel_sword_per_frame_update(weapon_d: &WeaponData, obb: &mut OBB) {
+pub fn zombie_arm_per_frame_update(weapon_d: &WeaponData, obb: &mut OBB) {
     let attack_dir = weapon_d.attack_dir;
 
     let angle_to_mouse = attack_dir.y.atan2(attack_dir.x);
@@ -150,7 +150,7 @@ pub fn steel_sword_per_frame_update(weapon_d: &WeaponData, obb: &mut OBB) {
     obb.compute_vertices();
 }
 
-pub fn steel_sword_while_attacking(
+pub fn zombie_arm_while_attacking(
     _: &mut WeaponData,
     _: &mut GravityAffected,
     user_vel: &mut Velocity,
@@ -163,7 +163,7 @@ pub fn steel_sword_while_attacking(
     anim_player.play(WeaponAnim::Attack.usize());
     user_vel.vec = user_vel.vec * 0.5;
 }
-pub fn steel_sword_after_effect(
+pub fn zombie_arm_after_effect(
     _: &mut WeaponData,
     _: &mut GravityAffected,
     user_vel: &mut Velocity,
@@ -177,7 +177,7 @@ pub fn steel_sword_after_effect(
 }
 
 // fn(&mut WeaponData, &mut GravityAffected, &mut Velocity, &mut Combat, &mut Sprite, &mut Transform)
-pub fn steel_sword_start_attack(
+pub fn zombie_arm_start_attack(
     weapon_d: &mut WeaponData,
     grav_affected: &mut GravityAffected,
     user_vel: &mut Velocity,
@@ -188,7 +188,7 @@ pub fn steel_sword_start_attack(
     // attack_dir: Vector2,
 ) {
     let attack_dir = combat.attack_dir;
-    steel_sword_animation(sprite, trans, attack_dir);
+    zombie_arm_animation(sprite, trans, attack_dir);
     anim_player.play(WeaponAnim::Attack.usize());
 
     weapon_d.attack_dir = attack_dir;
@@ -197,7 +197,7 @@ pub fn steel_sword_start_attack(
     combat.attacking = true;
 }
 
-pub fn steel_sword_end_attack(
+pub fn zombie_arm_end_attack(
     _: &mut WeaponData,
     grav_affected: &mut GravityAffected,
     user_vel: &mut Velocity,
@@ -213,8 +213,8 @@ pub fn steel_sword_end_attack(
 }
 
 #[allow(dead_code)]
-pub fn steel_sword_test_overlap(
-    mut query: Query<(&SteelSwordTag, &EntityOverlappingOBBs)>, 
+pub fn zombie_arm_test_overlap(
+    mut query: Query<(&ZombieArmTag, &EntityOverlappingOBBs)>, 
 ) {
     for (_e, e_over_obbs) in &mut query {
         if !e_over_obbs.0.is_empty() {

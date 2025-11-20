@@ -6,7 +6,7 @@ use crate::core::renderer::*;
 use crate::components::Vector2;
 use crate::resources::asset_manager::*;
 
-#[derive(Component, Default, Clone)]
+#[derive(Component, Clone)]
 #[component(storage = "Table")]
 pub struct Sprite {
     // texture: Option<Rc<Texture<'static>>>,

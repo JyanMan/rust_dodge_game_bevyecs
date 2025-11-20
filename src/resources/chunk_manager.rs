@@ -8,7 +8,7 @@ use crate::resources::asset_manager::*;
 use crate::resources::area_manager::*;
 use crate::math_helper::*;
 
-#[derive(Resource, Clone, Default)]
+#[derive(Resource, Clone)]
 pub struct ChunkManager  {
     chunks_map: HashMap<Point, usize>,
     chunks_arr: Vec<Chunk>,

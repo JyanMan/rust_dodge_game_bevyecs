@@ -5,7 +5,7 @@ pub const CHUNK_SIZE: i32 = 16;
 pub const CELL_SIZE: i32 = TILE_SIZE * CHUNK_SIZE;
 
 pub const KNOCK_TIME: f32 = 0.3;
-pub const IMMUNE_TIME: f32 = 0.025;
+pub const IMMUNE_TIME: f32 = 0.1;
 
 #[allow(dead_code)]
 pub const HALF_WIDTH: i32 = SCREEN_WIDTH / 2;

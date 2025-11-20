@@ -62,9 +62,9 @@ impl <'a> Renderer <'a> {
             let part_render = self.asset_m.open_sans_bold.render(text.content()); 
             let surface = part_render.solid(Color::RGB(255, 255, 255)).unwrap();
             let new_texture = self.asset_m.t_creator.create_texture_from_surface(surface).unwrap(); 
-            self.asset_m.text_set.insert(id, new_texture);
+            self.asset_m.text_texture_set.insert(id, new_texture);
         }
-        if let Some(texture) = self.asset_m.text_set.get(id) {
+        if let Some(texture) = self.asset_m.text_texture_set.get(id) {
             self.canvas.set_draw_color(Color::WHITE);
             let x_len = text.content().len() as i32 * text.size;
             let y_len = text.size * 2;

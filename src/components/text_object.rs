@@ -15,7 +15,7 @@ pub struct TextObject {
 impl TextObject {
     pub fn new(renderer: &mut Renderer, str: &str, size: i32, pos: Vector2) -> Self {
         Self {
-            id: renderer.asset_m.text_set.len(),
+            id: renderer.asset_m.text_texture_set.len(),
             content: String::from(str),
             prev_content: String::from(""),
             pos,

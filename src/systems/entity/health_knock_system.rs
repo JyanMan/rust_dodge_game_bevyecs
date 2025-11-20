@@ -54,7 +54,6 @@ pub fn player_health_bar_update(
 
     let health_width = if let (Some(back_sprite), Some(health)) =
         (back_sprite, health) {
-        // println!("width: {}, current: {}, max: {}", back_sprite.width, health.current, health.max);
         back_sprite.width * (health.current as f32 / health.max as f32)
     }
     else { 0.0 };

@@ -3,7 +3,8 @@
 #[derive(Clone, Default)]
 pub enum WeaponType {
     #[default]
-    SteelSword
+    SteelSword,
+    ZombieArm
 }
 
 impl WeaponType {

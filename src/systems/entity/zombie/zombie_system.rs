@@ -10,7 +10,7 @@ pub fn zombie_init(world: &mut World, renderer: &mut Renderer) {
     let mut rng = rand::thread_rng(); 
     for _ in 0..1 {
         let z = zombie_spawn(world, renderer, rng.gen_range(30..80) as f32);
-        steel_sword_spawn(world, renderer, z);
+        zombie_arm_spawn(world, renderer, z);
     }
 }
 
@@ -60,7 +60,7 @@ pub fn zombie_spawn(world: &mut World, renderer: &mut Renderer, speed: f32) -> E
             state: WalkerState::default(),
         },
         anim_player: AnimationPlayer::new(WalkerAnim::COUNT),
-        health: Health::new(10),
+        health: Health::new(100),
         obb: OBB::new(10.0, 20.0, Vector2::new(10.0, -1000.0), false),
         enemy_d: EnemyData { chase_range: 200.0, attack_range: 20.0},
         cell_pos: CellPos(Vec::new()),

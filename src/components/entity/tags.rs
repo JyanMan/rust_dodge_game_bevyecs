@@ -20,3 +20,6 @@ pub struct HealthBarTextTag{}
 
 #[derive(Component, Clone, Default)]
 pub struct SteelSwordTag { }
+
+#[derive(Component, Clone, Default)]
+pub struct ZombieArmTag { }
