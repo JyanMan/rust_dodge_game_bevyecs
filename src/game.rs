@@ -61,6 +61,7 @@ impl Game {
             player_health_bar_update,
             player_weapon_signal_update,
             health_knock_timer,
+            damage_counter_update,
             weapon_attack_timer_and_signal_update.before(weapon_system_animation_update),
             weapon_system_animation_update.after(weapon_attack_timer_and_signal_update),
             // enemy_weapon_system_animation_update.before(animation_player_update),
@@ -120,6 +121,8 @@ impl Game {
         delta_time_res.0 = delta_time;
 
         self.update_sched.run(&mut self.world);
+
+        damage_counter_despawn_update(&mut self.world, renderer);
 
         assert!(self.world.entities().len() <= MAX_ENTITIES as u32, "INTERNAL ERROR: number of entities exceeds MAX_ENTITIES");
     }

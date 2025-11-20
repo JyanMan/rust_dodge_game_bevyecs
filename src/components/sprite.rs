@@ -27,7 +27,7 @@ pub struct Sprite {
 
 impl Sprite {
     pub fn new(asset_m: &AssetManager, t_id: TextureId) -> Self {
-        let texture = asset_m.get_texture(t_id.clone());
+        let texture = asset_m.get_texture(t_id);
         let width = texture.query().width;
         let height = texture.query().height;
         Self {
@@ -48,21 +48,13 @@ impl Sprite {
         }
     }
 
-    pub fn init(&mut self, asset_m: &AssetManager, t_id: TextureId) {
-        let texture = asset_m.get_texture(t_id.clone());
-        let width = texture.query().width;
-        let height = texture.query().height;
-        self.px_w = width as i32;
-        self.px_h = height as i32;
-        self.texture_id = t_id;
-    }
-
     pub fn set_sprite_sheet(&mut self, hor: i32, vert: i32) {
         self.hor = hor;
         self.vert = vert;
         self.width = (self.px_w / self.hor) as f32;
         self.height = (self.px_h / self.vert) as f32;
     }
+
     pub fn draw(&self, renderer: &mut Renderer, pos: &Vector2, scale: f32) {
         self.draw_frame_angle(renderer, pos, scale, self.frame, self.angle);
     }
@@ -78,15 +70,15 @@ impl Sprite {
         let dest_rect = Rect::new(
             pos.x.round() as i32,         
             pos.y.round() as i32,
-            (self.width as f32 * scale).round() as u32, // scale
-            (self.height as f32 * scale).round() as u32 // scale
+            (self.width * scale).round() as u32, // scale
+            (self.height * scale).round() as u32 // scale
         );
 
-        let texture = renderer.asset_m.get_texture(self.texture_id.clone());
+        let texture = renderer.asset_m.get_texture(self.texture_id);
 
         renderer.canvas.set_draw_color(Color::WHITE);
         let _ = renderer.canvas.copy_ex(
-            &*texture,
+            texture,
             src_rect,
             dest_rect,
             angle,

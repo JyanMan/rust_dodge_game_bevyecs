@@ -55,6 +55,10 @@ impl <'a> Renderer <'a> {
     
     pub fn render_text(&mut self, text: &mut TextObject) {
 
+        if text.new {
+            text.set_id(self.asset_m.text_texture_set.len()); 
+        }
+
         let id = text.id();
         
         if text.changed() {
@@ -65,12 +69,33 @@ impl <'a> Renderer <'a> {
             self.asset_m.text_texture_set.insert(id, new_texture);
         }
         if let Some(texture) = self.asset_m.text_texture_set.get(id) {
+
+            
+            if text.is_relative_to_camera() {
+                self.canvas.set_draw_color(Color::WHITE);
+                let x_len = text.content().len() as i32 * text.size;
+                let pos_cam_adjusted = (text.pos() - self.camera.get_pos()) * self.camera.scale;
+                let y_len = text.size * 2;
+                let dest_rect = Rect::new(
+                     pos_cam_adjusted.x as i32,
+                     pos_cam_adjusted.y as i32,
+                     x_len as u32,
+                     y_len as u32
+                 );
+                let _ = self.canvas.copy_ex( texture, None, dest_rect, 0.0, None, false, false, );
+                return;
+            }
+            
             self.canvas.set_draw_color(Color::WHITE);
             let x_len = text.content().len() as i32 * text.size;
             let y_len = text.size * 2;
             let dest_rect = Rect::new( text.pos().x.round() as i32, text.pos().y.round() as i32, x_len as u32, y_len as u32 );
             let _ = self.canvas.copy_ex( texture, None, dest_rect, 0.0, None, false, false, );
         }
+    }
+
+    pub fn delete_text(&mut self, text: &TextObject) {
+        self.asset_m.text_texture_set.swap_remove_by_id(text.id());
     }
 
 

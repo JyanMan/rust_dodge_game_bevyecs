@@ -15,3 +15,5 @@ pub const HALF_WIDTH_F: f32 = SCREEN_WIDTH as f32 / 2.0;
 pub const HALF_HEIGHT_F: f32 = SCREEN_HEIGHT as f32 / 2.0;
 
 pub const MAX_ENTITIES: i32 = 5000;
+
+pub const DAMAGE_COUNTER_TIME: f32 = 0.3;

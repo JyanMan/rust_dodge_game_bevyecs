@@ -62,9 +62,40 @@ pub fn player_health_bar_update(
     }
 }
 
+pub fn damage_counter_update(
+    mut query: Query<(&mut DamageCounterTimer, &mut Transform)>,
+    delta_time: Res<DeltaTime>,
+) {
+    for (mut timer, mut trans) in &mut query {
+        if timer.0 < 0.0 {
+            continue;
+        }
+        timer.timer(delta_time.0);
+        // increase at a decreasing rate
+        trans.global.y -= 0.1 / timer.0;
+    }
+}
+
+pub fn damage_counter_despawn_update(
+    world: &mut World,
+    renderer: &mut Renderer
+) {
+   let mut query = world.query::<(Entity, &DamageCounterTimer, &TextObject)>(); 
+   let mut temp_vec: Vec<Entity> = vec![];
+   for (e, timer, text) in query.iter(world) {
+       if timer.0 < 0.0 {
+           renderer.delete_text(text);
+           temp_vec.push(e);
+       }
+   }
+   for e in temp_vec.iter() {
+      world.despawn(*e);
+   }
+}
+
 pub fn health_knock_timer(
     mut query: Query<(&mut Health, &mut KnockbackTrigger, &mut Velocity)>,
-    delta_time: Res<DeltaTime>
+    delta_time: Res<DeltaTime>,
 ) {
     for (mut health, mut knock, mut vel) in &mut query {
         health.timer(delta_time.0);

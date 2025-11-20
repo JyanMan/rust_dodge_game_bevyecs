@@ -16,8 +16,9 @@ pub fn sprite_system_draw(world: &mut World, renderer: &mut Renderer) {
 }
 
 pub fn text_system_draw(world: &mut World, renderer: &mut Renderer) {
-    let mut query = world.query::<&mut TextObject>();
-    for mut text in query.iter_mut(world) {
+    let mut query = world.query::<(&mut TextObject, &Transform)>();
+    for (mut text, trans) in query.iter_mut(world) {
+        text.set_pos(trans.global);
         renderer.render_text(&mut text);
     }
 }
