@@ -32,7 +32,7 @@ pub fn zombie_arm_spawn(world: &mut World, renderer: &mut Renderer, entity_owner
     });
     
     let mut sprite = Sprite::new(&renderer.asset_m, TextureId::ZombieArm);
-    sprite.set_sprite_sheet(4, 2);
+    sprite.set_sprite_sheet(2, 2);
     sprite.visible = true;
 
     let attack_dur = 0.2;
@@ -40,11 +40,11 @@ pub fn zombie_arm_spawn(world: &mut World, renderer: &mut Renderer, entity_owner
     let zombie_arm_e = world.spawn(ZombieArmBundle {
         trans: Transform::zero(),
         sprite,
-        weapon_d: WeaponData::new(2, 800.0, attack_dur, 0.2, 0.1, WeaponState::Owned, WeaponType::ZombieArm), 
+        weapon_d: WeaponData::new(2, 800.0, attack_dur, 0.4, 0.1, WeaponState::Owned, WeaponType::ZombieArm), 
         tag: ZombieArmTag::default(),
         anim_player: AnimationPlayer::new(WeaponAnim::COUNT),
         held: HeldBy(entity_owner),
-        obb: OBB::new(30.0, 30.0, Vector2::zero(), true),
+        obb: OBB::new(20.0, 20.0, Vector2::zero(), true),
         cell_pos: CellPos(Vec::new()),
         over_obbs: EntityOverlappingOBBs(Vec::new()),
         // target_entity_tags,
@@ -67,49 +67,49 @@ pub fn zombie_arm_spawn(world: &mut World, renderer: &mut Renderer, entity_owner
     let attack_anim = Animation::new(attack_dur / 8.0, &[
         AnimFrame::new(&[
             AnimData::SpriteFrame { value: 0, target: zombie_arm_e},
-            AnimData::OBBOffset { offset: Vector2::new(0.0, -20.0), target: zombie_arm_e},
+            AnimData::OBBOffset { offset: Vector2::new(0.0, -8.0), target: zombie_arm_e},
             AnimData::OBBUpdate { target: zombie_arm_e },
         ]),
         
         AnimFrame::new(&[
             AnimData::SpriteFrame { value: 0, target: zombie_arm_e},
-            AnimData::OBBOffset { offset: Vector2::new(8.0, -13.0), target: zombie_arm_e},
+            AnimData::OBBOffset { offset: Vector2::new(4.0, -4.0), target: zombie_arm_e},
             AnimData::OBBUpdate { target: zombie_arm_e },
         ]),
         
         AnimFrame::new(&[
             AnimData::SpriteFrame { value: 1, target: zombie_arm_e},
-            AnimData::OBBOffset { offset: Vector2::new(14.0, -6.0), target: zombie_arm_e},
+            AnimData::OBBOffset { offset: Vector2::new(9.0, -2.0), target: zombie_arm_e},
             AnimData::OBBUpdate { target: zombie_arm_e },
         ]),
         
         AnimFrame::new(&[
             AnimData::SpriteFrame { value: 1, target: zombie_arm_e},
-            AnimData::OBBOffset { offset: Vector2::new(18.0, 0.0), target: zombie_arm_e},
+            AnimData::OBBOffset { offset: Vector2::new(11.0, 0.0), target: zombie_arm_e},
             AnimData::OBBUpdate { target: zombie_arm_e },
         ]),
         
         AnimFrame::new(&[
             AnimData::SpriteFrame { value: 2, target: zombie_arm_e},
-            AnimData::OBBOffset { offset: Vector2::new(18.0, 0.0), target: zombie_arm_e},
+            AnimData::OBBOffset { offset: Vector2::new(11.0, 0.0), target: zombie_arm_e},
             AnimData::OBBUpdate { target: zombie_arm_e },
         ]),
         
         AnimFrame::new(&[
             AnimData::SpriteFrame { value: 2, target: zombie_arm_e},
-            AnimData::OBBOffset { offset: Vector2::new(14.0, 6.0), target: zombie_arm_e},
+            AnimData::OBBOffset { offset: Vector2::new(9.0, 2.0), target: zombie_arm_e},
             AnimData::OBBUpdate { target: zombie_arm_e },
         ]),
         
         AnimFrame::new(&[
             AnimData::SpriteFrame { value: 3, target: zombie_arm_e},
-            AnimData::OBBOffset { offset: Vector2::new(8.0, 13.0), target: zombie_arm_e},
+            AnimData::OBBOffset { offset: Vector2::new(4.0, 4.0), target: zombie_arm_e},
             AnimData::OBBUpdate { target: zombie_arm_e },
         ]),
         
         AnimFrame::new(&[
             AnimData::SpriteFrame { value: 3, target: zombie_arm_e},
-            AnimData::OBBOffset { offset: Vector2::new(0.0, 20.0), target: zombie_arm_e},
+            AnimData::OBBOffset { offset: Vector2::new(0.0, 8.0), target: zombie_arm_e},
             AnimData::OBBUpdate { target: zombie_arm_e },
         ]),
     ]);
@@ -191,7 +191,7 @@ pub fn zombie_arm_start_attack(
     anim_player.play(WeaponAnim::Attack.usize());
 
     weapon_d.attack_dir = attack_dir;
-    user_vel.vec = attack_dir * 1000.0;
+    user_vel.vec = attack_dir * 200.0;
     grav_affected.0 = false;
     combat.attacking = true;
 }

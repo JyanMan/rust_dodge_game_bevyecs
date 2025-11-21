@@ -67,7 +67,7 @@ impl <'a> AssetManager <'a> {
         Self::new_texture(&mut texture_set, t_creator, "assets/zombie.png", TextureId::Zombie);
         Self::new_texture(&mut texture_set, t_creator, "assets/tile_atlas.png", TextureId::TileAtlas);
         Self::new_texture(&mut texture_set, t_creator, "assets/steel_sword.png", TextureId::SteelSword);
-        Self::new_texture(&mut texture_set, t_creator, "assets/steel_sword.png", TextureId::ZombieArm);
+        Self::new_texture(&mut texture_set, t_creator, "assets/zombie_arm.png", TextureId::ZombieArm);
         Self::new_texture(&mut texture_set, t_creator, "assets/health_bar.png", TextureId::HealthBar);
         
         let open_sans_bold = Rc::new(ttf_ctx.load_font("assets/fonts/OpenSans-Bold.ttf", 18).unwrap());
