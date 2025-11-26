@@ -17,3 +17,6 @@ pub const HALF_HEIGHT_F: f32 = SCREEN_HEIGHT as f32 / 2.0;
 pub const MAX_ENTITIES: i32 = 5000;
 
 pub const DAMAGE_COUNTER_TIME: f32 = 0.3;
+
+pub const FRAME_PER_SEC: i32 = 12;
+pub const SEC_PER_FRAME: f32 = 1.0 / FRAME_PER_SEC as f32;

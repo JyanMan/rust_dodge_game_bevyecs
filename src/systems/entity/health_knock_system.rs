@@ -24,7 +24,7 @@ pub fn player_health_bar_spawn(world: &mut World, renderer: &mut Renderer) {
     ));
 
     let text_str = format!("Hp: {} / {}", 0, 0);
-    let text_e = spawn_text(world, renderer, text_str.as_str(), 8, Vector2::new(0.0, 30.0));
+    let text_e = spawn_text(world, renderer, text_str.as_str(), 3, Vector2::new(0.0, 12.0));
     let mut text_ref = world.entity_mut(text_e);
     text_ref.insert(HealthBarTextTag::default());
 

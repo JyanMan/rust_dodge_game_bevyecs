@@ -8,11 +8,11 @@ pub fn spawn_damage_counter(commands: &mut Commands, start_pos: Vector2, damage:
     let mut rng = rand::thread_rng(); 
     let text = format!("{}", damage);
     let x_rand = rng.gen_range(-4..4) as f32;
-    let y_rand = rng.gen_range((-20)..(-10)) as f32;
+    let y_rand = rng.gen_range((-25)..(-15)) as f32;
     let offset = Vector2::new(x_rand, y_rand);
     let pos = start_pos + offset;
     commands.spawn((
-        TextObject::new(text.as_str(), 10, pos, true),
+        TextObject::new(text.as_str(), 4, pos, true),
         DamageCounterTimer::new(),
         Transform::new(pos.x, pos.y)
         // TextObject::new(text)        
