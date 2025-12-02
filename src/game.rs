@@ -80,7 +80,7 @@ impl Game {
             transform_update_system.after(pos_vel_update_system),
             area_update_system.after(transform_update_system),
             obb_update_system.after(transform_update_system),
-            enemy_hit_update.after(update_entity_overlapping_obbs),
+            entity_hit_update.after(update_entity_overlapping_obbs),
             // steel_sword_test_overlap.after(update_entity_overlapping_obbs),
             // player_test_overlap,
             walker_animation_update.after(transform_update_system),

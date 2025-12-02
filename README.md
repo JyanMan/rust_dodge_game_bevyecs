@@ -1,8 +1,4 @@
 ## TODO
-* create sprite for zombie attack
-* add damage text or something
-  - in the process
-* player seems to receive the same damage from one zombie and from thousands of zombies due to your current health receive damage system.
 * now make the weapon have a chance to drop
 * add zombie hit animation
 * add hit particle like blood or something
