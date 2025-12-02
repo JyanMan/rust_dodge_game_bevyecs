@@ -18,6 +18,7 @@ pub struct PlayerData {
     pub can_dodge: bool,
     pub dodge_timer: f32,
     pub dodge_speed: f32,
+    #[allow(unused)]
     pub dodge_cd: f32,
     pub dodge_duration: f32,
     pub dodge_min: f32,

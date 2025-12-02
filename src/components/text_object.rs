@@ -28,8 +28,6 @@ impl TextObject {
     }
 
     pub fn is_relative_to_camera(&self) -> bool { self.relative_to_camera }
-    
-    pub fn set_relative_to_camera(&mut self) { self.relative_to_camera = true; }
 
     pub fn pos(&self) -> Vector2 { self.pos }
 

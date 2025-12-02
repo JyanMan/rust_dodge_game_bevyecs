@@ -6,9 +6,8 @@ use sdl2::pixels::Color;
 use crate::components::*;
 use crate::core::Renderer;
 
-const PI: f32 = 3.141592;
-
 #[derive(PartialEq, Eq, Clone, Debug)]
+#[allow(unused)]
 pub enum EntityTag { Zombie, Enemy, EnemyWeapon, Player, PlayerWeapon, Weapon }
 
 #[derive(Component)]
@@ -22,10 +21,6 @@ pub struct TargetEntityTags(pub Vec<EntityTag>);
 #[derive(Component)]
 #[component(storage = "Table")]
 pub struct EntityOverlappingOBBs(pub Vec<(Entity, EntityTag)>);
-
-#[derive(Component)]
-#[component(storage = "Table")]
-pub struct OBBCheckedOverlap(pub bool);
 
 /* WARNING: changing atts require that you call compute_vertices to apply check fn inside first */
 #[derive(Component, Clone)]
@@ -113,15 +108,10 @@ impl OBB {
             if min_a > max_b || min_b > max_a { return false }
         }
 
-        return true;
+        true
     }
 
-    pub fn set_rotation(&mut self, rotation: f32) {
-        self.rotation = rotation;
-        self.compute_vertices();
-    }
-
-    pub fn project_to_axis(axis: Vector2, vertices: &Vec<Vector2>, num_vertices: i32, min: &mut f32, max: &mut f32) {
+    pub fn project_to_axis(axis: Vector2, vertices: &[Vector2], num_vertices: i32, min: &mut f32, max: &mut f32) {
         *max = axis.dot(vertices[0]);
         *min = *max;
 
@@ -133,6 +123,7 @@ impl OBB {
         }
     }
 
+    #[allow(unused)]
     pub fn draw(&self, renderer: &mut Renderer) {
         let cam_pos = renderer.camera.get_pos();
         let cam_scale = renderer.camera.get_scale();
@@ -150,6 +141,7 @@ impl OBB {
     }
 
     pub fn rotate_around(&mut self, center: Vector2) {
+        use std::f32::consts::PI;
         let ninety_deg = PI / 2.0;
         let mut rot = self.rotation;
         let mut temp_offset = self.offset;

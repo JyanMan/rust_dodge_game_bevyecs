@@ -85,7 +85,7 @@ pub fn weapon_attack_timer_and_signal_update(
     }
 }
 
-pub fn weapon_lost_owner(mut removed: RemovedComponents<HeldBy>, weapon_query: Query<&WeaponData>, mut commands: Commands) {
+pub fn weapon_lost_owner(mut removed: RemovedComponents<HeldBy>, mut commands: Commands) {
     removed.read().for_each(|e| {
         commands.entity(e).despawn();
     });
