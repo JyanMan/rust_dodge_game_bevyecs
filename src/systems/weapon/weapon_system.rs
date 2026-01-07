@@ -103,7 +103,6 @@ pub fn spawn_damage_counter(commands: &mut Commands, start_pos: Vector2, damage:
         TextObject::new(text.as_str(), 4, pos, true),
         DamageCounterTimer::new(),
         Transform::new(pos.x, pos.y)
-        // TextObject::new(text)        
     ));
 }
 

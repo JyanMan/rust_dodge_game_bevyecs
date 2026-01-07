@@ -1,5 +1,4 @@
 use sdl2::pixels::Color;
-use sdl2::ttf::*;
 
 mod game;
 mod config;
@@ -16,13 +15,14 @@ use crate::game::*;
 use crate::core::renderer::*;
 use crate::resources::asset_manager::*;
 use crate::resources::Camera;
+use crate::config::*;
 
 pub fn main() {
     let sdl_context = sdl2::init().unwrap();
     let video_subsystem = sdl_context.video().unwrap();
     let timer_subsystem = sdl_context.timer().unwrap();
 
-    let window = video_subsystem.window("rust-sdl2 demo", 800, 600)
+    let window = video_subsystem.window("dodge the man", SCREEN_WIDTH as u32, SCREEN_HEIGHT as u32)
         // .opengl()
         .position_centered()
         .build()
@@ -76,7 +76,6 @@ pub fn main() {
         renderer.alpha = dt_accumulator / time_step;
         game.update(delta_time, &mut renderer);
         game.draw(&mut renderer);
-        // The rest of the game loop goes here...
         renderer.canvas.present();
     }
 }

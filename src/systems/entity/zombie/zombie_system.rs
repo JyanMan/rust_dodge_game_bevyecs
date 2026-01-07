@@ -124,7 +124,13 @@ pub fn zombie_movement_system(
             }
             else {
                 walker_d.state = WalkerState::Idle;
-                vel.vec.x -= x_dir.copysign(vel.vec.x) * walker_d.accel;
+                let decel: f32 = x_dir.copysign(vel.vec.x) * walker_d.accel;
+                if !walker_d.grounded {
+                    vel.vec.x -= decel * 0.2;
+                }
+                else {
+                    vel.vec.x -= decel;
+                }
                 if vel.vec.x.abs() <= walker_d.accel {
                     vel.vec.x = 0.0;
                 }
