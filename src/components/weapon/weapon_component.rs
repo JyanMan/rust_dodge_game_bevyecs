@@ -38,6 +38,7 @@ pub struct WeaponData {
     cd_timer: f32,
     attack_timer: f32,
     attack_duration: f32,
+    owner_attack_cd: f32,
 }
 
 impl Default for WeaponData {
@@ -55,7 +56,8 @@ impl Default for WeaponData {
             attacking: false,
             attack_dir: Vector2::zero(),
             can_attack: true,
-            cd_timer: 0.0
+            cd_timer: 0.0,
+            owner_attack_cd: 0.0,
         }
     }
 }
@@ -75,7 +77,8 @@ impl WeaponData {
             attacking: false,
             can_attack: true,
             attack_cd,
-            cd_timer: 0.0
+            cd_timer: 0.0,
+            owner_attack_cd: 0.0,
         }
     }
 
@@ -94,11 +97,16 @@ impl WeaponData {
     pub fn attack_cd_timer(&mut self, delta_time: f32) {
         assert!(!self.can_attack);
         self.cd_timer += delta_time;
-        if self.cd_timer >= self.attack_cd {
+        if self.cd_timer >= (self.attack_cd + self.owner_attack_cd) {
             self.cd_timer = 0.0;
+            self.owner_attack_cd = 0.0;
             self.can_attack = true;
             // self.can_attack = false;
         }
+    }
+
+    pub fn temporary_attack_disable(&mut self) {
+        self.can_attack = false;
     }
 
     pub fn after_effect_timer(&mut self, delta_time: f32) {
@@ -111,11 +119,12 @@ impl WeaponData {
         }
     }
 
-    pub fn attack(&mut self) {
+    pub fn attack(&mut self, owner_attack_cd: f32) {
         self.state = WeaponState::StartAttack;
         self.attack_timer = 0.0;
         self.attacking = true;
         self.can_attack = false;
+        self.owner_attack_cd = owner_attack_cd;
     }
 }
 

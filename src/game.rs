@@ -62,6 +62,7 @@ impl Game {
             player_weapon_signal_update,
             health_knock_timer,
             damage_counter_update,
+            entity_knocked_reaction,
             weapon_attack_timer_and_signal_update.before(weapon_system_animation_update),
             weapon_system_animation_update.after(weapon_attack_timer_and_signal_update),
             // enemy_weapon_system_animation_update.before(animation_player_update),

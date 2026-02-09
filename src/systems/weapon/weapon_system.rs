@@ -24,15 +24,20 @@ pub fn weapon_system_animation_update(
 ) {
     for (mut weapon_d, mut sprite, mut trans, owned_by, weapon_fns, mut anim_player) in &mut query {
         if weapon_d.state == WeaponState::Unowned {
-            return;
+            continue;
         }
 
         let owner_entity = owned_by.0;
 
         if let Ok((mut owner_combat, mut vel, mut grav_affected)) = owner_query.get_mut(owner_entity) {
 
+            if owner_combat.stunned() {
+                weapon_d.temporary_attack_disable();
+                owner_combat.unstun();
+            }
+
             if owner_combat.should_attack && weapon_d.can_attack {
-                weapon_d.attack();
+                weapon_d.attack(owner_combat.attack_cd);
             } 
 
             match weapon_d.state {
@@ -48,7 +53,7 @@ pub fn weapon_system_animation_update(
                 WeaponState::AfterEffectAttack => {
                     let after_effect_attack = weapon_fns.after_effect;
                     after_effect_attack(&mut weapon_d, &mut grav_affected, &mut vel, &mut owner_combat, &mut sprite, &mut trans, &mut anim_player);
-                }
+                },
                 WeaponState::EndAttack => {
                     weapon_d.state = WeaponState::Idle;
                     let end_attack = weapon_fns.end_attack;

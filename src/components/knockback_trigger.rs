@@ -28,6 +28,6 @@ impl KnockbackTrigger {
             self.dir = Vector2::zero();
             return true;
         }
-        return false;
+        false
     }
 }

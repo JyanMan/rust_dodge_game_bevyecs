@@ -111,9 +111,9 @@ pub fn zombie_movement_system(
 
         if dist < enemy_d.attack_range {
             // attack
-            // if walker_d.grounded {
                 let attack_dir = dir_to_player;
                 combat.attack(attack_dir);
+            // if walker_d.grounded {
             // }
         }
         else {
