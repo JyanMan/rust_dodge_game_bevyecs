@@ -1,4 +1,6 @@
 use bevy_ecs::prelude::*;
+use bevy_ecs::schedule::*;
+use bevy_app::AppLabel;
 use sdl2::EventPump;
 use sdl2::event::Event;
 use sdl2::keyboard::*;
@@ -21,6 +23,12 @@ pub struct Game {
     draw_sched: Schedule,
     input_sched: Schedule,
 }
+
+#[derive(ScheduleLabel, Clone, Debug, PartialEq, Eq, Hash, Default)]
+pub struct Render{}
+
+#[derive(Debug, Clone, Copy, Hash, PartialEq, Eq, AppLabel)]
+pub struct RenderApp;
 
 #[allow(dead_code, unused)]
 impl Game {
@@ -105,13 +113,13 @@ impl Game {
         game.register_resources(renderer);
         game.register_observers();
 
-        player_health_bar_spawn(&mut game.world, renderer);
+        // player_health_bar_spawn(&mut game.world, renderer);
 
 
-        let player_e = player_spawn(&mut game.world, renderer);
-        steel_sword_spawn(&mut game.world, renderer, player_e);
+        // let player_e = player_spawn(&mut game.world, renderer);
+        // steel_sword_spawn(&mut game.world, renderer, player_e);
 
-        zombie_init(&mut game.world, renderer);
+        // zombie_init(&mut game.world, renderer);
         // zombie_spawn(&mut game.world, renderer, 50.0);
 
         game
@@ -123,7 +131,7 @@ impl Game {
 
         self.update_sched.run(&mut self.world);
 
-        damage_counter_despawn_update(&mut self.world, renderer);
+        // damage_counter_despawn_update(&mut self.world, renderer);
 
         assert!(self.world.entities().len() <= MAX_ENTITIES as u32, "INTERNAL ERROR: number of entities exceeds MAX_ENTITIES");
     }
@@ -133,14 +141,14 @@ impl Game {
         time_step_res.0 = time_step;
 
         self.fixed_update_sched.run(&mut self.world);
-        camera_system_update(&mut self.world, renderer);
+        // camera_system_update(&mut self.world, renderer);
     }
 
     pub fn draw(&mut self, renderer: &mut Renderer) {
-        chunk_system_draw(&mut self.world, renderer);
-        sprite_system_draw(&mut self.world, renderer);
-        health_bar_system_draw(&mut self.world, renderer);
-        text_system_draw(&mut self.world, renderer);
+        // chunk_system_draw(&mut self.world, renderer);
+        // sprite_system_draw(&mut self.world, renderer);
+        // health_bar_system_draw(&mut self.world, renderer);
+        // text_system_draw(&mut self.world, renderer);
 
         // renderer.render_text(FontId::OpenSansBold, "hello brad", 20);
         

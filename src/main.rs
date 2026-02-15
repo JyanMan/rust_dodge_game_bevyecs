@@ -1,4 +1,13 @@
 use sdl2::pixels::Color;
+use sdl2::event::Event;
+use sdl2::keyboard::*;
+use bevy_ecs::prelude::*;
+use bevy_app::prelude::*;
+use static_cell::StaticCell;
+use std::time::Duration;
+
+use sdl2::render::*;
+use sdl2::video::WindowContext;
 
 mod game;
 mod config;
@@ -10,72 +19,31 @@ mod components;
 mod math_helper;
 mod tests;
 mod events;
+mod plugins;
 
 use crate::game::*;
+use crate::plugins::*;
 use crate::core::renderer::*;
 use crate::resources::asset_manager::*;
 use crate::resources::Camera;
 use crate::config::*;
 
+use crate::components::Vector2;
+use crate::core::renderer::*;
+use crate::resources::*;
+use crate::systems::world::*;
+use crate::systems::render::*;
+use crate::systems::*;
+use crate::config::*;
+
 pub fn main() {
-    let sdl_context = sdl2::init().unwrap();
-    let video_subsystem = sdl_context.video().unwrap();
-    let timer_subsystem = sdl_context.timer().unwrap();
+    App::new()
+        // .add_plugins(MinimalPlugins.set(ScheduleRunnerPlugin::run_loop(Duration::from_secs_f64(1.0/60.0))))
+        .add_plugins(SDLInit)
+        .add_plugins(Test)
+        .add_plugins(MainGame)
+        .set_runner(custom_runner)
+        .run();
+    
 
-    let window = video_subsystem.window("dodge the man", SCREEN_WIDTH as u32, SCREEN_HEIGHT as u32)
-        // .opengl()
-        .position_centered()
-        .build()
-        .unwrap();
-
-    let canvas = window.into_canvas().
-        present_vsync().
-        build().
-        unwrap();
-
-    let ttf_ctx = sdl2::ttf::init().unwrap();
-
-    let t_creator = canvas.texture_creator();
-    let mut renderer = Renderer::new(
-        canvas,
-        AssetManager::new(&t_creator, &ttf_ctx),
-        Camera::new(),
-    );
-
-    sdl2::hint::set("SDL_RENDER_SCALE_QUALITY", "0");
-
-    let mut game = Game::new(&mut renderer);
-
-    let mut dt_accumulator = 0.0;
-    let fps: f32 = 60.0;
-    let time_step = 1.0 / fps;
-
-    let mut event_pump = sdl_context.event_pump().unwrap();
-
-    let mut delta_time;
-    let mut last_time = timer_subsystem.performance_counter() as f32;
-    let mut curr_time;
-
-    'running: loop {
-
-        curr_time = timer_subsystem.performance_counter() as f32;
-        delta_time = (curr_time - last_time) / timer_subsystem.performance_frequency() as f32;
-        last_time = curr_time;
-        
-        let state = game.input(&mut event_pump);
-        if !state {
-            break 'running;
-        }
-        dt_accumulator += delta_time;
-        while dt_accumulator >= time_step {
-            dt_accumulator -= time_step;
-            game.fixed_update(time_step, &mut renderer);
-        }
-        renderer.canvas.set_draw_color(Color::RGB(100, 100, 100));
-        renderer.canvas.clear();
-        renderer.alpha = dt_accumulator / time_step;
-        game.update(delta_time, &mut renderer);
-        game.draw(&mut renderer);
-        renderer.canvas.present();
-    }
 }

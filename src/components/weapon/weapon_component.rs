@@ -106,6 +106,8 @@ impl WeaponData {
     }
 
     pub fn temporary_attack_disable(&mut self) {
+        // this waits for the timer for can_attack
+        // see weapon_system attack_cd_timer usage
         self.can_attack = false;
     }
 

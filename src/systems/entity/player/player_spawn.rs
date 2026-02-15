@@ -28,7 +28,8 @@ struct PlayerBundle {
     knock: KnockbackTrigger
 }
 
-pub fn player_spawn(world: &mut World, renderer: &mut Renderer) -> Entity {
+pub fn player_spawn(world: &mut World) -> Entity {
+    let renderer = world.get_non_send_resource::<Renderer<'static>>().unwrap();
     let mut sprite = Sprite::new(&renderer.asset_m, TextureId::Player);
     sprite.set_sprite_sheet(6, 6);
 

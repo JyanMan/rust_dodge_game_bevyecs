@@ -4,19 +4,24 @@ use crate::resources::*;
 use crate::core::*;
 use crate::systems::*;
 
-pub fn player_health_bar_spawn(world: &mut World, renderer: &mut Renderer) {
+pub fn player_health_bar_spawn(world: &mut World) {
+    let renderer = world.get_non_send_resource::<Renderer<'static>>().unwrap();
+
     let mut sprite_health= Sprite::new(&renderer.asset_m, TextureId::HealthBar);
     sprite_health.set_sprite_sheet(1, 2);
     sprite_health.frame = 0;
+
+    let mut sprite_health_clear = Sprite::new(&renderer.asset_m, TextureId::HealthBar);
+    sprite_health_clear.set_sprite_sheet(1, 2);
+    sprite_health_clear.frame = 1;
+
     world.spawn((
         sprite_health,
         Transform::new(0.0, 0.0),
         HealthBarTag::default(),
         HealthBarFillTag::default()
     ));
-    let mut sprite_health_clear = Sprite::new(&renderer.asset_m, TextureId::HealthBar);
-    sprite_health_clear.set_sprite_sheet(1, 2);
-    sprite_health_clear.frame = 1;
+
     world.spawn((
         sprite_health_clear,
         Transform::new(0.0, 0.0),
@@ -24,7 +29,7 @@ pub fn player_health_bar_spawn(world: &mut World, renderer: &mut Renderer) {
     ));
 
     let text_str = format!("Hp: {} / {}", 0, 0);
-    let text_e = spawn_text(world, renderer, text_str.as_str(), 3, Vector2::new(0.0, 12.0));
+    let text_e = spawn_text(world, text_str.as_str(), 3, Vector2::new(0.0, 12.0));
     let mut text_ref = world.entity_mut(text_e);
     text_ref.insert(HealthBarTextTag::default());
 
@@ -77,19 +82,19 @@ pub fn damage_counter_update(
 }
 
 pub fn damage_counter_despawn_update(
-    world: &mut World,
-    renderer: &mut Renderer
+    query: Query<(Entity, &DamageCounterTimer, &TextObject)>,
+    mut renderer: NonSendMut<Renderer<'static>>,
+    mut commands: Commands
 ) {
-   let mut query = world.query::<(Entity, &DamageCounterTimer, &TextObject)>(); 
    let mut temp_vec: Vec<Entity> = vec![];
-   for (e, timer, text) in query.iter(world) {
+   for (e, timer, text) in &query {
        if timer.0 < 0.0 {
            renderer.delete_text(text);
            temp_vec.push(e);
        }
    }
    for e in temp_vec.iter() {
-      world.despawn(*e);
+      commands.entity(*e).despawn();
    }
 }
 

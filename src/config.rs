@@ -20,3 +20,5 @@ pub const DAMAGE_COUNTER_TIME: f32 = 0.3;
 
 pub const FRAME_PER_SEC: i32 = 12;
 pub const SEC_PER_FRAME: f32 = 1.0 / FRAME_PER_SEC as f32;
+
+pub const RENDER_DISTANCE: i32 = 5;

@@ -6,11 +6,11 @@ use crate::components::*;
 use crate::resources::*;
 use crate::systems::*;
 
-pub fn zombie_init(world: &mut World, renderer: &mut Renderer) {
+pub fn zombie_init(world: &mut World) {
     let mut rng = rand::thread_rng(); 
     for _ in 0..1 {
-        let z = zombie_spawn(world, renderer, rng.gen_range(30..80) as f32);
-        zombie_arm_spawn(world, renderer, z);
+        let z = zombie_spawn(world, rng.gen_range(30..80) as f32);
+        zombie_arm_spawn(world, z);
     }
 }
 
@@ -36,7 +36,8 @@ struct ZombieBundle {
     knock: KnockbackTrigger
 }
 
-pub fn zombie_spawn(world: &mut World, renderer: &mut Renderer, speed: f32) -> Entity {
+pub fn zombie_spawn(world: &mut World, speed: f32) -> Entity {
+    let renderer = world.get_non_send_resource::<Renderer<'static>>().unwrap();
     let mut sprite = Sprite::new(&renderer.asset_m, TextureId::Zombie);
     sprite.set_sprite_sheet(4, 4);
 
@@ -111,8 +112,8 @@ pub fn zombie_movement_system(
 
         if dist < enemy_d.attack_range {
             // attack
-                let attack_dir = dir_to_player;
-                combat.attack(attack_dir);
+            let attack_dir = dir_to_player;
+            combat.attack(attack_dir);
             // if walker_d.grounded {
             // }
         }

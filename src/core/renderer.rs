@@ -1,29 +1,52 @@
 use sdl2::render::*;
 use bevy_ecs::prelude::*;
 use sdl2::pixels::*;
+use sdl2::ttf::Sdl2TtfContext;
+use sdl2::video::WindowContext;
 use sdl2::rect::*;
+use std::rc::Rc;
+use std::cell::RefCell;
+use static_cell::StaticCell;
 
 use crate::resources::*;
 use crate::components::{ Vector2, Sprite, TextObject };
 
-
 #[derive(Resource)]
 pub struct Renderer <'a> {
-    pub canvas: WindowCanvas,
+    pub canvas: &'static mut WindowCanvas,
     pub asset_m: AssetManager <'a>,
     pub camera: Camera,
     pub alpha: f32,
+    pub t_creator: &'static TextureCreator<WindowContext>,
 }
 
+unsafe impl <'a>Send for Renderer<'a> {}
+unsafe impl <'a>Sync for Renderer<'a> {}
+
+static T_CREATOR: StaticCell<TextureCreator<WindowContext>> = StaticCell::new();
+
 impl <'a> Renderer <'a> {
-    pub fn new(canvas: WindowCanvas, asset_m: AssetManager <'a>, camera: Camera) -> Self {
+    
+    pub fn new(
+        canvas: &'static mut WindowCanvas,
+        ttf_ctx: &'static Sdl2TtfContext,
+        camera: Camera
+    ) -> Self {
+        let t_creator: &'static TextureCreator<WindowContext> = T_CREATOR.init(canvas.texture_creator());
         Self {
-            canvas: canvas,
-            asset_m: asset_m,
-            camera: camera,
+            canvas, 
+            t_creator,
+            asset_m: AssetManager::new(
+                t_creator, ttf_ctx
+            ),
+            camera,
             alpha: 0.0,
         }
     }
+
+    // pub fn init_textures<'a>(mut renderer: ResMut<Renderer<'static>>) {
+    //     renderer.asset_m.init_textures();
+    // }
 
     pub fn get_camera_adjusted_pos(&self, pos: Vector2) -> Vector2 {
         let cam_scale = self.camera.scale;
@@ -63,9 +86,13 @@ impl <'a> Renderer <'a> {
         
         if text.changed() {
             text.mark_unchanged();
-            let part_render = self.asset_m.open_sans_bold.render(text.content()); 
+            let part_render = self.asset_m.fonts_map.get(&FontId::OpenSansBold)
+                .unwrap().render(text.content()); 
             let surface = part_render.solid(Color::RGB(255, 255, 255)).unwrap();
-            let new_texture = self.asset_m.t_creator.create_texture_from_surface(surface).unwrap(); 
+            let t_creator: &'static TextureCreator<WindowContext> = unsafe {
+                &*(self.t_creator as *const TextureCreator<WindowContext>)
+            }; 
+            let new_texture = t_creator.create_texture_from_surface(surface).unwrap(); 
             self.asset_m.text_texture_set.insert(id, new_texture);
         }
         if let Some(texture) = self.asset_m.text_texture_set.get(id) {
@@ -83,7 +110,7 @@ impl <'a> Renderer <'a> {
                      x_len,
                      y_len
                  );
-                let _ = self.canvas.copy_ex( texture, None, dest_rect, 0.0, None, false, false, );
+                let _ = self.canvas.copy_ex( &texture, None, dest_rect, 0.0, None, false, false, );
                 return;
             }
 
@@ -96,7 +123,7 @@ impl <'a> Renderer <'a> {
                  x_len,
                  y_len
             );
-            let _ = self.canvas.copy_ex( texture, None, dest_rect, 0.0, None, false, false, );
+            let _ = self.canvas.copy_ex( &texture, None, dest_rect, 0.0, None, false, false, );
         }
     }
 

@@ -21,8 +21,9 @@ struct ZombieArmBundle {
     funcs: WeaponFns,
 }
 
-pub fn zombie_arm_spawn(world: &mut World, renderer: &mut Renderer, entity_owner: Entity) -> Entity {
+pub fn zombie_arm_spawn(world: &mut World, entity_owner: Entity) -> Entity {
 
+    let renderer = world.get_non_send_resource::<Renderer<'static>>().unwrap();
     let owner_ref = world.entity(entity_owner);
     let owner_tag = owner_ref.get::<EntityTagContainer>().unwrap();
     let entity_tag_container = EntityTagContainer(match owner_tag.0 {

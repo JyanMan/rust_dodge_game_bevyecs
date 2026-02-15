@@ -21,7 +21,9 @@ struct SteelSwordBundle {
     funcs: WeaponFns,
 }
 
-pub fn steel_sword_spawn(world: &mut World, renderer: &mut Renderer, entity_owner: Entity) -> Entity {
+pub fn steel_sword_spawn(world: &mut World, entity_owner: Entity) -> Entity {
+
+    let renderer = world.get_non_send_resource::<Renderer<'static>>().unwrap();
 
     let owner_ref = world.entity(entity_owner);
     let owner_tag = owner_ref.get::<EntityTagContainer>().unwrap();
