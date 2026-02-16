@@ -5,7 +5,7 @@ use crate::core::*;
 use crate::systems::*;
 
 pub fn player_health_bar_spawn(world: &mut World) {
-    let renderer = world.get_non_send_resource::<Renderer<'static>>().unwrap();
+    let renderer = world.get_non_send_resource::<Renderer>().unwrap();
 
     let mut sprite_health= Sprite::new(&renderer.asset_m, TextureId::HealthBar);
     sprite_health.set_sprite_sheet(1, 2);
@@ -67,36 +67,6 @@ pub fn player_health_bar_update(
     }
 }
 
-pub fn damage_counter_update(
-    mut query: Query<(&mut DamageCounterTimer, &mut Transform)>,
-    delta_time: Res<DeltaTime>,
-) {
-    for (mut timer, mut trans) in &mut query {
-        if timer.0 < 0.0 {
-            continue;
-        }
-        timer.timer(delta_time.0);
-        // increase at a decreasing rate
-        trans.global.y -= 0.1 / timer.0;
-    }
-}
-
-pub fn damage_counter_despawn_update(
-    query: Query<(Entity, &DamageCounterTimer, &TextObject)>,
-    mut renderer: NonSendMut<Renderer<'static>>,
-    mut commands: Commands
-) {
-   let mut temp_vec: Vec<Entity> = vec![];
-   for (e, timer, text) in &query {
-       if timer.0 < 0.0 {
-           renderer.delete_text(text);
-           temp_vec.push(e);
-       }
-   }
-   for e in temp_vec.iter() {
-      commands.entity(*e).despawn();
-   }
-}
 
 pub fn health_knock_timer(
     mut query: Query<(&mut Health, &mut KnockbackTrigger, &mut Velocity)>,

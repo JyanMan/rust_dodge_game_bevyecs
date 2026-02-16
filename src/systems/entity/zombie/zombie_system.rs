@@ -8,7 +8,7 @@ use crate::systems::*;
 
 pub fn zombie_init(world: &mut World) {
     let mut rng = rand::thread_rng(); 
-    for _ in 0..1500{
+    for _ in 0..5{
         let z = zombie_spawn(world, rng.gen_range(30..80) as f32);
         zombie_arm_spawn(world, z);
     }
@@ -37,7 +37,7 @@ struct ZombieBundle {
 }
 
 pub fn zombie_spawn(world: &mut World, speed: f32) -> Entity {
-    let renderer = world.get_non_send_resource::<Renderer<'static>>().unwrap();
+    let renderer = world.get_non_send_resource::<Renderer>().unwrap();
     let mut sprite = Sprite::new(&renderer.asset_m, TextureId::Zombie);
     sprite.set_sprite_sheet(4, 4);
 
@@ -66,7 +66,7 @@ pub fn zombie_spawn(world: &mut World, speed: f32) -> Entity {
         enemy_d: EnemyData { chase_range: 200.0, attack_range: 20.0},
         cell_pos: CellPos(Vec::new()),
         combat: Combat::new(1.0, 0.2),
-        e_over_obbs: EntityOverlappingOBBs(Vec::new()),
+        e_over_obbs: EntityOverlappingOBBs::default(),
         target_e_tags: TargetEntityTags(vec![EntityTag::PlayerWeapon]),
         tag_container: EntityTagContainer(EntityTag::Zombie),
         knock: KnockbackTrigger::default()

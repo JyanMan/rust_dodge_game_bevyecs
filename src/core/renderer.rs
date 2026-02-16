@@ -11,25 +11,22 @@ use static_cell::StaticCell;
 use crate::resources::*;
 use crate::components::{ Vector2, Sprite, TextObject };
 
-#[derive(Resource)]
-pub struct Renderer <'a> {
-    pub canvas: &'static mut WindowCanvas,
-    pub asset_m: AssetManager <'a>,
-    pub camera: Camera,
-    pub alpha: f32,
+pub struct Renderer {
+    pub asset_m: AssetManager,
     pub t_creator: &'static TextureCreator<WindowContext>,
+    pub canvas: &'static mut WindowCanvas,
+    pub camera: Camera,
+    // pub alpha: f32,
 }
 
-static T_CREATOR: StaticCell<TextureCreator<WindowContext>> = StaticCell::new();
-
-impl <'a> Renderer <'a> {
+impl Renderer {
     
     pub fn new(
         canvas: &'static mut WindowCanvas,
         ttf_ctx: &'static Sdl2TtfContext,
+        t_creator: &'static TextureCreator<WindowContext>,
         camera: Camera
     ) -> Self {
-        let t_creator: &'static TextureCreator<WindowContext> = T_CREATOR.init(canvas.texture_creator());
         Self {
             canvas, 
             t_creator,
@@ -37,13 +34,9 @@ impl <'a> Renderer <'a> {
                 t_creator, ttf_ctx
             ),
             camera,
-            alpha: 0.0,
+            // alpha: 0.0,
         }
     }
-
-    // pub fn init_textures<'a>(mut renderer: ResMut<Renderer<'static>>) {
-    //     renderer.asset_m.init_textures();
-    // }
 
     pub fn get_camera_adjusted_pos(&self, pos: Vector2) -> Vector2 {
         let cam_scale = self.camera.scale;
@@ -107,7 +100,7 @@ impl <'a> Renderer <'a> {
                      x_len,
                      y_len
                  );
-                let _ = self.canvas.copy_ex( &texture, None, dest_rect, 0.0, None, false, false, );
+                let _ = self.canvas.copy_ex( texture, None, dest_rect, 0.0, None, false, false, );
                 return;
             }
 
@@ -120,7 +113,7 @@ impl <'a> Renderer <'a> {
                  x_len,
                  y_len
             );
-            let _ = self.canvas.copy_ex( &texture, None, dest_rect, 0.0, None, false, false, );
+            let _ = self.canvas.copy_ex( texture, None, dest_rect, 0.0, None, false, false, );
         }
     }
 

@@ -11,7 +11,6 @@ use xsparseset::*;
 use crate::core::*;
 
 pub type TextId = usize;
-// pub type TextureId = usize;
 
 #[derive(Clone, Copy, Default)]
 #[repr(usize)]
@@ -24,6 +23,7 @@ pub enum TextureId {
     ZombieArm,
     HealthBar
 }
+
 impl TextureId {
     pub fn as_usize(self) -> usize {
         self as usize
@@ -36,20 +36,17 @@ pub enum FontId {
     OpenSansBold
 }
 
-pub struct AssetManager <'a> {
-    // pub open_sans_bold: Rc<Font<'a, 'static>>,
-    pub fonts_map: HashMap<FontId, Rc<Font<'a, 'a>>>,
-    pub text_texture_set: SparseSet<TextId, Texture<'a>, VecStorage<TextId>>,
-    pub texture_set: SparseSet<usize, Texture<'a>, VecStorage<usize>>,
-    // pub ttf_ctx: Sdl2TtfContext,
-    // pub t_creator: TextureCreator<WindowContext>
+pub struct AssetManager {
+    pub fonts_map: HashMap<FontId, Rc<Font<'static, 'static>>>,
+    pub text_texture_set: SparseSet<TextId, Texture<'static>, VecStorage<TextId>>,
+    pub texture_set: SparseSet<usize, Texture<'static>, VecStorage<usize>>,
 }
 
-impl <'a> AssetManager <'a> {
+impl AssetManager {
 
     pub fn new_texture(
-        texture_set: &mut SparseSet<usize, Texture<'a>, VecStorage<usize>>,
-        t_creator: &'a TextureCreator<WindowContext>,
+        texture_set: &mut SparseSet<usize, Texture<'static>, VecStorage<usize>>,
+        t_creator: &'static TextureCreator<WindowContext>,
         path: &str,
         id: TextureId
     ) {
@@ -59,9 +56,8 @@ impl <'a> AssetManager <'a> {
     
     pub fn new(t_creator: &'static TextureCreator<WindowContext>, ttf_ctx: &'static Sdl2TtfContext) -> Self {
         let _image_context = sdl2::image::init(InitFlag::PNG | InitFlag::JPG);
-        // let t_creator = canvas.texture_creator();
 
-        let mut texture_set: SparseSet<usize, Texture<'a>, VecStorage<usize>> = SparseSet::default();
+        let mut texture_set: SparseSet<usize, Texture<'static>, VecStorage<usize>> = SparseSet::default();
 
         Self::new_texture(&mut texture_set, t_creator, "assets/player.png", TextureId::Player);
         Self::new_texture(&mut texture_set, t_creator, "assets/zombie.png", TextureId::Zombie);
@@ -75,22 +71,15 @@ impl <'a> AssetManager <'a> {
         let open_sans_bold = ttf_ctx.load_font("assets/fonts/OpenSans-Bold.ttf", 18).unwrap();
         fonts_map.insert(FontId::OpenSansBold, Rc::new(open_sans_bold));
 
-        let mut new_self = Self {
+        Self {
             // open_sans_bold,
             fonts_map,
             text_texture_set: SparseSet::default(),
             texture_set,
-            // ttf_ctx,
-        };
-       
-
-        new_self
+        }
     }
 
-    pub fn init_textures(&'a mut self) {
-    }
-
-    pub fn get_texture(&'a self, id: TextureId) -> &'a Texture<'a> {
+    pub fn get_texture<'a>(&'a self, id: TextureId) -> &'a Texture<'a> {
         self.texture_set.get(id.as_usize()).unwrap()
     }
 }

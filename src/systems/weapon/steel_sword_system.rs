@@ -23,7 +23,7 @@ struct SteelSwordBundle {
 
 pub fn steel_sword_spawn(world: &mut World, entity_owner: Entity) -> Entity {
 
-    let renderer = world.get_non_send_resource::<Renderer<'static>>().unwrap();
+    let renderer = world.get_non_send_resource::<Renderer>().unwrap();
 
     let owner_ref = world.entity(entity_owner);
     let owner_tag = owner_ref.get::<EntityTagContainer>().unwrap();
@@ -49,7 +49,7 @@ pub fn steel_sword_spawn(world: &mut World, entity_owner: Entity) -> Entity {
         held: HeldBy(entity_owner),
         obb: OBB::new(30.0, 30.0, Vector2::zero(), true),
         cell_pos: CellPos(Vec::new()),
-        over_obbs: EntityOverlappingOBBs(Vec::new()),
+        over_obbs: EntityOverlappingOBBs::default(),
         // target_entity_tags,
         target_tags: TargetEntityTags(vec![]),
         tag_container: entity_tag_container,
@@ -194,7 +194,7 @@ pub fn steel_sword_start_attack(
     anim_player.play(WeaponAnim::Attack.usize());
 
     weapon_d.attack_dir = attack_dir;
-    user_vel.vec = attack_dir * 1000.0;
+    user_vel.vec = attack_dir * 200.0;
     grav_affected.0 = false;
     combat.attacking = true;
 }

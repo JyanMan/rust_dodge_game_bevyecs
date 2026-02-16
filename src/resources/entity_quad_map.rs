@@ -174,7 +174,7 @@ impl EntityQuadMap {
             let cell_pos = prev_cells.0.pop().unwrap();
             if let Some(index) = self.cells_map.get_mut(&cell_pos) {
                 let prev_cell = self.cells_arr.get_mut(*index).unwrap();
-                prev_cell.entities.swap_remove_by_id(e.index() as usize);
+                prev_cell.entities.swap_remove_by_id(e.index_u32() as usize);
                 // prev_cell.entities.remove(&e);
             }
         }
@@ -188,7 +188,7 @@ impl EntityQuadMap {
         for cell_pos in prev_cells.0.iter() {
             if let Some(index) = self.cells_map.get_mut(cell_pos) {
                 let new_cell = self.cells_arr.get_mut(*index).unwrap();
-                new_cell.entities.insert(e.index() as usize, e);
+                new_cell.entities.insert(e.index_u32() as usize, e);
                 // new_cell.entities.insert(e);
             }
         }

@@ -8,3 +8,10 @@
   - slam attack
 * fix frame flutter bug
 * optimize entity_quad fetching for entities overlapping
+
+## MECHANIC
+* if a dodge is successful and was attacked during the act...
+  the player completely refills his dodge stamina.
+  This allows it so that unlimited dodges can be achieved
+  even at the beginning of the game, as long as the player was
+  attacked while doing so.

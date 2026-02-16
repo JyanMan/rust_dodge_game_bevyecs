@@ -29,7 +29,7 @@ struct PlayerBundle {
 }
 
 pub fn player_spawn(world: &mut World) -> Entity {
-    let renderer = world.get_non_send_resource::<Renderer<'static>>().unwrap();
+    let renderer = world.get_non_send_resource::<Renderer>().unwrap();
     let mut sprite = Sprite::new(&renderer.asset_m, TextureId::Player);
     sprite.set_sprite_sheet(6, 6);
 
@@ -57,7 +57,7 @@ pub fn player_spawn(world: &mut World) -> Entity {
          anim_player: AnimationPlayer::new(WalkerAnim::COUNT),
          grav_affected: GravityAffected(true),
          combat: Combat::new(2.0, 0.0),
-         e_over_obbs: EntityOverlappingOBBs(Vec::new()),
+         e_over_obbs: EntityOverlappingOBBs::default(),
          target_e_tags: TargetEntityTags(vec![EntityTag::EnemyWeapon]),
          cell_pos: CellPos(Vec::new()),
          e_tag_container: EntityTagContainer(EntityTag::Player),

@@ -20,13 +20,13 @@ pub fn chunk_system_update(
 //     let mut chunk_m = world.get_resource_mut::<ChunkManager>().unwrap();
 //     chunk_m.draw(renderer);
 // }
-pub fn init_chunk_manager(renderer: NonSend<Renderer<'static>>, mut commands: Commands) {
+pub fn init_chunk_manager(renderer: NonSend<Renderer>, mut commands: Commands) {
     let chunk_m = ChunkManager::new(Vector2::new(0.0, 0.0), &renderer.asset_m, RENDER_DISTANCE);
     commands.insert_resource(chunk_m);
     println!("STARTED chunk manager");
    
 }
 
-pub fn chunk_system_draw(mut chunk_m: ResMut<ChunkManager>, mut renderer: NonSendMut<Renderer<'static>>) {
+pub fn chunk_system_draw(mut chunk_m: ResMut<ChunkManager>, mut renderer: NonSendMut<Renderer>) {
     chunk_m.draw(&mut renderer);
 }

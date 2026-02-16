@@ -81,7 +81,7 @@ impl Plugin for MainGame {
         ));
 
         app.add_systems(Render, (
-            chunk_system_draw,
+            chunk_system_draw.before(sprite_system_draw),
             sprite_system_draw,
             health_bar_system_draw,
             text_system_draw.after(sprite_system_draw),
@@ -92,6 +92,7 @@ impl Plugin for MainGame {
 }
 
 pub struct Test;
+
 impl Plugin for Test {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, init_spawn);
@@ -113,7 +114,6 @@ pub fn user_input(
     mut writer: MessageWriter<AppExit>
 ) {
     
-    // let mut user_input_res = world.get_resource_mut::<KeyInput>().unwrap();
     for event in event_pump.poll_iter() {
         match event {
             Event::Quit { .. } => {

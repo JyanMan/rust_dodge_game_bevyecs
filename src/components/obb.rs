@@ -2,6 +2,7 @@ use bevy_ecs::prelude::*;
 use std::vec::*;
 use sdl2::rect::*;
 use sdl2::pixels::Color;
+use bevy_ecs::storage::SparseSet;
 
 use crate::components::*;
 use crate::core::Renderer;
@@ -18,9 +19,23 @@ pub struct EntityTagContainer(pub EntityTag);
 #[component(storage = "Table")]
 pub struct TargetEntityTags(pub Vec<EntityTag>);
 
-#[derive(Component)]
+#[derive(Component, Default)]
 #[component(storage = "Table")]
-pub struct EntityOverlappingOBBs(pub Vec<(Entity, EntityTag)>);
+pub struct EntityOverlappingOBBs(pub SparseSet<Entity, EntityTag>);
+
+impl EntityOverlappingOBBs {
+    pub fn entities_with_tag(&self, tag: &EntityTag) -> Vec<Entity> {
+        let mut entities = Vec::new();
+
+        for (overlapped_e, _overlapped_tag) in self.0.iter() {
+            if matches!(tag, _overlapped_tag) {
+                entities.push(*overlapped_e);
+            }
+        }
+
+        entities
+    }
+}
 
 /* WARNING: changing atts require that you call compute_vertices to apply check fn inside first */
 #[derive(Component, Clone)]

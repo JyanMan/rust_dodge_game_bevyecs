@@ -83,7 +83,7 @@ pub fn update_entity_overlapping_obbs(
 
                 // add overlapping obbs
                 if has_tag && obb.overlapping(other_obb) {
-                    over_obbs.0.push((other_e, other_tag.0.clone()));
+                    over_obbs.0.insert(other_e, other_tag.0.clone());
                 }
             }
         }

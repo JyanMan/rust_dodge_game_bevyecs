@@ -19,6 +19,7 @@ use crate::resources::*;
 
 static CANVAS: StaticCell<Canvas<sdl2::video::Window>> = StaticCell::new();
 static TTF_CTX: StaticCell<Sdl2TtfContext> = StaticCell::new();
+static T_CREATOR: StaticCell<TextureCreator<WindowContext>> = StaticCell::new();
 
 #[derive(ScheduleLabel, Clone, Debug, PartialEq, Eq, Hash, Default)]
 pub struct Render;
@@ -82,9 +83,11 @@ pub fn custom_runner(mut app: App) -> AppExit {
     let mut last_time = timer_subsystem.performance_counter() as f32;
     let mut curr_time;
 
+    let canvas_static: &'static mut WindowCanvas = CANVAS.init(canvas);
     app.insert_non_send_resource( Renderer::new(
-        CANVAS.init(canvas),
+        canvas_static,
         TTF_CTX.init(ttf_ctx),
+        T_CREATOR.init(canvas_static.texture_creator()),
         Camera::new(),
     ));
     app.insert_non_send_resource(sdl_context.event_pump().unwrap());
@@ -125,11 +128,11 @@ pub fn custom_runner(mut app: App) -> AppExit {
     }
 }
 
-pub fn set_background(mut renderer: NonSendMut<Renderer<'static>>) {
+pub fn set_background(mut renderer: NonSendMut<Renderer>) {
     renderer.canvas.set_draw_color(Color::RGB(100, 100, 100));
     renderer.canvas.clear();
 }
 
-pub fn canvas_present(mut renderer: NonSendMut<Renderer<'static>>) {
+pub fn canvas_present(mut renderer: NonSendMut<Renderer>) {
     renderer.canvas.present();
 }
