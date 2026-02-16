@@ -19,13 +19,6 @@ pub struct ChunkManager  {
 }
 
 impl ChunkManager {
-    pub fn init(renderer: Res<Renderer<'static>>, mut commands: Commands) {
-        commands.insert_resource(ChunkManager::new(
-            Vector2::zero(),
-            &renderer.asset_m,
-            3
-        ));
-    }
     
     pub fn new(world_pos: Vector2, asset_m: &AssetManager, h_render_dist: i32) -> ChunkManager {
 

@@ -96,13 +96,12 @@ pub fn weapon_lost_owner(mut removed: RemovedComponents<HeldBy>, mut commands: C
     });
 }
 
-
 pub fn spawn_damage_counter(commands: &mut Commands, start_pos: Vector2, damage: i32) {
     let mut rng = rand::thread_rng(); 
     let text = format!("{}", damage);
-    let x_rand = rng.gen_range(-4..4) as f32;
-    let y_rand = rng.gen_range((-25)..(-15)) as f32;
-    let offset = Vector2::new(x_rand, y_rand);
+    let x_rand = rng.gen_range(-1..1) as f32;
+    let y_rand = rng.gen_range((-1)..0) as f32;
+    let offset = Vector2::new(x_rand, y_rand).normalize() * 10.0;
     let pos = start_pos + offset;
     commands.spawn((
         TextObject::new(text.as_str(), 4, pos, true),

@@ -44,6 +44,4 @@ pub fn main() {
         .add_plugins(MainGame)
         .set_runner(custom_runner)
         .run();
-    
-
 }

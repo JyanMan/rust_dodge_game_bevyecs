@@ -91,6 +91,10 @@ pub fn custom_runner(mut app: App) -> AppExit {
 
     app.world_mut().run_schedule(Startup);
 
+    // TIME STEP IS FIXED
+    let mut ts_res = app.world_mut().get_resource_mut::<TimeStep>().unwrap();
+    ts_res.0 = time_step;
+
     loop {
         curr_time = timer_subsystem.performance_counter() as f32;
         delta_time = (curr_time - last_time) / timer_subsystem.performance_frequency() as f32;
@@ -106,9 +110,6 @@ pub fn custom_runner(mut app: App) -> AppExit {
         while dt_accumulator >= time_step {
             dt_accumulator -= time_step;
             app.world_mut().run_schedule(FixedUpdate);
-            let mut ts_res = app.world_mut().get_resource_mut::<TimeStep>().unwrap();
-            ts_res.0 = time_step;
-            // game.fixed_update(time_step, &mut renderer);
         }
         let mut dt_res = app.world_mut().get_resource_mut::<DeltaTime>().unwrap();
         dt_res.0 = delta_time;

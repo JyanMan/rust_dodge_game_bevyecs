@@ -10,7 +10,7 @@ use crate::core::Renderer;
 #[allow(unused)]
 pub enum EntityTag { Zombie, Enemy, EnemyWeapon, Player, PlayerWeapon, Weapon }
 
-#[derive(Component)]
+#[derive(Component, Clone)]
 #[component(storage = "Table")]
 pub struct EntityTagContainer(pub EntityTag);
 

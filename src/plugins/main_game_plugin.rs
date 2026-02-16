@@ -26,23 +26,17 @@ pub struct MainGame;
 impl Plugin for MainGame {
     fn build(&self, app: &mut App) {
 
-        let area_m = AreaManager::new();
-        app.insert_resource(area_m);
+        app.init_resource::<AreaManager>();
+        app.init_resource::<DeltaTime>();
+        app.init_resource::<TimeStep>();
+        app.init_resource::<KeyInput>();
+        app.init_resource::<MouseInput>();
 
-        let dt_res = DeltaTime(0.0);
-        app.insert_resource(dt_res);
-
-        let ts_res = TimeStep(0.0);
-        app.insert_resource(ts_res);
-
-        let user_input_res = KeyInput::default();
-        app.insert_resource(user_input_res);
-
-        let mouse_input = MouseInput::default();
-        app.insert_resource(mouse_input);
-
-        let e_quad_map = EntityQuadMap::new(Vector2::new(0.0, 0.0), RENDER_DISTANCE);
-        app.insert_resource(e_quad_map);
+        app.insert_resource(
+            EntityQuadMap::new(
+                Vector2::new(0.0, 0.0), RENDER_DISTANCE
+            )
+        );
 
         app.add_systems(Startup, (
             init_chunk_manager,
@@ -64,14 +58,6 @@ impl Plugin for MainGame {
             damage_counter_despawn_update,
         ));
         app.add_systems(FixedUpdate, (
-            // player_movement_system.before(gravity_system),
-            // gravity_system,
-            // walker_collision_system.after(gravity_system),
-            // pos_vel_update_system.after(walker_collision_system),
-            // transform_update_system.after(pos_vel_update_system),
-            // area_update_system.after(transform_update_system),
-            // walker_animation_update.after(transform_update_system),
-            // chunk_system_update,
             player_movement_system.before(gravity_system),
             zombie_movement_system.before(gravity_system),
             //PHYSICS
@@ -98,7 +84,7 @@ impl Plugin for MainGame {
             chunk_system_draw,
             sprite_system_draw,
             health_bar_system_draw,
-            text_system_draw,
+            text_system_draw.after(sprite_system_draw),
         ));
 
         app.add_systems(Input, (user_input, player_system_input));

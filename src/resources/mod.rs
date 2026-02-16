@@ -18,10 +18,10 @@ use bevy_ecs::prelude::*;
 use std::collections::HashSet;
 use sdl2::keyboard::*;
 
-#[derive(Resource)]
+#[derive(Resource, Default)]
 pub struct DeltaTime(pub f32);
 
-#[derive(Resource)]
+#[derive(Resource, Default)]
 pub struct TimeStep(pub f32);
 
 #[derive(Resource, Default)]

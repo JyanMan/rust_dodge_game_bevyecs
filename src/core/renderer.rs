@@ -20,9 +20,6 @@ pub struct Renderer <'a> {
     pub t_creator: &'static TextureCreator<WindowContext>,
 }
 
-unsafe impl <'a>Send for Renderer<'a> {}
-unsafe impl <'a>Sync for Renderer<'a> {}
-
 static T_CREATOR: StaticCell<TextureCreator<WindowContext>> = StaticCell::new();
 
 impl <'a> Renderer <'a> {
