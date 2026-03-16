@@ -107,7 +107,9 @@ pub fn custom_runner(mut app: App) -> AppExit {
         dt_accumulator += delta_time;
         while dt_accumulator >= time_step {
             dt_accumulator -= time_step;
+            app.world_mut().run_schedule(FixedPreUpdate);
             app.world_mut().run_schedule(FixedUpdate);
+            app.world_mut().run_schedule(FixedPostUpdate);
         }
         let mut dt_res = app.world_mut().get_resource_mut::<DeltaTime>().unwrap();
         dt_res.0 = delta_time;

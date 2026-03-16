@@ -41,7 +41,6 @@ impl Plugin for MainGame {
         ));
 
         app.add_systems(Update, (
-            // player_timer_system,
             player_timer_system,
             player_health_bar_update,
             player_weapon_signal_update,
@@ -50,32 +49,31 @@ impl Plugin for MainGame {
             entity_knocked_reaction,
             weapon_attack_timer_and_signal_update.before(weapon_system_animation_update),
             weapon_system_animation_update.after(weapon_attack_timer_and_signal_update),
-            // enemy_weapon_system_animation_update.before(animation_player_update),
             animation_player_update,
             weapon_lost_owner,
             damage_counter_despawn_update,
         ));
+        app.add_systems(FixedPreUpdate, (
+            player_movement_system,
+            zombie_movement_system,
+        ));
         app.add_systems(FixedUpdate, (
-            player_movement_system.before(gravity_system),
-            zombie_movement_system.before(gravity_system),
-            //PHYSICS
             gravity_system,
             walker_collision_system.after(gravity_system),
-            pos_vel_update_system.after(walker_collision_system),
             update_entity_quad_system.after(gravity_system),
             update_entity_overlapping_obbs.after(update_entity_quad_system),
+            entity_hit_update.after(update_entity_overlapping_obbs),
+            pos_vel_update_system.after(walker_collision_system),
             transform_update_system.after(pos_vel_update_system),
             area_update_system.after(transform_update_system),
             obb_update_system.after(transform_update_system),
-            entity_hit_update.after(update_entity_overlapping_obbs),
-            // steel_sword_test_overlap.after(update_entity_overlapping_obbs),
-            // player_test_overlap,
-            walker_animation_update.after(transform_update_system),
+        ));
+        app.add_systems(FixedPostUpdate, (
+            walker_animation_update,
             chunk_system_update,
             quad_generation_system,
             health_update,
             camera_system_update,
-            // player_movement_system.before(gravity_system),
         ));
 
         app.add_systems(Render, (
