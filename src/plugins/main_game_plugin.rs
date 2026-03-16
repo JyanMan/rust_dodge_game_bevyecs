@@ -11,9 +11,7 @@ use std::time::Duration;
 use sdl2::render::*;
 use sdl2::video::WindowContext;
 
-use crate::core::renderer::*;
 use crate::config::*;
-use crate::camera::*;
 use crate::systems::*;
 use crate::systems::world::*;
 use crate::resources::*;

@@ -1,20 +1,15 @@
 use sdl2::pixels::Color;
-use sdl2::event::Event;
-use sdl2::keyboard::*;
-use sdl2::EventPump;
 use sdl2::ttf::Sdl2TtfContext;
 use bevy_ecs::prelude::*;
 use bevy_ecs::schedule::*;
 use bevy_app::prelude::*;
 use static_cell::StaticCell;
-use std::time::Duration;
 
 use sdl2::render::*;
 use sdl2::video::WindowContext;
 
 use crate::core::renderer::*;
 use crate::config::*;
-use crate::camera::*;
 use crate::resources::*;
 
 static CANVAS: StaticCell<Canvas<sdl2::video::Window>> = StaticCell::new();

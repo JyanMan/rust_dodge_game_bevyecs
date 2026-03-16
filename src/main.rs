@@ -9,6 +9,7 @@ mod tests;
 mod events;
 mod plugins;
 
+use bevy_app::prelude::*;
 use crate::plugins::*;
 use crate::core::renderer::*;
 
