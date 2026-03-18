@@ -41,6 +41,7 @@ impl Plugin for MainGame {
         ));
 
         app.add_systems(Update, (
+            particle_systems::update,
             player_timer_system,
             player_health_bar_update,
             player_weapon_signal_update,

@@ -3,6 +3,8 @@ use crate::components::*;
 use crate::systems::world::*;
 use std::collections::HashMap;
 
+pub mod blood_particles;
+
 pub fn entity_hit_update(
     mut query: Query<(
         Entity,
@@ -37,6 +39,7 @@ pub fn entity_hit_update(
                         health.hit_and_immune(hitter_wd.damage);
                         knock_trigger.trigger(hitter_wd.knock_force as i32, hitter_wd.attack_dir);
                         damage_counter_spawn(&mut commands, trans.global, hitter_wd.damage);
+                        blood_particles::spawn(&mut commands, *trans, hitter_wd.attack_dir);
                     }
                 }
             },

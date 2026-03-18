@@ -21,7 +21,8 @@ pub enum TextureId {
     Zombie,
     SteelSword,
     ZombieArm,
-    HealthBar
+    HealthBar,
+    BloodParticle
 }
 
 impl TextureId {
@@ -36,6 +37,12 @@ pub enum FontId {
     OpenSansBold
 }
 
+/// this is not accessed directly, it is retrieved via the renderer
+/// to access it, get the renderer with
+/// ```
+/// let renderer = world.get_non_send_resource::<Renderer>().unwrap();
+/// renderer.asset_m...
+/// ```
 pub struct AssetManager {
     pub fonts_map: HashMap<FontId, Rc<Font<'static, 'static>>>,
     pub text_texture_set: SparseSet<TextId, Texture<'static>, VecStorage<TextId>>,
@@ -65,6 +72,7 @@ impl AssetManager {
         Self::new_texture(&mut texture_set, t_creator, "assets/steel_sword.png", TextureId::SteelSword);
         Self::new_texture(&mut texture_set, t_creator, "assets/zombie_arm.png", TextureId::ZombieArm);
         Self::new_texture(&mut texture_set, t_creator, "assets/health_bar.png", TextureId::HealthBar);
+        Self::new_texture(&mut texture_set, t_creator, "assets/blood_color.png", TextureId::BloodParticle);
 
         let mut fonts_map = HashMap::new();
 
