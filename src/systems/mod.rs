@@ -5,6 +5,7 @@ pub mod physics;
 pub mod render;
 pub mod world;
 pub mod weapon;
+pub mod particle_system;
 
 pub use animation::*;
 pub use entity::*;

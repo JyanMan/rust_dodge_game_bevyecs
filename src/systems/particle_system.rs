@@ -11,7 +11,8 @@ pub fn spawn(
     speed: f32,
     lifetime_sec: f32,
     texture: TextureId,
-    gravity: bool
+    gravity: bool,
+    scale: f32
 ) -> Entity {
 
     let init_vec = dir * speed;
@@ -20,7 +21,7 @@ pub fn spawn(
         &renderer.asset_m,
         texture
     );
-    sprite.scale = 0.5;
+    sprite.scale = scale;
     if gravity {
         world.spawn((
             sprite,
@@ -40,7 +41,7 @@ pub fn spawn(
     }
 }
 
-pub fn update(
+pub fn update_timer(
     mut query: Query<(Entity, &mut ParticleData)>,
     delta_time: Res<DeltaTime>,
     mut commands: Commands

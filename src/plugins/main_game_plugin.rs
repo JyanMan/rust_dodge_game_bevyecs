@@ -41,11 +41,11 @@ impl Plugin for MainGame {
         ));
 
         app.add_systems(Update, (
-            particle_systems::update,
+            particle_system::update_timer,
+            health_knock_timer,
             player_timer_system,
             player_health_bar_update,
             player_weapon_signal_update,
-            health_knock_timer,
             damage_counter_update,
             entity_knocked_reaction,
             weapon_attack_timer_and_signal_update.before(weapon_system_animation_update),

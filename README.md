@@ -1,11 +1,16 @@
 ## TODO
-* add hit particle like blood or something
-* now make the weapon have a chance to drop
-* add zombie hit animation
+* add stamina for dodging and skill uses
 * add player attack combos (different animation for some key combos)
+  - if player attacks while dodging, play a different animation
+  - if player uses some key: he can use the skill of the weapon
+    - skill decreases stamina
+    - if skill is used
+
   - hold dodge before attacking to do dodge attack (allows dodge attack)
     - cannot dodge while attacking
   - slam attack
+* now make the weapon have a chance to drop
+* add zombie hit animation
 * fix frame flutter bug
 * optimize entity_quad fetching for entities overlapping
 

@@ -8,8 +8,8 @@ use PlayerState as P;
 
 pub fn player_timer_system(mut query: Query<(&mut PlayerData, &mut WalkerData)>, delta_time: Res<DeltaTime>) {
     use super::player_timer::*;
-    for (mut p_data, mut walker_d) in &mut query {
-        player_can_jump_delay_timer(&mut p_data, &mut walker_d, delta_time.0);
+    for (mut p_data, walker_d) in &mut query {
+        player_can_jump_delay_timer(&mut p_data, &walker_d, delta_time.0);
         player_dodge_timer(&mut p_data, delta_time.0);
         player_lerp_timer(&mut p_data, delta_time.0);
     } 
