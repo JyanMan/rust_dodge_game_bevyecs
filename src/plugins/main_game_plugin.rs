@@ -1,19 +1,11 @@
-use sdl2::pixels::Color;
 use sdl2::event::Event;
 use sdl2::keyboard::*;
 use sdl2::EventPump;
 use bevy_ecs::prelude::*;
-use bevy_ecs::schedule::*;
 use bevy_app::prelude::*;
-use static_cell::StaticCell;
-use std::time::Duration;
-
-use sdl2::render::*;
-use sdl2::video::WindowContext;
 
 use crate::config::*;
-use crate::systems::*;
-use crate::systems::world::*;
+use crate::sys;
 use crate::resources::*;
 use crate::components::*;
 use crate::plugins::*;
@@ -37,54 +29,59 @@ impl Plugin for MainGame {
         );
 
         app.add_systems(Startup, (
-            init_chunk_manager,
+            // init_chunk_manager,
+            sys::world::chunks::init,
         ));
 
+        // use crate::systems::entity_sys;
         app.add_systems(Update, (
-            particle_system::update_timer,
-            health_knock_timer,
-            player_timer_system,
-            player_health_bar_update,
-            player_weapon_signal_update,
-            damage_counter_update,
-            entity_knocked_reaction,
-            weapon_attack_timer_and_signal_update.before(weapon_system_animation_update),
-            weapon_system_animation_update.after(weapon_attack_timer_and_signal_update),
-            animation_player_update,
-            weapon_lost_owner,
-            damage_counter_despawn_update,
+            sys::particle::update_timer,
+            sys::entity::health::knock_timer,
+            sys::entity::player::timers_update,
+            sys::entity::health::player::health_bar_update,
+            sys::entity::hit_reaction::set_knocked_as_stunned,
+            sys::weapon::from_player_input_update,
+            sys::weapon::attack_timer_and_signal_update.before(sys::weapon::anim_update),
+            sys::weapon::anim_update.after(sys::weapon::attack_timer_and_signal_update),
+            sys::weapon::lost_owner,
+            sys::world::damage_counter::update,
+            sys::world::damage_counter::despawn_update,
+            sys::anim::update_all,
+            sys::anim::walker::update,
         ));
         app.add_systems(FixedPreUpdate, (
-            player_movement_system,
-            zombie_movement_system,
+            sys::entity::player::movement_update,
+            sys::entity::zombie::movement_update,
         ));
         app.add_systems(FixedUpdate, (
-            gravity_system,
-            walker_collision_system.after(gravity_system),
-            update_entity_quad_system.after(gravity_system),
-            update_entity_overlapping_obbs.after(update_entity_quad_system),
-            entity_hit_update.after(update_entity_overlapping_obbs),
-            pos_vel_update_system.after(walker_collision_system),
-            transform_update_system.after(pos_vel_update_system),
-            area_update_system.after(transform_update_system),
-            obb_update_system.after(transform_update_system),
+            sys::physics::gravity,
+            sys::physics::walker_collision .after(sys::physics::gravity),
+            sys::physics::pos_vel_update.after(sys::physics::walker_collision),
+            sys::physics::transform_update.after(sys::physics::pos_vel_update),
+            sys::physics::area_update.after(sys::physics::transform_update),
+            sys::physics::obb_update.after(sys::physics::transform_update),
+            sys::world::entity_quad::update .after(sys::physics::gravity),
+            sys::world::entity_quad::update_overlapping_obbs .after(sys::world::entity_quad::update),
+            sys::entity::hit_reaction::update .after(sys::world::entity_quad::update_overlapping_obbs),
         ));
         app.add_systems(FixedPostUpdate, (
-            walker_animation_update,
-            chunk_system_update,
-            quad_generation_system,
-            health_update,
-            camera_system_update,
+            sys::entity::health::update,
+            sys::world::chunks::generate,
+            sys::world::entity_quad::generate,
+            sys::world::camera::update,
         ));
 
         app.add_systems(Render, (
-            chunk_system_draw.before(sprite_system_draw),
-            sprite_system_draw,
-            health_bar_system_draw,
-            text_system_draw.after(sprite_system_draw),
+            sys::world::chunks::draw .before(sys::render::sprites_draw),
+            sys::render::sprites_draw,
+            sys::render::health_bar_draw,
+            sys::render::texts_draw.after(sys::render::sprites_draw),
         ));
 
-        app.add_systems(Input, (user_input, player_system_input));
+        app.add_systems(Input, (
+            user_input,
+            sys::entity::player::input_update
+        ));
     }
 }
 
@@ -97,10 +94,10 @@ impl Plugin for Test {
 }
 
 pub fn init_spawn(world: &mut World) {
-    let player_e = player_spawn(world);
-    steel_sword_spawn(world, player_e);
-    player_health_bar_spawn(world);
-    zombie_init(world);
+    let player_e = sys::entity::player::spawn(world);
+    sys::weapon::steel_sword::spawn(world, player_e);
+    sys::entity::health::player::health_bar_spawn(world);
+    sys::entity::zombie::mass_spawn(world);
 }
 
 

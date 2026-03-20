@@ -1,7 +1,6 @@
-mod game;
 mod config;
 mod core;
-mod systems;
+mod sys;
 mod resources;
 mod components;
 mod math_helper;

@@ -1,0 +1,11 @@
+use bevy_ecs::prelude::*;
+use crate::core::*;
+use crate::resources::*;
+use crate::components::*;
+
+pub fn text_spawn(world: &mut World, text: &str, size: i32, pos: Vector2) -> Entity {
+    world.spawn((
+        Transform::new(pos.x, pos.y),
+        TextObject::new(text, size, pos, false),
+    )).id()
+}
