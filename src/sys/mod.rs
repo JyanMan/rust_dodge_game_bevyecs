@@ -6,6 +6,7 @@ pub mod render;
 pub mod world;
 pub mod weapon;
 pub mod particle;
+pub mod state_machine;
 
 // pub use animation::*;
 // pub use entity_sys::*;

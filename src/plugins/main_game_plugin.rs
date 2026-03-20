@@ -35,6 +35,7 @@ impl Plugin for MainGame {
 
         // use crate::systems::entity_sys;
         app.add_systems(Update, (
+            sys::state_machine::update,
             sys::particle::update_timer,
             sys::entity::health::knock_timer,
             sys::entity::player::timers_update,
@@ -51,6 +52,7 @@ impl Plugin for MainGame {
         ));
         app.add_systems(FixedPreUpdate, (
             sys::entity::player::movement_update,
+            sys::entity::player::state_machine_handler,
             sys::entity::zombie::movement_update,
         ));
         app.add_systems(FixedUpdate, (

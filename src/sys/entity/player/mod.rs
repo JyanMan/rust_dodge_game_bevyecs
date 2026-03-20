@@ -3,6 +3,7 @@ pub mod player_spawn;
 pub mod player_input;
 mod player_movement;
 mod player_timer;
+mod states;
 
 // pub use player_spawn::*;
 pub use player_input::*;
@@ -18,54 +19,141 @@ use crate::components::entity::*;
 
 use PlayerState as P;
 
-pub fn timers_update(mut query: Query<(&mut PlayerData, &mut WalkerData)>, delta_time: Res<DeltaTime>) {
+pub fn timers_update(
+    mut query: Query<(&mut PlayerData, &mut WalkerData, &mut StateMachine)>,
+    delta_time: Res<DeltaTime>
+) {
     use player_timer;
     // use super::player_timer::*;
-    for (mut p_data, walker_d) in &mut query {
-        player_timer::can_jump_delay_timer(&mut p_data, &walker_d, delta_time.0);
-        player_timer::dodge_timer(&mut p_data, delta_time.0);
-        player_timer::lerp_timer(&mut p_data, delta_time.0);
+    for (mut p_data, walker_d, mut state_m) in &mut query {
+        player_timer::can_jump_delay_timer(&mut p_data, &walker_d, &mut state_m, delta_time.0);
+        player_timer::dodge_timer(&mut p_data, &mut state_m, delta_time.0);
+        player_timer::lerp_timer(&mut p_data, &mut state_m, delta_time.0);
     } 
 }
 
 pub fn movement_update(
-    mut query: Query<(&mut PlayerData, &mut WalkerData, &mut Velocity, &mut Health, &PlayerInput, &Combat)>, 
+    mut query: Query<(
+        &mut PlayerData, &mut WalkerData, &mut Velocity, &mut Health, &PlayerInput,
+        &Combat,
+        &mut StateMachine
+    )>, 
     mouse_input: Res<MouseInput>
 ) {
     use player_movement;
 
     let mouse_pos = mouse_input.pos;
 
-    for (mut p_data, mut walker_d, mut vel, mut health, input, combat) in &mut query {
+    for (mut p_data, mut walker_d, mut vel, mut health, input, combat, mut state_m) in &mut query {
         if input.dodge && p_data.can_dodge {
-            player_movement::dodge(&mut p_data);
+            // player_movement::dodge(&mut p_data);
+            state_m.set_state(states::start_dodge());
+            return;
+            // state_m.set_state(states::start_dodge());
         }
+        // if input.right || input.left {
+        //     state_m.set_state(states::running());
+        // }
+        // else {
+        //     state_m.set_state(states::idle());
+        // }
 
         // only allow dodge again if dodge button is let go
         // otherwise, player can fly like superman
-        if p_data.state != P::Dodging && !input.dodge {
-            p_data.can_dodge = true; 
+        // if p_data.state != P::Dodging && !input.dodge {
+        //     p_data.can_dodge = true; 
+        // }
+        // if p_data.state == P::Dodging {
+        //     let dodge_dir = player_movement::get_dodge_dir(mouse_pos, &p_data);
+        //     player_movement::dodging(dodge_dir, &mut p_data, &mut vel, &mut health);
+        //     return;
+        // } 
+        // if p_data.state == P::Lerping {
+        //     player_movement::lerping(&mut vel);
+        //     return;
+        // }
+        if input.right || input.left {
+            state_m.set_state(states::running());
         }
-        if p_data.state == P::Dodging {
-            let dodge_dir = player_movement::get_dodge_dir(mouse_pos, &p_data);
-            player_movement::dodging(dodge_dir, &mut p_data, &mut vel, &mut health);
-            return;
-        } 
-        if p_data.state == P::Lerping {
-            player_movement::lerping(&mut vel);
-            return;
+        else {
+            state_m.set_state(states::idle());
         }
         if combat.attacking {
             // vel.vec = vel.vec * 0.5;
             // steel_sword_movement_effect(&mut vel, mouse_input.clone());
+            state_m.set_state(states::attacking());
             return;
         }
-
-        player_movement::left_right_motion(&mut walker_d, &mut vel, input);
-
-        if input.jump && p_data.can_jump {
-            player_movement::jump(&mut p_data, &mut walker_d, &mut vel);
+        else {
+            state_m.set_state(states::stop_attacking());
         }
+
+        // player_movement::left_right_motion(&mut walker_d, &mut vel, input);
+
+        // if input.jump && p_data.can_jump {
+        //     player_movement::jump(&mut p_data, &mut walker_d, &mut vel);
+        // }
+    }
+}
+
+pub fn state_machine_handler(
+    mut query: Query<(
+        &mut PlayerData, &mut WalkerData, &mut Velocity, &mut Health, &PlayerInput,
+        &Combat,
+        &mut StateMachine
+    )>, 
+    mouse_input: Res<MouseInput>
+) {
+    use player_movement;
+
+    let mouse_pos = mouse_input.pos;
+
+    for (mut p_data, mut walker_d, mut vel, mut health, input, combat, mut state_m) in &mut query {
+
+        match state_m.curr_state() {
+            StateId::StartDodge => {
+                println!("START DODGE");
+                player_movement::dodge(&mut p_data);
+                state_m.set_state(states::dodging());
+                p_data.state = P::Rest;
+            }
+            StateId::Dodging => {
+                println!("DODGING");
+                let dodge_dir = player_movement::get_dodge_dir(mouse_pos, &p_data);
+                player_movement::dodging(dodge_dir, &mut p_data, &mut vel, &mut health);
+                // p_data.state = P::Dodging;
+            },
+            StateId::DodgeLerping => {
+                println!("LERPING");
+                player_movement::lerping(&mut vel);
+                // p_data.state = P::Lerping;
+            },
+            StateId::Running => {
+                println!("RUNNIN");
+                player_movement::left_right_motion(&mut walker_d, &mut vel, input);
+                if input.jump && p_data.can_jump {
+                    player_movement::jump(&mut p_data, &mut walker_d, &mut vel);
+                }
+            }
+            StateId::Idle => {
+                println!("IDLE");
+                p_data.can_dodge = true;
+                player_movement::left_right_motion(&mut walker_d, &mut vel, input);
+                if input.jump && p_data.can_jump {
+                    player_movement::jump(&mut p_data, &mut walker_d, &mut vel);
+                }
+            }
+            StateId::Attacking => {
+                println!("attacking");
+            }
+            StateId::StopAttacking => {
+                println!("asdfasdfasdf");
+            }
+            _ => {
+                println!("WTF ARE YOU??");
+            }
+        }
+
     }
 }
 

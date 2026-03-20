@@ -1,4 +1,5 @@
 use bevy_ecs::prelude::*;
+use crate::components::state::*;
 
 #[repr(u8)]
 #[derive(Clone, PartialEq)]
@@ -14,7 +15,6 @@ pub struct PlayerData {
     pub can_jump: bool,
     pub can_jump_timer: f32,
     pub jump_delay: f32,
-
     pub can_dodge: bool,
     pub dodge_timer: f32,
     pub dodge_speed: f32,

@@ -25,8 +25,10 @@ struct PlayerBundle {
     cell_pos: CellPos,
     e_tag_container: EntityTagContainer,
     health: Health,
-    knock: KnockbackTrigger
+    knock: KnockbackTrigger,
+    state_machine: StateMachine
 }
+
 
 pub fn spawn(world: &mut World) -> Entity {
     let renderer = world.get_non_send_resource::<Renderer>().unwrap();
@@ -63,6 +65,8 @@ pub fn spawn(world: &mut World) -> Entity {
          e_tag_container: EntityTagContainer(EntityTag::Player),
          health: Health::new(100),
          knock: KnockbackTrigger::default(),
+         // state_machine: StateMachine::new(State::Idle),
+         state_machine: StateMachine::new(super::states::idle())
     }).id();
 
     let mut player_ref_mut = world.entity_mut(player_e);
