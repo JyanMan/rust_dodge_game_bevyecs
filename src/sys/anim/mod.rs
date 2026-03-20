@@ -41,8 +41,7 @@ pub fn update_all(
                     if let (Ok(mut obb), Ok(weapon_d)) =
                         (obb_query.get_mut(*target), weapon_query.get(*target))
                     {
-                        sys::weapon
-                            ::steel_sword::per_frame_update(weapon_d, &mut obb);
+                        sys::weapon::per_frame_update(weapon_d, &mut obb);
                     }
                 },
                 AnimData::Debug{ msg } => {

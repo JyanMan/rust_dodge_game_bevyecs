@@ -25,6 +25,18 @@ pub fn from_player_input_update(
     }
 }
 
+
+pub fn per_frame_update(weapon_d: &WeaponData, obb: &mut OBB) {
+    let attack_dir = weapon_d.attack_dir;
+
+    let ang_rad = attack_dir.y.atan2(attack_dir.x);
+
+    obb.rotation = ang_rad ;
+    obb.rotate_around(Vector2::zero());
+    obb.compute_vertices();
+}
+
+
 pub fn anim_update(
     mut query: Query<(&mut WeaponData, &mut Sprite, &mut Transform, &HeldBy, &WeaponFns, &mut AnimationPlayer)>, 
     mut owner_query: Query<(&mut Combat, &mut Velocity, &mut GravityAffected), (With<HeldItem>, Without<HeldBy>)>, 

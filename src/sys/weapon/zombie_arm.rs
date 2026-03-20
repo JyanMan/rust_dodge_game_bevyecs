@@ -140,16 +140,6 @@ pub fn zombie_arm_animation(sprite: &mut Sprite, trans: &mut Transform, attack_d
     trans.local = attack_dir * attack_range;
 }
 
-pub fn zombie_arm_per_frame_update(weapon_d: &WeaponData, obb: &mut OBB) {
-    let attack_dir = weapon_d.attack_dir;
-
-    let angle_to_mouse = attack_dir.y.atan2(attack_dir.x);
-
-    obb.rotation = angle_to_mouse;
-    obb.rotate_around(Vector2::zero());
-    obb.compute_vertices();
-}
-
 pub fn zombie_arm_while_attacking(
     _: &mut WeaponData,
     _: &mut GravityAffected,

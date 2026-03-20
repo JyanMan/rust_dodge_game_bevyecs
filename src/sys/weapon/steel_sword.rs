@@ -122,7 +122,7 @@ pub fn spawn(world: &mut World, entity_owner: Entity) -> Entity {
     steel_sword_e
 }
 
-fn steel_sword_animation(sprite: &mut Sprite, trans: &mut Transform, attack_dir: Vector2) {
+pub fn steel_sword_animation(sprite: &mut Sprite, trans: &mut Transform, attack_dir: Vector2) {
     // flip y if left side 
     // this allows animation to be consistent not flipped on another direction
     if attack_dir.x < 0.0 {
@@ -141,21 +141,10 @@ fn steel_sword_animation(sprite: &mut Sprite, trans: &mut Transform, attack_dir:
     let attack_range: f32 = 3.0;
     trans.local = attack_dir * attack_range;
 }
-
-pub fn per_frame_update(weapon_d: &WeaponData, obb: &mut OBB) {
-    let attack_dir = weapon_d.attack_dir;
-
-    let angle_to_mouse = attack_dir.y.atan2(attack_dir.x);
-
-    obb.rotation = angle_to_mouse;
-    obb.rotate_around(Vector2::zero());
-    obb.compute_vertices();
-}
-
-fn steel_sword_while_attacking(
+pub fn steel_sword_while_attacking(
     _: &mut WeaponData,
     _: &mut GravityAffected,
-    user_vel: &mut Velocity,
+    _: &mut Velocity,
     _: &mut Combat,
     _: &mut Sprite,
     _: &mut Transform,
@@ -163,23 +152,23 @@ fn steel_sword_while_attacking(
     // attack_dir: Vector2,
 ) {
     anim_player.play(WeaponAnim::Attack.usize());
-    user_vel.vec = user_vel.vec * 0.5;
+    // user_vel.vec = user_vel.vec * 0.5;
 }
-fn steel_sword_after_effect(
+pub fn steel_sword_after_effect(
     _: &mut WeaponData,
     _: &mut GravityAffected,
-    user_vel: &mut Velocity,
+    _: &mut Velocity,
     _: &mut Combat,
     _: &mut Sprite,
     _: &mut Transform,
     anim_player: &mut AnimationPlayer
 ) {
-    user_vel.vec = user_vel.vec * 0.2;
+    // user_vel.vec = user_vel.vec * 0.2;
     anim_player.stop();
 }
 
 // fn(&mut WeaponData, &mut GravityAffected, &mut Velocity, &mut Combat, &mut Sprite, &mut Transform)
-fn steel_sword_start_attack(
+pub fn steel_sword_start_attack(
     weapon_d: &mut WeaponData,
     grav_affected: &mut GravityAffected,
     user_vel: &mut Velocity,
@@ -194,12 +183,13 @@ fn steel_sword_start_attack(
     anim_player.play(WeaponAnim::Attack.usize());
 
     weapon_d.attack_dir = attack_dir;
-    user_vel.vec = attack_dir * 200.0;
+    // user_vel.vec = attack_dir * 200.0;
+    user_vel.vec = Vector2::zero();
     grav_affected.0 = false;
     combat.attacking = true;
 }
 
-fn steel_sword_end_attack(
+pub fn steel_sword_end_attack(
     _: &mut WeaponData,
     grav_affected: &mut GravityAffected,
     user_vel: &mut Velocity,
