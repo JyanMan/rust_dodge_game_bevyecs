@@ -10,13 +10,13 @@ pub mod knockback_trigger;
 pub mod obb;
 pub mod particle;
 pub mod sprite;
+pub mod state_machine;
 pub mod text_object;
 pub mod transform;
 pub mod vector2;
 pub mod velocity;
 pub mod weapon;
 pub mod quad;
-pub mod state;
 
 pub use animation::*;
 pub use animation_player::*;
@@ -31,11 +31,11 @@ pub use obb::*;
 pub use particle::*;
 pub use text_object::*;
 pub use sprite::*;
+pub use state_machine::*;
 pub use transform::*;
 pub use vector2::*;
 pub use velocity::*;
 pub use weapon::*;
 pub use quad::*;
-pub use state::*;
 
 

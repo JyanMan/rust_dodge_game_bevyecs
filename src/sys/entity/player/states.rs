@@ -1,8 +1,7 @@
 use crate::components::*;
 
 pub fn state_machine() -> StateMachine {
-    let mut state_m = StateMachine::new(idle());
-    state_m.add_state(StateId::Idle, idle());
+    let mut state_m = StateMachine::new(StateId::Idle, idle());
     state_m.add_state(StateId::Running, running());
     state_m.add_state(StateId::StartDodge, start_dodge());
     state_m.add_state(StateId::DodgeEnd, dodge_end());

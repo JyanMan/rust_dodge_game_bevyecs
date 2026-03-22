@@ -1,7 +1,5 @@
-use crate::components::entity::{PlayerData, PlayerState};
+use crate::components::entity::PlayerData;
 use crate::components::{WalkerData, StateMachine, StateId};
-
-use PlayerState as P;
 
 pub fn can_jump_delay_timer(p_data: &mut PlayerData, walker_d: &WalkerData, state_m: &mut StateMachine, delta_time: f32) {
     if walker_d.grounded {

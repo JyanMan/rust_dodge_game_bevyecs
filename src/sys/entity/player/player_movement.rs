@@ -1,8 +1,6 @@
-use crate::components::entity::{PlayerData, PlayerInput, PlayerState};
+use crate::components::entity::{PlayerData, PlayerInput};
 use crate::components::*;
 use crate::resources::MouseInput;
-
-use PlayerState as P;
 
 pub fn left_right_motion(
     walker_d: &mut WalkerData, 
@@ -49,7 +47,6 @@ pub fn jump(
     vel: &mut Velocity
 ) {
     vel.vec.y = -walker_d.jump_force;
-    p_data.state = P::Rest;
     //p_data.state.clear(P::Jumping);
     p_data.can_jump = false;
 }
@@ -88,13 +85,7 @@ pub fn dodge(
     p_data: &mut PlayerData, 
     // vel: &mut Velocity,
 ) {
-    if p_data.state == P::Dodging {
-        // let dodge_dir = get_dodge_dir(ecs, p_data);
-        // player_dodging(dodge_dir, p_data, vel);
-        return;
-    }
     p_data.can_dodge = false;
     p_data.dodge_timer = 0.0;
-    p_data.state = P::Dodging;
 }
 

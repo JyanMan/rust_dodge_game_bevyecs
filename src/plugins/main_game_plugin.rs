@@ -51,10 +51,10 @@ impl Plugin for MainGame {
             sys::anim::walker::update,
         ));
         app.add_systems(FixedPreUpdate, (
-            sys::entity::player::movement_update,
+            sys::entity::player::state_update,
             sys::entity::zombie::movement_update,
-            sys::entity::player::state_machine_handler
-                .after(sys::entity::player::movement_update),
+            sys::entity::player::state_handler
+                .after(sys::entity::player::state_update),
         ));
         app.add_systems(FixedUpdate, (
             sys::physics::gravity,

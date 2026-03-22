@@ -9,10 +9,10 @@ use crate::sys;
 
 pub fn mass_spawn(world: &mut World) {
     let mut rng = rand::thread_rng(); 
-    // for _ in 0..5 {
-    //     let z = super::zombie::spawn(world, rng.gen_range(30..80) as f32);
-    //     sys::weapon::zombie_arm::spawn(world, z);
-    // }
+    for _ in 0..5 {
+        let z = super::zombie::spawn(world, rng.gen_range(30..80) as f32);
+        sys::weapon::zombie_arm::spawn(world, z);
+    }
 }
 
 #[derive(Bundle)]

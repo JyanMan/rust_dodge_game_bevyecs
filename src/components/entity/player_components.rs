@@ -1,17 +1,16 @@
 use bevy_ecs::prelude::*;
-use crate::components::state::*;
 
-#[repr(u8)]
-#[derive(Clone, PartialEq)]
-pub enum PlayerState {
-    Rest,
-    Dodging,
-    Lerping
-}
+// #[repr(u8)]
+// #[derive(Clone, PartialEq)]
+// pub enum PlayerState {
+//     Rest,
+//     Dodging,
+//     Lerping
+// }
 
 #[derive(Component, Clone)]
 pub struct PlayerData {
-    pub state: PlayerState,
+    // pub state: PlayerState,
     pub can_jump: bool,
     pub can_jump_timer: f32,
     pub jump_delay: f32,
@@ -30,7 +29,7 @@ pub struct PlayerData {
 impl Default for PlayerData {
     fn default() -> Self {
         Self {
-            state: PlayerState::Rest,
+            // state: PlayerState::Rest,
 
             // jumping: false,
             can_jump: false,

@@ -1,14 +1,18 @@
 use bevy_ecs::prelude::*;
-use std::collections::HashMap;
 use bevy_ecs::storage::SparseSet;
 // use std::vec::Vec;
 
+/// a container for a set of states
+/// this is made to avoid the use of Vec<State> and O(n) lookups
+/// HashMaps are slower since you typically won't have large state_sets
 #[derive(Clone)]
 pub struct StateConditions {
     conds: u32,
 }
 impl StateConditions {
-    // use when a state can only exit to some specific states
+    /// creates StateCondition from a state ids flat array
+    /// NOTE: avoid using mulitple times, use only once per entity spawn
+    /// otherwise defeats the purpose of using bit ops for performance
     pub fn new(conditions: &[StateId]) -> Self {
         let mut conds = 0u32;
         for state_id in conditions {
@@ -22,13 +26,15 @@ impl StateConditions {
 
     pub fn contains(&self, state: &StateId) -> bool {
         let bit_state = 1u32 << (state.clone() as u32);
-        // check if bit is within conditions
-        self.conds as u32 & bit_state != 0
+        self.conds & bit_state != 0
     }
 }
 
-// no need for entries, each exit connects already
-
+/// entries: states this state can come from
+/// exits: states this state struct can exit to
+/// duration: none if no automatic transition | time before transition
+/// next_state: none if no automatic transition | next state to auto transition to
+/// id: the state id
 #[derive(Clone)]
 pub struct State {
     pub entries: StateConditions,
@@ -99,12 +105,30 @@ pub struct StateMachine {
     states_set: SparseSet<usize, State>
 }
 
+/// the id is converted to usize manually in this code, no need to worry how it works to use
+/// ```
+/// // add the states first
+/// let mut state_m = StateMachine::new(StateId::Idle, idle());
+/// state_m.add_state(StateId::Running, State {..});
+/// state_m.add_state(StateId::Falling, State {..});
+/// if state_m.curr_state() == StateId::Running {
+///   // running
+/// }
+/// if state_m.curr_state() == StateId::Idle{
+///   // idling
+///   // should be true since idle was made as initial state
+/// }
+/// 
+/// ```
 impl StateMachine {
-    pub fn new(init_state: State) -> Self {
+    // sets initial state and adds into set
+    pub fn new(id: StateId, init_state: State) -> Self {
+        let mut states_set = SparseSet::new();
+        states_set.insert(id.usize(), init_state.clone());
         Self {
             state: init_state,
             timer: 0.0,
-            states_set: SparseSet::new()
+            states_set: states_set
         }
     }
 
