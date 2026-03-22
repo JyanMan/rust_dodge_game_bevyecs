@@ -27,8 +27,19 @@ pub fn timers_update(
     // use super::player_timer::*;
     for (mut p_data, walker_d, mut state_m) in &mut query {
         player_timer::can_jump_delay_timer(&mut p_data, &walker_d, &mut state_m, delta_time.0);
-        player_timer::dodge_timer(&mut p_data, &mut state_m, delta_time.0);
-        player_timer::lerp_timer(&mut p_data, &mut state_m, delta_time.0);
+        match state_m.curr_state() {
+            StateId::Dodging => {
+                player_timer::dodge_timer(&mut p_data, &mut state_m, delta_time.0);
+            },
+            StateId::DodgeAttacking => {
+                player_timer::dodge_timer(&mut p_data, &mut state_m, delta_time.0);
+            }
+            StateId::DodgeLerping => {
+                player_timer::lerp_timer(&mut p_data, &mut state_m, delta_time.0);
+            }
+            _ => {}
+            
+        }
     } 
 }
 
@@ -45,21 +56,12 @@ pub fn movement_update(
     let mouse_pos = mouse_input.pos;
 
     for (mut p_data, mut walker_d, mut vel, mut health, input, combat, mut state_m) in &mut query {
-        if input.dodge && p_data.can_dodge {
-            // player_movement::dodge(&mut p_data);
-            state_m.set_state(states::start_dodge());
-            return;
-            // state_m.set_state(states::start_dodge());
-        }
-        // if input.right || input.left {
-        //     state_m.set_state(states::running());
-        // }
-        // else {
-        //     state_m.set_state(states::idle());
+        //  if input.dodge && p_data.can_dodge {
+        //     player_movement::dodge(&mut p_data);
         // }
 
-        // only allow dodge again if dodge button is let go
-        // otherwise, player can fly like superman
+        // // only allow dodge again if dodge button is let go
+        // // otherwise, player can fly like superman
         // if p_data.state != P::Dodging && !input.dodge {
         //     p_data.can_dodge = true; 
         // }
@@ -72,27 +74,34 @@ pub fn movement_update(
         //     player_movement::lerping(&mut vel);
         //     return;
         // }
-        if input.right || input.left {
-            state_m.set_state(states::running());
-        }
-        else {
-            state_m.set_state(states::idle());
-        }
-        if combat.attacking {
-            // vel.vec = vel.vec * 0.5;
-            // steel_sword_movement_effect(&mut vel, mouse_input.clone());
-            state_m.set_state(states::attacking());
-            return;
-        }
-        else {
-            state_m.set_state(states::stop_attacking());
-        }
+        // if combat.attacking {
+        //     // vel.vec = vel.vec * 0.5;
+        //     // steel_sword_movement_effect(&mut vel, mouse_input.clone());
+        //     return;
+        // }
 
         // player_movement::left_right_motion(&mut walker_d, &mut vel, input);
 
         // if input.jump && p_data.can_jump {
         //     player_movement::jump(&mut p_data, &mut walker_d, &mut vel);
         // }
+         
+        if input.dodge && p_data.can_dodge {
+            state_m.set_state(StateId::StartDodge);
+            return;
+        }
+        if input.right || input.left {
+            state_m.set_state(StateId::Running);
+        }
+        if combat.attacking {
+            state_m.set_state(StateId::Attacking);
+        }
+        else {
+            // println!("HEY iM STOPPING AIN'T I??");
+            state_m.set_state(StateId::StopAttacking);
+        }
+        state_m.set_state(StateId::Idle);
+
     }
 }
 
@@ -114,20 +123,32 @@ pub fn state_machine_handler(
             StateId::StartDodge => {
                 println!("START DODGE");
                 player_movement::dodge(&mut p_data);
-                state_m.set_state(states::dodging());
+                state_m.set_state(StateId::Dodging);
                 p_data.state = P::Rest;
             }
             StateId::Dodging => {
                 println!("DODGING");
                 let dodge_dir = player_movement::get_dodge_dir(mouse_pos, &p_data);
                 player_movement::dodging(dodge_dir, &mut p_data, &mut vel, &mut health);
+                p_data.state = P::Dodging;
                 // p_data.state = P::Dodging;
             },
             StateId::DodgeLerping => {
                 println!("LERPING");
                 player_movement::lerping(&mut vel);
-                // p_data.state = P::Lerping;
+                p_data.state = P::Lerping;
+
+                // only allow dodge once button was let go
+                if !input.dodge {
+                    p_data.can_dodge = true;
+                }
             },
+            StateId::DodgeAttacking => {
+                println!("DODGING");
+                let dodge_dir = player_movement::get_dodge_dir(mouse_pos, &p_data);
+                player_movement::dodging(dodge_dir, &mut p_data, &mut vel, &mut health);
+                p_data.state = P::Dodging;
+            }
             StateId::Running => {
                 println!("RUNNIN");
                 player_movement::left_right_motion(&mut walker_d, &mut vel, input);
@@ -137,14 +158,17 @@ pub fn state_machine_handler(
             }
             StateId::Idle => {
                 println!("IDLE");
-                p_data.can_dodge = true;
+                // only allow dodge once button was let go
+                if !input.dodge {
+                    p_data.can_dodge = true;
+                }
                 player_movement::left_right_motion(&mut walker_d, &mut vel, input);
                 if input.jump && p_data.can_jump {
                     player_movement::jump(&mut p_data, &mut walker_d, &mut vel);
                 }
             }
             StateId::Attacking => {
-                println!("attacking");
+                println!("ATTACKING");
             }
             StateId::StopAttacking => {
                 println!("asdfasdfasdf");

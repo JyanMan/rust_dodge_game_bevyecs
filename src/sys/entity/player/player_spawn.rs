@@ -66,7 +66,7 @@ pub fn spawn(world: &mut World) -> Entity {
          health: Health::new(100),
          knock: KnockbackTrigger::default(),
          // state_machine: StateMachine::new(State::Idle),
-         state_machine: StateMachine::new(super::states::idle())
+         state_machine: super::states::state_machine()
     }).id();
 
     let mut player_ref_mut = world.entity_mut(player_e);

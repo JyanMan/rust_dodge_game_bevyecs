@@ -52,8 +52,9 @@ impl Plugin for MainGame {
         ));
         app.add_systems(FixedPreUpdate, (
             sys::entity::player::movement_update,
-            sys::entity::player::state_machine_handler,
             sys::entity::zombie::movement_update,
+            sys::entity::player::state_machine_handler
+                .after(sys::entity::player::movement_update),
         ));
         app.add_systems(FixedUpdate, (
             sys::physics::gravity,

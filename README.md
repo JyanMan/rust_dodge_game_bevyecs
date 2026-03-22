@@ -1,4 +1,5 @@
 ## TODO
+* ADD ENTRIES TO THE FUCKING STATE MACHINE (hecking stop attacknig).
 * add stamina for dodging and skill uses
 * add player attack combos (different animation for some key combos)
   - if player attacks while dodging, play a different animation
