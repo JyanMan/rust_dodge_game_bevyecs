@@ -1,7 +1,8 @@
 use crate::components::entity::PlayerData;
 use crate::components::{WalkerData, StateMachine, StateId};
+use crate::components::states::*;
 
-pub fn can_jump_delay_timer(p_data: &mut PlayerData, walker_d: &WalkerData, state_m: &mut StateMachine, delta_time: f32) {
+pub fn can_jump_delay_timer(p_data: &mut PlayerData, walker_d: &WalkerData, state_m: &mut StateMachine<MovementState>, delta_time: f32) {
     if walker_d.grounded {
         p_data.can_jump = true;
         p_data.can_jump_timer = 0.0;
@@ -15,25 +16,25 @@ pub fn can_jump_delay_timer(p_data: &mut PlayerData, walker_d: &WalkerData, stat
     }
 }
 
-pub fn dodge_timer(p_data: &mut PlayerData, state_m: &mut StateMachine, delta_time: f32) {
+pub fn dodge_timer(p_data: &mut PlayerData, state_m: &mut StateMachine<MovementState>, delta_time: f32) {
     p_data.dodge_timer += delta_time;
     // make sure lerp timer is reset as you can dodge while lerping
     p_data.lerp_timer = 0.0;
 
     if p_data.dodge_timer >= p_data.dodge_duration {
         // transition to lerping
-        state_m.set_state(StateId::DodgeLerping);
+        state_m.set_state(MovementState::DodgeLerping);
         p_data.dodge_timer = 0.0;
         // p_data.can_dodge = true;
     }
 }
 
-pub fn lerp_timer(p_data: &mut PlayerData, state_m: &mut StateMachine, delta_time: f32) {
+pub fn lerp_timer(p_data: &mut PlayerData, state_m: &mut StateMachine<MovementState>, delta_time: f32) {
     p_data.lerp_timer += delta_time;
     //p_data.dodge_timer = 0.0;
     if p_data.lerp_timer >= p_data.lerp_duration {
         p_data.lerp_timer = 0.0;
-        state_m.set_state(StateId::DodgeEnd);
+        state_m.set_state(MovementState::DodgeEnd);
     }
 }
 // void player_lerp_timer(Player* p, float dt) 

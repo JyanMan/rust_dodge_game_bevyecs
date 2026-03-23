@@ -6,6 +6,9 @@ use crate::components::*;
 use crate::resources::*;
 // use crate::systems::*;
 use crate::sys;
+use crate::components::states::*;
+
+pub mod states;
 
 pub fn mass_spawn(world: &mut World) {
     let mut rng = rand::thread_rng(); 
@@ -34,7 +37,8 @@ struct ZombieBundle {
     e_over_obbs: EntityOverlappingOBBs,
     target_e_tags: TargetEntityTags,
     tag_container: EntityTagContainer,
-    knock: KnockbackTrigger
+    knock: KnockbackTrigger,
+    movement_state: StateMachine<MovementState>
 }
 
 pub fn spawn(world: &mut World, speed: f32) -> Entity {
@@ -70,7 +74,8 @@ pub fn spawn(world: &mut World, speed: f32) -> Entity {
         e_over_obbs: EntityOverlappingOBBs::default(),
         target_e_tags: TargetEntityTags(vec![EntityTag::PlayerWeapon]),
         tag_container: EntityTagContainer(EntityTag::Zombie),
-        knock: KnockbackTrigger::default()
+        knock: KnockbackTrigger::default(),
+        movement_state: states::state_machine(),
         // StateMachine::default(),
     }).id();
 
@@ -143,6 +148,142 @@ pub fn movement_update(
         }
     }    
 }
+
+// pub fn state_update(
+//     mut query: Query<(
+//         &PlayerData, &PlayerInput,
+//         &Combat,
+//         &mut StateMachine
+//     )>, 
+// ) {
+//     for (p_data, input, combat, mut state_m) in &mut query {
+//         if knock.knocked { continue; }
+//         if combat.attacking { continue; }
+//         // jump ai
+//         if vel.vec.x.abs() <= 0.001 && walker_d.state == WalkerState::Running {
+//             vel.vec.y -= walker_d.jump_force;
+//         }
+
+//         let x_trans = p_trans.global.x - trans.global.x;
+//         let y_trans = p_trans.global.y - trans.global.y;
+
+//         // calc dist
+//         let mut dist = (x_trans*x_trans + y_trans*y_trans).sqrt();
+//         // disallow dividing by zero
+//         if dist == 0.0 {
+//             dist = 0.0001;
+//         }
+
+//         // get the direction on x axis
+//         let dir_to_player = Vector2::new(x_trans, y_trans).normalize();
+//         let x_dir = (1.0_f32).copysign(x_trans);
+
+//         if dist < enemy_d.attack_range {
+//             // attack
+//             let attack_dir = dir_to_player;
+//             combat.attack(attack_dir);
+//             // if walker_d.grounded {
+//             // }
+//         }
+//         else {
+//             combat.not_attack();
+//             if dist <= enemy_d.chase_range {
+//                 walker_d.state = WalkerState::Running;
+//                 vel.vec.x += x_dir * walker_d.accel;
+//             }
+//             else {
+//                 walker_d.state = WalkerState::Idle;
+//                 let decel: f32 = x_dir.copysign(vel.vec.x) * walker_d.accel;
+//                 if !walker_d.grounded {
+//                     vel.vec.x -= decel * 0.2;
+//                 }
+//                 else {
+//                     vel.vec.x -= decel;
+//                 }
+//                 if vel.vec.x.abs() <= walker_d.accel {
+//                     vel.vec.x = 0.0;
+//                 }
+//             }
+//         }
+//         if vel.vec.x.abs() >= walker_d.run_speed {
+//             vel.vec.x = walker_d.run_speed.copysign(vel.vec.x);
+//         }
+         
+//         if input.dodge && p_data.can_dodge {
+//             state_m.set_state(StateId::StartDodge);
+//             return;
+//         }
+//         if input.right || input.left {
+//             state_m.set_state(StateId::Running);
+//         }
+//         if combat.attacking {
+//             state_m.set_state(StateId::Attacking);
+//         }
+//         else {
+//             state_m.set_state(StateId::StopAttacking);
+//         }
+//         state_m.set_state(StateId::Idle);
+
+//     }
+// }
+
+// pub fn state_handler(
+//     mut query: Query<(
+//         &mut PlayerData, &mut WalkerData, &mut Velocity, &mut Health, &PlayerInput,
+//         &Combat,
+//         &mut StateMachine
+//     )>, 
+//     mouse_input: Res<MouseInput>
+// ) {
+//     use player_movement;
+
+//     let mouse_pos = mouse_input.pos;
+
+//     for (mut p_data, mut walker_d, mut vel, mut health, input, combat, mut state_m) in &mut query {
+
+//         match state_m.curr_state() {
+//             StateId::StartDodge => {
+//                 player_movement::dodge(&mut p_data);
+//                 state_m.set_state(StateId::Dodging);
+//             }
+//             StateId::Dodging => {
+//                 let dodge_dir = player_movement::get_dodge_dir(mouse_pos, &p_data);
+//                 player_movement::dodging(dodge_dir, &mut p_data, &mut vel, &mut health);
+//                 // p_data.state = P::Dodging;
+//             },
+//             StateId::DodgeLerping => {
+//                 player_movement::lerping(&mut vel);
+
+//                 // only allow dodge once button was let go
+//                 if !input.dodge {
+//                     p_data.can_dodge = true;
+//                 }
+//             },
+//             StateId::DodgeAttacking => {
+//                 let dodge_dir = player_movement::get_dodge_dir(mouse_pos, &p_data);
+//                 player_movement::dodging(dodge_dir, &mut p_data, &mut vel, &mut health);
+//             }
+//             StateId::Running => {
+//                 player_movement::left_right_motion(&mut walker_d, &mut vel, input);
+//                 if input.jump && p_data.can_jump {
+//                     player_movement::jump(&mut p_data, &mut walker_d, &mut vel);
+//                 }
+//             }
+//             StateId::Idle => {
+//                 // only allow dodge once button was let go
+//                 if !input.dodge {
+//                     p_data.can_dodge = true;
+//                 }
+//                 player_movement::left_right_motion(&mut walker_d, &mut vel, input);
+//                 if input.jump && p_data.can_jump {
+//                     player_movement::jump(&mut p_data, &mut walker_d, &mut vel);
+//                 }
+//             }
+//             _ => {}
+//         }
+
+//     }
+// }
 
 pub fn anim_init(anim_player: &mut AnimationPlayer, zombie_e: Entity) {
     let idle_anim = Animation::new(0.2, &[

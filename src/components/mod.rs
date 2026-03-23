@@ -18,6 +18,8 @@ pub mod velocity;
 pub mod weapon;
 pub mod quad;
 
+pub mod states;
+
 pub use animation::*;
 pub use animation_player::*;
 pub use area::*;

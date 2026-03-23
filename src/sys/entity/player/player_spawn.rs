@@ -3,6 +3,7 @@ use crate::core::renderer::*;
 use crate::components::entity::{ WalkerData, WalkerState };
 use crate::components::*;
 use crate::resources::asset_manager::*;
+use crate::components::states::*;
 use crate::components::entity::*;
 // use super::anim_init;
 
@@ -26,7 +27,8 @@ struct PlayerBundle {
     e_tag_container: EntityTagContainer,
     health: Health,
     knock: KnockbackTrigger,
-    state_machine: StateMachine
+    movement_state: StateMachine<MovementState>,
+    combat_state: StateMachine<CombatState>,
 }
 
 
@@ -66,7 +68,8 @@ pub fn spawn(world: &mut World) -> Entity {
          health: Health::new(100),
          knock: KnockbackTrigger::default(),
          // state_machine: StateMachine::new(State::Idle),
-         state_machine: super::states::state_machine()
+         movement_state: super::states::movement_state(),
+         combat_state: super::states::combat_state()
     }).id();
 
     let mut player_ref_mut = world.entity_mut(player_e);

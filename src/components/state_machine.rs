@@ -1,31 +1,42 @@
 use bevy_ecs::prelude::*;
 use bevy_ecs::storage::SparseSet;
+use std::marker::PhantomData;
 // use std::vec::Vec;
 
 /// a container for a set of states
 /// this is made to avoid the use of Vec<State> and O(n) lookups
 /// HashMaps are slower since you typically won't have large state_sets
 #[derive(Clone)]
-pub struct StateConditions {
+pub struct StateConditions <S: StateId> {
     conds: u32,
+    _phantom: PhantomData<S>
 }
-impl StateConditions {
+
+impl <S: StateId> StateConditions <S> {
     /// creates StateCondition from a state ids flat array
     /// NOTE: avoid using mulitple times, use only once per entity spawn
     /// otherwise defeats the purpose of using bit ops for performance
-    pub fn new(conditions: &[StateId]) -> Self {
+    pub fn new(conditions: &[S]) -> Self {
         let mut conds = 0u32;
         for state_id in conditions {
-            conds |= 1u32 << (state_id.clone() as u32);
+            conds |= state_id.clone().bit_mask();
         }
-        Self { conds  }
+        Self { conds, _phantom: PhantomData::default() }
     }
 
     // when a state can exit to any other state
-    pub fn accept_all() -> Self { Self { conds: u32::MAX, } }
+    pub fn accept_all() -> Self { Self { conds: u32::MAX, _phantom: PhantomData::default() } }
 
-    pub fn contains(&self, state: &StateId) -> bool {
-        let bit_state = 1u32 << (state.clone() as u32);
+    pub fn all_except(conditions: &[S]) -> Self {
+       let mut conds = u32::MAX; 
+       for state_id in conditions {
+           conds &= !state_id.clone().bit_mask();
+       }
+       Self {conds, _phantom: PhantomData::default() }
+    }
+
+    pub fn contains(&self, state: &S) -> bool {
+        let bit_state = state.clone().bit_mask();
         self.conds & bit_state != 0
     }
 }
@@ -36,20 +47,20 @@ impl StateConditions {
 /// next_state: none if no automatic transition | next state to auto transition to
 /// id: the state id
 #[derive(Clone)]
-pub struct State {
-    pub entries: StateConditions,
-    pub exits: StateConditions,
+pub struct State<S: StateId> {
+    pub entries: StateConditions<S>,
+    pub exits: StateConditions<S>,
     pub duration: Option<f32>,
-    pub next_state: Option<StateId>,
-    pub id: StateId
+    pub next_state: Option<S>,
+    pub id: S
 }
 
 #[allow(clippy::manual_map)]
-impl State {
-    pub fn exits(&self) -> &StateConditions {
+impl <S: StateId> State <S> {
+    pub fn exits(&self) -> &StateConditions<S> {
         &self.exits
     }
-    pub fn entries(&self) -> &StateConditions {
+    pub fn entries(&self) -> &StateConditions<S> {
         &self.entries
         
     }
@@ -63,7 +74,7 @@ impl State {
         }
     }
 
-    pub fn next_state(&self) -> Option<StateId> {
+    pub fn next_state(&self) -> Option<S> {
         if let Some(next_state_id) = self.next_state.as_ref() {
             Some(next_state_id.clone())
         }
@@ -73,36 +84,35 @@ impl State {
     }
 }
 
-#[derive(Clone, PartialEq, Eq, Hash)]
-pub enum StateId {
-    Idle,
-    Chasing,
-    Running,
-    Attacking,
-    StopAttacking,
-    StartDodge,
-    Dodging,
-    Falling,
-    Rising,
-    DodgeAttacking,
-    DodgeLerping,
-    DodgeEnd,
-    AirAttack,
-    Knocked,
-}
+// #[derive(Clone, PartialEq, Eq, Hash)]
+// pub enum StateId {
+//     Idle,
+//     Chasing,
+//     Running,
+//     Attacking,
+//     StopAttacking,
+//     StartDodge,
+//     Dodging,
+//     Falling,
+//     Rising,
+//     DodgeAttacking,
+//     DodgeLerping,
+//     DodgeEnd,
+//     AirAttack,
+//     Knocked,
+// }
 
-impl StateId {
-    pub fn usize(self) -> usize {
-        self as usize
-    }
+pub trait StateId: Clone + PartialEq + Eq {
+    fn usize(self) -> usize;
+    fn bit_mask(self) -> u32;
 }
 
 #[derive(Component)]
-pub struct StateMachine {
-    state: State,
+pub struct StateMachine <S: StateId + 'static> {
+    state: State<S>,
     timer: f32,
     // states_set: HashMap<StateId, State>
-    states_set: SparseSet<usize, State>
+    states_set: SparseSet<usize, State<S>>
 }
 
 /// the id is converted to usize manually in this code, no need to worry how it works to use
@@ -118,38 +128,43 @@ pub struct StateMachine {
 ///   // idling
 ///   // should be true since idle was made as initial state
 /// }
+/// match state_m.curr_state() {
+///   StateId::Running => {..},
+///   StateId::Idle => {..}
+/// }
 /// 
 /// ```
-impl StateMachine {
+impl <S: StateId + 'static> StateMachine <S> {
     // sets initial state and adds into set
-    pub fn new(id: StateId, init_state: State) -> Self {
+    pub fn new(id: S, init_state: State<S>) -> Self {
         let mut states_set = SparseSet::new();
         states_set.insert(id.usize(), init_state.clone());
         Self {
             state: init_state,
             timer: 0.0,
-            states_set: states_set
+            states_set
         }
     }
 
-    pub fn add_state(&mut self, id: StateId, state: State) {
+    pub fn add_state(&mut self, id: S, state: State<S>) {
         self.states_set.insert(id.usize(), state);
     }
 
-    pub fn curr_state(&self) -> StateId { self.state.id.clone() }
+    pub fn curr_state(&self) -> S { self.state.id.clone() }
 
     // only allows new state that is connected to the current state
-    pub fn set_state(&mut self, id: StateId) {
+    pub fn set_state(&mut self, id: S) {
         if self.state.id == id {
             return;
         }
-        let next_state = self.states_set.get(id.clone().usize()).expect("state does not exist");
 
         if self.state.exits().contains(&id)
-            && next_state.entries().contains(&self.state.id)
         {
-            self.state = next_state.clone();
-            self.timer = 0.0;
+            let next_state = self.states_set.get(id.clone().usize()).expect("state does not exist");
+            if next_state.entries().contains(&self.state.id) {
+                self.state = next_state.clone();
+                self.timer = 0.0;
+            }
         }
     }
 
