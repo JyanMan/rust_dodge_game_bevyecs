@@ -38,7 +38,8 @@ struct ZombieBundle {
     target_e_tags: TargetEntityTags,
     tag_container: EntityTagContainer,
     knock: KnockbackTrigger,
-    movement_state: StateMachine<MovementState>
+    movement_state: StateMachine<MovementState>,
+    combat_state: StateMachine<CombatState>
 }
 
 pub fn spawn(world: &mut World, speed: f32) -> Entity {
@@ -75,7 +76,8 @@ pub fn spawn(world: &mut World, speed: f32) -> Entity {
         target_e_tags: TargetEntityTags(vec![EntityTag::PlayerWeapon]),
         tag_container: EntityTagContainer(EntityTag::Zombie),
         knock: KnockbackTrigger::default(),
-        movement_state: states::state_machine(),
+        movement_state: states::movement_state(),
+        combat_state: states::combat_state(),
         // StateMachine::default(),
     }).id();
 

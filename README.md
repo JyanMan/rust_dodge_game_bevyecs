@@ -1,6 +1,8 @@
 ## TODO
-* ADD ENTRIES TO THE FUCKING STATE MACHINE (hecking stop attacknig).
+* use the statemachine components for the weapon states
+* use statemachine for the zombie states
 * add stamina for dodging and skill uses
+  - NEED TO TEST WHETHER immunity in lerping is viable or too easy
 * add player attack combos (different animation for some key combos)
   - if player attacks while dodging, play a different animation
   - if player uses some key: he can use the skill of the weapon

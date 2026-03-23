@@ -144,7 +144,7 @@ pub fn steel_sword_animation(sprite: &mut Sprite, trans: &mut Transform, attack_
 pub fn steel_sword_while_attacking(
     _: &mut WeaponData,
     _: &mut GravityAffected,
-    _: &mut Velocity,
+    user_vel: &mut Velocity,
     _: &mut Combat,
     _: &mut Sprite,
     _: &mut Transform,
@@ -152,6 +152,7 @@ pub fn steel_sword_while_attacking(
     // attack_dir: Vector2,
 ) {
     anim_player.play(WeaponAnim::Attack.usize());
+    user_vel.vec = Vector2::zero();
     // user_vel.vec = user_vel.vec * 0.5;
 }
 pub fn steel_sword_after_effect(

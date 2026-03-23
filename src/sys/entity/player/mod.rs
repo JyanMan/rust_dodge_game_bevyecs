@@ -45,16 +45,13 @@ pub fn timers_update(
     } 
 }
 
-pub fn state_update(
+pub fn movement_state_update(
     mut query: Query<(
         &PlayerData, &PlayerInput,
-        &Combat,
-        &KnockbackTrigger,
         &mut StateMachine<components::states::MovementState>,
-        &mut StateMachine<components::states::CombatState>
     )>, 
 ) {
-    for (p_data, input, combat, knock, mut movement_state, mut combat_state) in &mut query {
+    for (p_data, input, mut movement_state) in &mut query {
          
         if input.dodge && p_data.can_dodge {
             movement_state.set_state(MovementState::StartDodge);
@@ -63,27 +60,15 @@ pub fn state_update(
         if input.right || input.left {
             movement_state.set_state(MovementState::Running);
         }
-        if knock.knocked && movement_state.curr_state() != MovementState::Dodging {
-            combat_state.set_state(CombatState::Knocked);
-        }
-        else if combat.attacking {
-            combat_state.set_state(CombatState::Attacking);
-        }
-        else {
-            combat_state.set_state(CombatState::StopAttacking);
-            combat_state.set_state(CombatState::Idle);
-        }
         movement_state.set_state(MovementState::Idle);
-
     }
 }
 
 pub fn state_handler(
     mut query: Query<(
         &mut PlayerData, &mut WalkerData, &mut Velocity, &mut Health, &PlayerInput,
-        &Combat,
         &mut StateMachine<MovementState>,
-        &mut StateMachine<CombatState>
+        &StateMachine<CombatState>
     )>, 
     mouse_input: Res<MouseInput>
 ) {
@@ -91,7 +76,7 @@ pub fn state_handler(
 
     let mouse_pos = mouse_input.pos;
 
-    for (mut p_data, mut walker_d, mut vel, mut health, input, combat, mut movement_state, mut combat_state) in &mut query {
+    for (mut p_data, mut walker_d, mut vel, mut health, input, mut movement_state, combat_state) in &mut query {
 
         match movement_state.curr_state() {
             MovementState::StartDodge => {
@@ -104,6 +89,7 @@ pub fn state_handler(
                 // p_data.state = P::Dodging;
             },
             MovementState::DodgeLerping => {
+                health.set_immune();
                 player_movement::lerping(&mut vel);
 
                 // only allow dodge once button was let go

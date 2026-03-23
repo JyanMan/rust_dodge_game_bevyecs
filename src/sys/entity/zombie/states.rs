@@ -1,8 +1,18 @@
 use crate::components::*;
 use crate::components::states::*;
 
-pub fn state_machine() -> StateMachine<MovementState> {
+pub fn movement_state() -> StateMachine<MovementState> {
     let mut state_m = StateMachine::new(MovementState::Idle, idle());
+    // state_m.add_state(StateId::Running, running());
+    // state_m.add_state(StateId::Attacking, attacking());
+    // state_m.add_state(StateId::StopAttacking, stop_attacking());
+    state_m
+}
+pub fn combat_state() -> StateMachine<CombatState> {
+    let mut state_m = StateMachine::new(CombatState::Idle, idle_combat());
+    state_m.add_state(CombatState::Knocked, knocked());
+    state_m.add_state(CombatState::Attacking, attacking());
+    state_m.add_state(CombatState::StopAttacking, stop_attacking());
     // state_m.add_state(StateId::Running, running());
     // state_m.add_state(StateId::Attacking, attacking());
     // state_m.add_state(StateId::StopAttacking, stop_attacking());
@@ -16,6 +26,46 @@ pub fn idle() -> State<MovementState> {
         duration: None,
         next_state: None,
         id: MovementState::Idle
+    }
+}
+
+pub fn idle_combat() -> State<CombatState> {
+    State {
+        entries:  StateConditions::accept_all() ,
+        exits:  StateConditions::accept_all() ,
+        duration: None,
+        next_state: None,
+        id: CombatState::Idle
+    }
+}
+
+pub fn knocked() -> State<CombatState> {
+    State {
+        entries:  StateConditions::accept_all() ,
+        exits:  StateConditions::accept_all() ,
+        duration: None,
+        next_state: None,
+        id: CombatState::Knocked
+    }
+}
+
+pub fn attacking() -> State<CombatState> {
+    State {
+        entries:  StateConditions::accept_all() ,
+        exits:  StateConditions::new(&[ CombatState::StopAttacking]) ,
+        duration: None,
+        next_state: None,
+        id: CombatState::Attacking
+    }
+}
+
+pub fn stop_attacking() -> State<CombatState> {
+    State {
+        entries:  StateConditions::new(&[ CombatState::Attacking ]) ,
+        exits:  StateConditions::accept_all() ,
+        duration: None,
+        next_state: None,
+        id: CombatState::StopAttacking
     }
 }
 

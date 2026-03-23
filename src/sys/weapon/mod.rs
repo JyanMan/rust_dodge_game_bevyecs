@@ -10,6 +10,7 @@ use bevy_ecs::prelude::*;
 use std::collections::HashMap;
 
 use crate::components::*;
+use crate::components::states::*;
 use crate::resources::*;
 
 pub fn from_player_input_update(
@@ -39,7 +40,14 @@ pub fn per_frame_update(weapon_d: &WeaponData, obb: &mut OBB) {
 
 pub fn anim_update(
     mut query: Query<(&mut WeaponData, &mut Sprite, &mut Transform, &HeldBy, &WeaponFns, &mut AnimationPlayer)>, 
-    mut owner_query: Query<(&mut Combat, &mut Velocity, &mut GravityAffected), (With<HeldItem>, Without<HeldBy>)>, 
+    mut owner_query: Query<(
+            &mut Combat,
+            &mut Velocity,
+            &mut GravityAffected,
+            &mut StateMachine<CombatState>,
+        ),
+        (With<HeldItem>, Without<HeldBy>
+    )>, 
 ) {
     for (mut weapon_d, mut sprite, mut trans, owned_by, weapon_fns, mut anim_player) in &mut query {
         if weapon_d.state == WeaponState::Unowned {
@@ -48,11 +56,15 @@ pub fn anim_update(
 
         let owner_entity = owned_by.0;
 
-        if let Ok((mut owner_combat, mut vel, mut grav_affected)) = owner_query.get_mut(owner_entity) {
+        if let Ok((mut owner_combat, mut vel, mut grav_affected, mut combat_state)) = owner_query.get_mut(owner_entity) {
 
             if owner_combat.stunned() {
+                combat_state.set_state(CombatState::Knocked);
                 weapon_d.temporary_attack_disable();
                 owner_combat.unstun();
+            }
+            else {
+                combat_state.set_state(CombatState::Idle);
             }
 
             if owner_combat.should_attack && weapon_d.can_attack {
@@ -62,6 +74,7 @@ pub fn anim_update(
             match weapon_d.state {
                 WeaponState::StartAttack => {
                     weapon_d.state = WeaponState::Attacking;
+                    combat_state.set_state(CombatState::Attacking);
                     let start_attack = weapon_fns.start_attack;
                     start_attack(&mut weapon_d, &mut grav_affected, &mut vel, &mut owner_combat, &mut sprite, &mut trans, &mut anim_player);
                 },
@@ -75,6 +88,7 @@ pub fn anim_update(
                 },
                 WeaponState::EndAttack => {
                     weapon_d.state = WeaponState::Idle;
+                    combat_state.set_state(CombatState::StopAttacking);
                     let end_attack = weapon_fns.end_attack;
                     end_attack(&mut weapon_d, &mut grav_affected, &mut vel, &mut owner_combat, &mut sprite, &mut trans, &mut anim_player);
                 },
