@@ -13,6 +13,7 @@ pub fn movement_state() -> StateMachine<MovementState> {
 pub fn combat_state() -> StateMachine<CombatState> {
     let mut state_m = StateMachine::new(CombatState::Idle, idle_combat());
     state_m.add_state(CombatState::Attacking, attacking());
+    state_m.add_state(CombatState::Knocked, knocked());
     state_m.add_state(CombatState::StopAttacking, stop_attacking());
     state_m
 }
@@ -141,7 +142,7 @@ pub fn attacking() -> State<CombatState> {
 pub fn knocked() -> State<CombatState> {
     State {
         entries: StateConditions::accept_all(),
-        exits: StateConditions::accept_all(),
+        exits: StateConditions::new(&[ CombatState::Idle ]),
         duration: None,
         next_state: None,
         id: CombatState::Knocked

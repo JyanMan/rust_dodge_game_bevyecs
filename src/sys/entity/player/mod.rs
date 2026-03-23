@@ -49,11 +49,12 @@ pub fn state_update(
     mut query: Query<(
         &PlayerData, &PlayerInput,
         &Combat,
+        &KnockbackTrigger,
         &mut StateMachine<components::states::MovementState>,
         &mut StateMachine<components::states::CombatState>
     )>, 
 ) {
-    for (p_data, input, combat, mut movement_state, mut combat_state) in &mut query {
+    for (p_data, input, combat, knock, mut movement_state, mut combat_state) in &mut query {
          
         if input.dodge && p_data.can_dodge {
             movement_state.set_state(MovementState::StartDodge);
@@ -62,14 +63,15 @@ pub fn state_update(
         if input.right || input.left {
             movement_state.set_state(MovementState::Running);
         }
-        if combat.attacking {
+        if knock.knocked && movement_state.curr_state() != MovementState::Dodging {
+            combat_state.set_state(CombatState::Knocked);
+        }
+        else if combat.attacking {
             combat_state.set_state(CombatState::Attacking);
-            println!("wtf?, combat_state: {:?}", combat_state.curr_state());
         }
         else {
             combat_state.set_state(CombatState::StopAttacking);
             combat_state.set_state(CombatState::Idle);
-            println!("combat_state not accacing supposedly: {:?}", combat_state.curr_state());
         }
         movement_state.set_state(MovementState::Idle);
 
@@ -110,21 +112,16 @@ pub fn state_handler(
                 }
             },
             MovementState::Running => {
-                if combat_state.curr_state() != CombatState::Attacking {
+                if combat_state.curr_state() == CombatState::Idle {
                     player_movement::left_right_motion(&mut walker_d, &mut vel, input);
                     if input.jump && p_data.can_jump {
                         player_movement::jump(&mut p_data, &mut walker_d, &mut vel);
                     }
-                    println!("wtf??");
-                }
-                else {
-                    println!("attacking");
                 }
             }
             MovementState::Idle => {
                 // only allow dodge once button was let go
-                if combat_state.curr_state() != CombatState::Attacking {
-                    println!("IDLE");
+                if combat_state.curr_state() == CombatState::Idle {
                     if !input.dodge {
                         p_data.can_dodge = true;
                     }
@@ -136,18 +133,6 @@ pub fn state_handler(
             }
             _ => {}
         }
-        // match combat_state.curr_state() {
-        //     CombatState::Attacking => {
-        //         println!("ATTACKING");
-        //     },
-        //     CombatState::Idle => {
-        //         println!("COMBAT IDLE");
-        //     },
-        //     CombatState::StartAttack => {
-        //         println!("Start ATtack");
-        //     }
-        //     _ => {}
-        // }
 
     }
 }

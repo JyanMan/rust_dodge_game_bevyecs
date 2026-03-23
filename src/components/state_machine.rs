@@ -160,7 +160,8 @@ impl <S: StateId + 'static> StateMachine <S> {
 
         if self.state.exits().contains(&id)
         {
-            let next_state = self.states_set.get(id.clone().usize()).expect("state does not exist");
+            let next_state = self.states_set.get(id.clone().usize())
+                .expect("state does not exist in state machine");
             if next_state.entries().contains(&self.state.id) {
                 self.state = next_state.clone();
                 self.timer = 0.0;
