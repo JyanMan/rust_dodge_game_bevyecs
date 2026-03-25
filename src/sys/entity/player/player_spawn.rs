@@ -15,6 +15,7 @@ struct PlayerBundle {
     area: Area,
     obb: OBB,
     player_d: PlayerData,
+    dodge_stam: DodgeStamina,
     tag: PlayerTag,
     input: PlayerInput,
     walker_d: WalkerData,
@@ -51,6 +52,7 @@ pub fn spawn(world: &mut World) -> Entity {
          obb: OBB::new(10.0, 20.0, Vector2::new(10.0, -1000.0), false)
              .with_offset(Vector2::new(0.0, 3.0)),
          player_d: PlayerData::default(),
+         dodge_stam: DodgeStamina::new(2),
          tag: PlayerTag {},
          input: PlayerInput::default(),
          walker_d: WalkerData {

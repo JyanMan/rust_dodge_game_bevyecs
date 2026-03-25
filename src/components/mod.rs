@@ -18,6 +18,8 @@ pub mod velocity;
 pub mod weapon;
 pub mod quad;
 pub mod dodge;
+pub mod timer;
+pub mod stamina;
 
 pub mod states;
 
@@ -41,4 +43,5 @@ pub use velocity::*;
 pub use weapon::*;
 pub use quad::*;
 pub use dodge::*;
-
+pub use timer::*;
+pub use stamina::*;

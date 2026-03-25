@@ -80,12 +80,3 @@ pub fn lerping(vel: &mut Velocity) {
     vel.vec = vel.vec.normalize() * 25.0 
 }
 
-pub fn dodge(
-    // ecs: &ECS,
-    p_data: &mut PlayerData, 
-    // vel: &mut Velocity,
-) {
-    p_data.can_dodge = false;
-    p_data.dodge_timer = 0.0;
-}
-

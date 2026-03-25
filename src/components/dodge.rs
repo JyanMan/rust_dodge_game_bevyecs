@@ -1,29 +1,36 @@
 use bevy_ecs::prelude::*;
+use crate::components::timer::*;
+
+const DODGE_REGEN_DUR: f32 = 1.0;
 
 #[derive(Component)]
-pub struct DodgeCD {
-    timer: f32,
-    dur: f32
+pub struct DodgeStamina {
+    pub timer: Timer,
+    pub in_between_timer: Timer, // prevent holding dodge
+    pub max_stack: i32,
+    pub stack: i32
 }
-impl DodgeCD {
-    pub fn new(dur: f32) -> Self {
+impl DodgeStamina {
+    pub fn new(max_stack: i32) -> Self {
         Self {
-            timer: 0.0,
-            dur
+            stack: max_stack,
+            max_stack,
+            in_between_timer: Timer::new_paused(0.15),
+            timer: Timer::new(DODGE_REGEN_DUR)
         }
     }
-}
 
-#[derive(Component)]
-pub struct LerpCD {
-    timer: f32,
-    dur: f32
-}
-impl LerpCD {
-    pub fn new(dur: f32) -> Self {
-        Self {
-            timer: 0.0,
-            dur
-        }
+    pub fn can_dodge(&self) -> bool {
+        self.in_between_timer.just_finished() &&
+        self.stack > 0
+    }
+
+    pub fn use_dodge(&mut self) {
+        self.stack -= 1;
+        self.in_between_timer.start();
+    }
+
+    pub fn successful_dodge(&mut self) {
+        self.stack += 1;
     }
 }

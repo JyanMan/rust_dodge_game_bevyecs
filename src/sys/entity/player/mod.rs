@@ -80,6 +80,7 @@ pub fn state_handler(
         &mut StateMachine<MovementState>,
         &mut StateMachine<CombatState>,
         &mut GravityAffected,
+        &mut DodgeStamina
     )>, 
     mouse_input: Res<MouseInput>
 ) {
@@ -87,13 +88,14 @@ pub fn state_handler(
 
     let mouse_pos = mouse_input.pos;
 
-    for (mut p_data, mut walker_d, mut vel, mut health, input, mut combat, mut movement_state, mut combat_state, mut gravity) in &mut query {
+    for (mut p_data, mut walker_d, mut vel, mut health, input, mut combat, mut movement_state, mut combat_state, mut gravity, mut dodge_stam) in &mut query {
 
         match movement_state.curr_state() {
             MovementState::StartDodge => {
-                player_movement::dodge(&mut p_data);
-                movement_state.set_state(MovementState::Dodging);
+                p_data.dodge_timer = 0.0;
+                dodge_stam.use_dodge();
                 gravity.0 = false;
+                movement_state.set_state(MovementState::Dodging);
             }
             MovementState::Dodging => {
                 let dodge_dir = player_movement::get_dodge_dir(mouse_pos, &p_data);
@@ -124,10 +126,7 @@ pub fn state_handler(
             _ => {}
         }
 
-        if !input.dodge {
-            p_data.can_dodge = true;
-        }
-        if input.dodge && p_data.can_dodge {
+        if input.dodge && dodge_stam.can_dodge() {
             movement_state.set_state(MovementState::StartDodge);
         }
         if input.right || input.left {

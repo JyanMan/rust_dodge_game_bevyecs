@@ -38,6 +38,7 @@ impl Plugin for MainGame {
             sys::state_machine::update,
             sys::particle::update_timer,
             sys::entity::health::knock_timer,
+            sys::entity::dodge_stamina::timer,
             sys::entity::player::timers_update,
             sys::entity::health::player::health_bar_update,
             sys::entity::hit_reaction::set_knocked_as_stunned,

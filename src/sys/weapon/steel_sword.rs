@@ -141,6 +141,7 @@ pub fn steel_sword_animation(sprite: &mut Sprite, trans: &mut Transform, attack_
     let attack_range: f32 = 3.0;
     trans.local = attack_dir * attack_range;
 }
+
 pub fn steel_sword_while_attacking(
     _: &mut WeaponData,
     _: &mut GravityAffected,
