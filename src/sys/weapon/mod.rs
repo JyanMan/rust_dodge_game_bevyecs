@@ -13,19 +13,6 @@ use crate::components::*;
 use crate::components::states::*;
 use crate::resources::*;
 
-pub fn from_player_input_update(
-    mut query: Query<(&PlayerInput, &mut Combat), (With<HeldItem>, Without<HeldBy>)>, 
-    mouse_input: Res<MouseInput>,
-) {
-    for (input, mut combat) in &mut query{
-        if input.attack {
-            let attack_dir = mouse_input.dir_from_center();
-            combat.attack(attack_dir);
-        }
-        else { combat.not_attack() }
-    }
-}
-
 
 pub fn per_frame_update(weapon_d: &WeaponData, obb: &mut OBB) {
     let attack_dir = weapon_d.attack_dir;
@@ -67,7 +54,7 @@ pub fn anim_update(
                 combat_state.set_state(CombatState::Idle);
             }
 
-            if owner_combat.should_attack && weapon_d.can_attack {
+            if owner_combat.should_attack && weapon_d.can_attack && combat_state.curr_state() == CombatState::StartAttack {
                 weapon_d.attack(owner_combat.attack_cd);
             } 
 

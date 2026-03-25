@@ -43,7 +43,7 @@ pub fn spawn(world: &mut World, entity_owner: Entity) -> Entity {
     let steel_sword_e = world.spawn(SteelSwordBundle {
         trans: Transform::zero(),
         sprite,
-        weapon_d: WeaponData::new(5, 800.0, attack_dur, 0.2, 0.1, WeaponState::Owned, WeaponType::SteelSword), 
+        weapon_d: WeaponData::new(5, 800.0, attack_dur, 0.1, 0.05, WeaponState::Owned, WeaponType::SteelSword), 
         tag: SteelSwordTag::default(),
         anim_player: AnimationPlayer::new(WeaponAnim::COUNT),
         held: HeldBy(entity_owner),

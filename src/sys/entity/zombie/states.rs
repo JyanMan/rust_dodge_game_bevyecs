@@ -10,9 +10,9 @@ pub fn movement_state() -> StateMachine<MovementState> {
 }
 pub fn combat_state() -> StateMachine<CombatState> {
     let mut state_m = StateMachine::new(CombatState::Idle, idle_combat());
-    state_m.add_state(CombatState::Knocked, knocked());
-    state_m.add_state(CombatState::Attacking, attacking());
-    state_m.add_state(CombatState::StopAttacking, stop_attacking());
+    state_m.add_state(knocked());
+    state_m.add_state(attacking());
+    state_m.add_state(stop_attacking());
     // state_m.add_state(StateId::Running, running());
     // state_m.add_state(StateId::Attacking, attacking());
     // state_m.add_state(StateId::StopAttacking, stop_attacking());

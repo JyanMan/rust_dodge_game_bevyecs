@@ -45,30 +45,39 @@ pub fn timers_update(
     } 
 }
 
-pub fn movement_state_update(
-    mut query: Query<(
-        &PlayerData, &PlayerInput,
-        &mut StateMachine<components::states::MovementState>,
-    )>, 
-) {
-    for (p_data, input, mut movement_state) in &mut query {
+// pub fn movement_state_update(
+//     mut query: Query<(
+//         &PlayerData, &PlayerInput,
+//         &mut StateMachine<components::states::MovementState>,
+//     )>, 
+// ) {
+//     for (p_data, input, mut movement_state) in &mut query {
          
-        if input.dodge && p_data.can_dodge {
-            movement_state.set_state(MovementState::StartDodge);
-            return;
-        }
-        if input.right || input.left {
-            movement_state.set_state(MovementState::Running);
-        }
-        movement_state.set_state(MovementState::Idle);
-    }
-}
+//         movement_state.set_state(MovementState::Idle);
+//     }
+// }
+
+
+// pub fn from_player_input_update(
+//     mut query: Query<(&PlayerInput, &mut Combat), (With<HeldItem>, Without<HeldBy>)>, 
+//     mouse_input: Res<MouseInput>,
+// ) {
+//     for (input, mut combat) in &mut query{
+//         if input.attack {
+//             let attack_dir = mouse_input.dir_from_center();
+//             combat.attack(attack_dir);
+//         }
+//         else { combat.not_attack() }
+//     }
+// }
 
 pub fn state_handler(
     mut query: Query<(
         &mut PlayerData, &mut WalkerData, &mut Velocity, &mut Health, &PlayerInput,
+        &mut Combat,
         &mut StateMachine<MovementState>,
-        &StateMachine<CombatState>
+        &mut StateMachine<CombatState>,
+        &mut GravityAffected,
     )>, 
     mouse_input: Res<MouseInput>
 ) {
@@ -76,48 +85,69 @@ pub fn state_handler(
 
     let mouse_pos = mouse_input.pos;
 
-    for (mut p_data, mut walker_d, mut vel, mut health, input, mut movement_state, combat_state) in &mut query {
+    for (mut p_data, mut walker_d, mut vel, mut health, input, mut combat, mut movement_state, mut combat_state, mut gravity) in &mut query {
 
         match movement_state.curr_state() {
             MovementState::StartDodge => {
                 player_movement::dodge(&mut p_data);
                 movement_state.set_state(MovementState::Dodging);
+                gravity.0 = false;
             }
             MovementState::Dodging => {
                 let dodge_dir = player_movement::get_dodge_dir(mouse_pos, &p_data);
                 player_movement::dodging(dodge_dir, &mut p_data, &mut vel, &mut health);
-                // p_data.state = P::Dodging;
             },
             MovementState::DodgeLerping => {
+                println!("lerping");
                 health.set_immune();
                 player_movement::lerping(&mut vel);
-
-                // only allow dodge once button was let go
-                if !input.dodge {
-                    p_data.can_dodge = true;
-                }
             },
+            MovementState::DodgeEnd => {
+                movement_state.set_state(MovementState::Idle);
+                println!("FUCKING ENDED DODGE");
+                gravity.0 = true;
+            }
+            MovementState::StartJump => {
+                player_movement::jump(&mut p_data, &mut walker_d, &mut vel);
+                movement_state.set_state(MovementState::Idle);
+            }
             MovementState::Running => {
-                if combat_state.curr_state() == CombatState::Idle {
+                if combat_state.curr_state() != CombatState::Attacking{
                     player_movement::left_right_motion(&mut walker_d, &mut vel, input);
-                    if input.jump && p_data.can_jump {
-                        player_movement::jump(&mut p_data, &mut walker_d, &mut vel);
-                    }
                 }
             }
             MovementState::Idle => {
-                // only allow dodge once button was let go
-                if combat_state.curr_state() == CombatState::Idle {
-                    if !input.dodge {
-                        p_data.can_dodge = true;
-                    }
+                println!("IDLE");
+                if combat_state.curr_state() != CombatState::Attacking {
                     player_movement::left_right_motion(&mut walker_d, &mut vel, input);
-                    if input.jump && p_data.can_jump {
-                        player_movement::jump(&mut p_data, &mut walker_d, &mut vel);
-                    }
                 }
             }
             _ => {}
+        }
+
+        if !input.dodge {
+            p_data.can_dodge = true;
+        }
+        if input.dodge && p_data.can_dodge {
+            movement_state.set_state(MovementState::StartDodge);
+        }
+        if input.right || input.left {
+            movement_state.set_state(MovementState::Running{});
+        }
+        else {
+            movement_state.set_state(MovementState::Idle);
+        }
+        if input.jump && p_data.can_jump {
+            movement_state.set_state(MovementState::StartJump);
+        }
+
+        if input.use_item {
+            let attack_dir = mouse_input.dir_from_center();
+            combat_state.set_state(CombatState::StartAttack);
+            combat.attack(attack_dir);
+        }
+        else {
+            combat.not_attack();
         }
 
     }

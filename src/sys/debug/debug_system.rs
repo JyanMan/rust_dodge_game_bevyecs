@@ -1,16 +1,35 @@
 use bevy_ecs::prelude::*;
 
 use crate::core::renderer::*;
-use crate::components::Area;
+use crate::components::*;
 use crate::resources::AreaManager;
 
-pub fn debug_draw_entity_areas(world: &mut World, renderer: &mut Renderer) {
-    let mut query = world.query::<&Area>();
+pub fn draw_entity_areas(
+    query: Query<&Area>,
+    mut renderer: NonSendMut<Renderer>
+) {
 
-    for area in query.iter(world) {
-        area.draw(renderer);
+    for area in &query {
+        area.draw(&mut renderer);
     }
+}
 
-    let mut area_m = world.get_resource_mut::<AreaManager>().unwrap();
-    area_m.draw_tile_areas(renderer);
+pub fn render_all_obb(
+    query: Query<&OBB>,
+    mut renderer: NonSendMut<Renderer>
+) {
+
+    for obb in &query {
+        if obb.disabled {
+            continue;
+        }
+        obb.draw(&mut renderer);
+    }
+}
+
+pub fn draw_tile_areas(
+    mut area_m: ResMut<AreaManager>,
+    mut renderer: NonSendMut<Renderer>
+) {
+    area_m.draw_tile_areas(&mut renderer);
 }

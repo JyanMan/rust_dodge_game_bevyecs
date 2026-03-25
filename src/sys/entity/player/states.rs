@@ -3,18 +3,20 @@ use crate::components::states::*;
 
 pub fn movement_state() -> StateMachine<MovementState> {
     let mut state_m = StateMachine::new(MovementState::Idle, idle());
-    state_m.add_state(MovementState::Running, running());
-    state_m.add_state(MovementState::StartDodge, start_dodge());
-    state_m.add_state(MovementState::DodgeEnd, dodge_end());
-    state_m.add_state(MovementState::Dodging, dodging());
-    state_m.add_state(MovementState::DodgeLerping, lerping());
+    state_m.add_state(running());
+    state_m.add_state(start_dodge());
+    state_m.add_state(dodge_end());
+    state_m.add_state(dodging());
+    state_m.add_state(lerping());
+    state_m.add_state(jump());
     state_m
 }
 pub fn combat_state() -> StateMachine<CombatState> {
     let mut state_m = StateMachine::new(CombatState::Idle, idle_combat());
-    state_m.add_state(CombatState::Attacking, attacking());
-    state_m.add_state(CombatState::Knocked, knocked());
-    state_m.add_state(CombatState::StopAttacking, stop_attacking());
+    state_m.add_state(start_attack());
+    state_m.add_state(attacking());
+    state_m.add_state(knocked());
+    state_m.add_state(stop_attacking());
     state_m
 }
 
@@ -126,9 +128,34 @@ pub fn dodge_end() -> State<MovementState> {
     }
 }
 
-pub fn attacking() -> State<CombatState> {
+pub fn jump() -> State<MovementState> {
+    State {
+        entries: 
+            StateConditions::accept_all()
+        ,
+        exits:  StateConditions::accept_all() ,
+        duration: None,
+        next_state: None,
+        id: MovementState::StartJump
+    }
+}
+
+pub fn start_attack() -> State<CombatState> {
     State {
         entries: StateConditions::accept_all() ,
+        exits: 
+            StateConditions::new(&[ CombatState::Attacking, ])
+        ,
+        // duration is dictated by weapon
+        duration: None,
+        next_state: None,
+        id: CombatState::StartAttack
+    }
+}
+
+pub fn attacking() -> State<CombatState> {
+    State {
+        entries: StateConditions::new(&[ CombatState::StartAttack ]) ,
         exits: 
             StateConditions::new(&[ CombatState::StopAttacking, ])
         ,
@@ -154,10 +181,7 @@ pub fn stop_attacking() -> State<CombatState> {
     State {
         entries: StateConditions::new(&[ CombatState::Attacking ]) ,
         exits: 
-            StateConditions::new(&[
-                CombatState::Knocked,
-                CombatState::Idle,
-            ]),
+            StateConditions::accept_all(),
         // duration is dictated by weapon
         duration: None,
         next_state: None,

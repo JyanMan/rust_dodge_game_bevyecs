@@ -102,7 +102,7 @@ impl <S: StateId> State <S> {
 //     Knocked,
 // }
 
-pub trait StateId: Clone + PartialEq + Eq {
+pub trait StateId: Clone + PartialEq {
     fn usize(self) -> usize;
     fn bit_mask(self) -> u32;
 }
@@ -146,23 +146,25 @@ impl <S: StateId + 'static> StateMachine <S> {
         }
     }
 
-    pub fn add_state(&mut self, id: S, state: State<S>) {
-        self.states_set.insert(id.usize(), state);
+    pub fn add_state(&mut self, state: State<S>) {
+        self.states_set.insert(state.id.clone().usize(), state);
     }
 
     pub fn curr_state(&self) -> S { self.state.id.clone() }
 
     // only allows new state that is connected to the current state
     pub fn set_state(&mut self, id: S) {
-        if self.state.id == id {
+        if self.state.id.clone().usize() == id.clone().usize() {
             return;
         }
 
+        // check if next state can be transitioned to
         if self.state.exits().contains(&id)
         {
             let next_state = self.states_set.get(id.clone().usize())
                 .expect("state does not exist in state machine");
             if next_state.entries().contains(&self.state.id) {
+                // set to next state
                 self.state = next_state.clone();
                 self.timer = 0.0;
             }

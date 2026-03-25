@@ -35,6 +35,7 @@ pub fn lerp_timer(p_data: &mut PlayerData, state_m: &mut StateMachine<MovementSt
     if p_data.lerp_timer >= p_data.lerp_duration {
         p_data.lerp_timer = 0.0;
         state_m.set_state(MovementState::DodgeEnd);
+        println!("WTF??");
     }
 }
 // void player_lerp_timer(Player* p, float dt) 

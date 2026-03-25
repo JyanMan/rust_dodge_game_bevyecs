@@ -12,10 +12,10 @@ pub mod states;
 
 pub fn mass_spawn(world: &mut World) {
     let mut rng = rand::thread_rng(); 
-    for _ in 0..5 {
-        let z = super::zombie::spawn(world, rng.gen_range(30..80) as f32);
-        sys::weapon::zombie_arm::spawn(world, z);
-    }
+    // for _ in 0..5 {
+    //     let z = super::zombie::spawn(world, rng.gen_range(30..80) as f32);
+    //     sys::weapon::zombie_arm::spawn(world, z);
+    // }
 }
 
 #[derive(Bundle)]
@@ -88,77 +88,15 @@ pub fn spawn(world: &mut World, speed: f32) -> Entity {
     zombie_e
 }
 
-pub fn movement_update(
-    player_query: Query<(&PlayerTag, &Transform)>, 
-    mut query: Query<(&Transform, &mut Velocity, &ZombieTag, &mut WalkerData,  &EnemyData, &KnockbackTrigger, &mut Combat)>,
-) {
-    let mut p_trans = Transform::zero();
-    for (_p_tag, trans) in &player_query {
-        p_trans = *trans;
-    }
-    for (trans, mut vel, _, mut walker_d, enemy_d, knock, mut combat) in &mut query {
-        if knock.knocked { continue; }
-        if combat.attacking { continue; }
-        // jump ai
-        if vel.vec.x.abs() <= 0.001 && walker_d.state == WalkerState::Running {
-            vel.vec.y -= walker_d.jump_force;
-        }
-
-        let x_trans = p_trans.global.x - trans.global.x;
-        let y_trans = p_trans.global.y - trans.global.y;
-
-        // calc dist
-        let mut dist = (x_trans*x_trans + y_trans*y_trans).sqrt();
-        // disallow dividing by zero
-        if dist == 0.0 {
-            dist = 0.0001;
-        }
-
-        // get the direction on x axis
-        let dir_to_player = Vector2::new(x_trans, y_trans).normalize();
-        let x_dir = (1.0_f32).copysign(x_trans);
-
-        if dist < enemy_d.attack_range {
-            // attack
-            let attack_dir = dir_to_player;
-            combat.attack(attack_dir);
-            // if walker_d.grounded {
-            // }
-        }
-        else {
-            combat.not_attack();
-            if dist <= enemy_d.chase_range {
-                walker_d.state = WalkerState::Running;
-                vel.vec.x += x_dir * walker_d.accel;
-            }
-            else {
-                walker_d.state = WalkerState::Idle;
-                let decel: f32 = x_dir.copysign(vel.vec.x) * walker_d.accel;
-                if !walker_d.grounded {
-                    vel.vec.x -= decel * 0.2;
-                }
-                else {
-                    vel.vec.x -= decel;
-                }
-                if vel.vec.x.abs() <= walker_d.accel {
-                    vel.vec.x = 0.0;
-                }
-            }
-        }
-        if vel.vec.x.abs() >= walker_d.run_speed {
-            vel.vec.x = walker_d.run_speed.copysign(vel.vec.x);
-        }
-    }    
-}
-
-// pub fn state_update(
-//     mut query: Query<(
-//         &PlayerData, &PlayerInput,
-//         &Combat,
-//         &mut StateMachine
-//     )>, 
+// pub fn movement_update(
+//     player_query: Query<(&PlayerTag, &Transform)>, 
+//     mut query: Query<(&Transform, &mut Velocity, &ZombieTag, &mut WalkerData,  &EnemyData, &KnockbackTrigger, &mut Combat)>,
 // ) {
-//     for (p_data, input, combat, mut state_m) in &mut query {
+//     let mut p_trans = Transform::zero();
+//     for (_p_tag, trans) in &player_query {
+//         p_trans = *trans;
+//     }
+//     for (trans, mut vel, _, mut walker_d, enemy_d, knock, mut combat) in &mut query {
 //         if knock.knocked { continue; }
 //         if combat.attacking { continue; }
 //         // jump ai
@@ -210,82 +148,109 @@ pub fn movement_update(
 //         if vel.vec.x.abs() >= walker_d.run_speed {
 //             vel.vec.x = walker_d.run_speed.copysign(vel.vec.x);
 //         }
-         
-//         if input.dodge && p_data.can_dodge {
-//             state_m.set_state(StateId::StartDodge);
-//             return;
-//         }
-//         if input.right || input.left {
-//             state_m.set_state(StateId::Running);
-//         }
-//         if combat.attacking {
-//             state_m.set_state(StateId::Attacking);
-//         }
-//         else {
-//             state_m.set_state(StateId::StopAttacking);
-//         }
-//         state_m.set_state(StateId::Idle);
-
-//     }
+//     }    
 // }
+pub fn movement_state_update(
+    player_query: Query<(&PlayerTag, &Transform)>, 
+    mut query: Query<(
+        &Transform,
+        &mut Velocity,
+        &ZombieTag,
+        &mut WalkerData,
+        &EnemyData,
+        &KnockbackTrigger,
+        &mut Combat,
+        &mut StateMachine<MovementState>,
+        &mut StateMachine<CombatState>,
+        &mut StateMachine<EnemyState>,
+    )>,
+) {
+    let mut p_trans = Transform::zero();
+    for (_p_tag, trans) in &player_query {
+        p_trans = *trans;
+    }
+    for (trans, mut vel, _, mut walker_d, enemy_d, knock, mut combat, mut movement_state, mut combat_state, mut enemy_state) in &mut query {
 
-// pub fn state_handler(
-//     mut query: Query<(
-//         &mut PlayerData, &mut WalkerData, &mut Velocity, &mut Health, &PlayerInput,
-//         &Combat,
-//         &mut StateMachine
-//     )>, 
-//     mouse_input: Res<MouseInput>
-// ) {
-//     use player_movement;
+        let x_trans = p_trans.global.x - trans.global.x;
+        let y_trans = p_trans.global.y - trans.global.y;
 
-//     let mouse_pos = mouse_input.pos;
+        // calc dist
+        let mut dist = (x_trans*x_trans + y_trans*y_trans).sqrt();
+        // disallow dividing by zero
+        if dist == 0.0 {
+            dist = 0.0001;
+        }
 
-//     for (mut p_data, mut walker_d, mut vel, mut health, input, combat, mut state_m) in &mut query {
+        // get the direction on x axis
+        let dir_to_player = Vector2::new(x_trans, y_trans).normalize();
+        let x_dir = (1.0_f32).copysign(x_trans);
 
-//         match state_m.curr_state() {
-//             StateId::StartDodge => {
-//                 player_movement::dodge(&mut p_data);
-//                 state_m.set_state(StateId::Dodging);
-//             }
-//             StateId::Dodging => {
-//                 let dodge_dir = player_movement::get_dodge_dir(mouse_pos, &p_data);
-//                 player_movement::dodging(dodge_dir, &mut p_data, &mut vel, &mut health);
-//                 // p_data.state = P::Dodging;
-//             },
-//             StateId::DodgeLerping => {
-//                 player_movement::lerping(&mut vel);
+        if dist < enemy_d.attack_range {
+            enemy_state.set_state(EnemyState::InAttackRange);
+            movement_state.set_state(MovementState::Idle);
+            combat_state.set_state(CombatState::StartAttack);
 
-//                 // only allow dodge once button was let go
-//                 if !input.dodge {
-//                     p_data.can_dodge = true;
-//                 }
-//             },
-//             StateId::DodgeAttacking => {
-//                 let dodge_dir = player_movement::get_dodge_dir(mouse_pos, &p_data);
-//                 player_movement::dodging(dodge_dir, &mut p_data, &mut vel, &mut health);
-//             }
-//             StateId::Running => {
-//                 player_movement::left_right_motion(&mut walker_d, &mut vel, input);
-//                 if input.jump && p_data.can_jump {
-//                     player_movement::jump(&mut p_data, &mut walker_d, &mut vel);
-//                 }
-//             }
-//             StateId::Idle => {
-//                 // only allow dodge once button was let go
-//                 if !input.dodge {
-//                     p_data.can_dodge = true;
-//                 }
-//                 player_movement::left_right_motion(&mut walker_d, &mut vel, input);
-//                 if input.jump && p_data.can_jump {
-//                     player_movement::jump(&mut p_data, &mut walker_d, &mut vel);
-//                 }
-//             }
-//             _ => {}
-//         }
+            let attack_dir = dir_to_player;
+            combat.attack(attack_dir);
+        }
+        else {
+            combat.not_attack();
+            combat_state.set_state(CombatState::Idle);
+            if dist <= enemy_d.chase_range {
+                enemy_state.set_state(EnemyState::Chasing);
+                movement_state.set_state(MovementState::Running);
+            }
+            else {
+                enemy_state.set_state(EnemyState::Idle);
+                movement_state.set_state(MovementState::Idle);
 
-//     }
-// }
+                walker_d.state = WalkerState::Idle;
+                let decel: f32 = x_dir.copysign(vel.vec.x) * walker_d.accel;
+                if !walker_d.grounded {
+                    vel.vec.x -= decel * 0.2;
+                }
+                else {
+                    vel.vec.x -= decel;
+                }
+                if vel.vec.x.abs() <= walker_d.accel {
+                    vel.vec.x = 0.0;
+                }
+            }
+        }
+        if vel.vec.x.abs() >= walker_d.run_speed {
+            vel.vec.x = walker_d.run_speed.copysign(vel.vec.x);
+        }
+
+        match movement_state.curr_state() {
+            MovementState::Running => {
+                // jump ai
+                if vel.vec.x.abs() <= 0.001 && walker_d.state == WalkerState::Running {
+                    vel.vec.y -= walker_d.jump_force;
+                }
+                walker_d.state = WalkerState::Running;
+            }
+            MovementState::Idle => {
+            }
+            _ => {}
+        }
+    }    
+}
+
+pub fn state_handler(
+    mut query: Query<(
+        &mut PlayerData, &mut WalkerData, &mut Velocity, &mut Health, &PlayerInput,
+        &Combat,
+        &mut StateMachine<MovementState>
+    )>, 
+    mouse_input: Res<MouseInput>
+) {
+    let mouse_pos = mouse_input.pos;
+
+    for (mut p_data, mut walker_d, mut vel, mut health, input, combat, mut state_m) in &mut query {
+
+
+    }
+}
 
 pub fn anim_init(anim_player: &mut AnimationPlayer, zombie_e: Entity) {
     let idle_anim = Animation::new(0.2, &[

@@ -13,4 +13,5 @@ rand = "0.8"
 sdl2 =  { version = "0.38", features = [ "image", "ttf" ] }
 fastnoise-lite = "1.1.1"
 xsparseset = "0.2.5"
-
+strum = "0.28.0"
+strum_macros = "0.28"

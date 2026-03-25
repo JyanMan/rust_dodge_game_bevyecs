@@ -41,7 +41,7 @@ impl Plugin for MainGame {
             sys::entity::player::timers_update,
             sys::entity::health::player::health_bar_update,
             sys::entity::hit_reaction::set_knocked_as_stunned,
-            sys::weapon::from_player_input_update,
+            // sys::weapon::from_player_input_update,
             sys::weapon::attack_timer_and_signal_update.before(sys::weapon::anim_update),
             sys::weapon::anim_update.after(sys::weapon::attack_timer_and_signal_update),
             sys::weapon::lost_owner,
@@ -51,10 +51,11 @@ impl Plugin for MainGame {
             sys::anim::walker::update,
         ));
         app.add_systems(FixedPreUpdate, (
-            sys::entity::player::movement_state_update,
-            sys::entity::zombie::movement_update,
+            // sys::entity::player::movement_state_update,
+            // sys::entity::zombie::movement_update,
+            sys::entity::zombie::state_handler,
             sys::entity::player::state_handler
-                .after(sys::entity::player::movement_state_update),
+                // .after(sys::entity::player::movement_state_update),
         ));
         app.add_systems(FixedUpdate, (
             sys::physics::gravity,
@@ -79,6 +80,7 @@ impl Plugin for MainGame {
             sys::render::sprites_draw,
             sys::render::health_bar_draw,
             sys::render::texts_draw.after(sys::render::sprites_draw),
+            // sys::debug::render_all_obb
         ));
 
         app.add_systems(Input, (

@@ -47,7 +47,8 @@ pub fn spawn(world: &mut World) -> Entity {
          trans: Transform::new(10.0, -1000.0),
          vel: Velocity::new(0.0, 0.0),
          area,
-         obb: OBB::new(10.0, 20.0, Vector2::new(10.0, -1000.0), false),
+         obb: OBB::new(10.0, 20.0, Vector2::new(10.0, -1000.0), false)
+             .with_offset(Vector2::new(0.0, 3.0)),
          player_d: PlayerData::default(),
          tag: PlayerTag {},
          input: PlayerInput::default(),

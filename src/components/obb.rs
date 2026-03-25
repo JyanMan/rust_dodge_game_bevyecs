@@ -67,6 +67,10 @@ impl OBB {
 
         obb
     }
+    pub fn with_offset(mut self, offset: Vector2) -> Self {
+       self.offset = offset;
+       self
+    }
 
     pub fn get_vertices(&self) -> &Vec<Vector2> { &self.vertices }
 
