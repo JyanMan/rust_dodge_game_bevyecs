@@ -35,9 +35,9 @@ pub fn walker_collision(
         // pass area_m as &AreaManager
         area_colliding_to_tile(&mut area, &mut trans.global, &mut vel.vec, &mut walker_d.grounded, &area_m, time_step.0);
 
-        if !walker_d.grounded {
-            walker_d.state = WalkerState::Aired;
-        }
+        // if !walker_d.grounded {
+        //     walker_d.state = WalkerState::Aired;
+        // }
     });
 }
 

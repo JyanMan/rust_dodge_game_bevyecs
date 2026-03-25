@@ -54,7 +54,9 @@ pub fn anim_update(
                 combat_state.set_state(CombatState::Idle);
             }
 
-            if owner_combat.should_attack && weapon_d.can_attack && combat_state.curr_state() == CombatState::StartAttack {
+            // if owner_combat.should_attack && weapon_d.can_attack
+            if  combat_state.curr_state() == CombatState::StartAttack && weapon_d.can_attack
+            {
                 weapon_d.attack(owner_combat.attack_cd);
             } 
 

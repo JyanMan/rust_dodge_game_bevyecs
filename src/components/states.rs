@@ -1,6 +1,12 @@
 use crate::components::*;
+use strum_macros::EnumDiscriminants;
 
-#[derive(Clone, PartialEq, Eq, Hash, Debug)]
+#[derive(Clone, PartialEq, Default, Debug)]
+pub struct AttackData {
+    pub attack_dir: Vector2,
+}
+
+#[derive(Clone, PartialEq, EnumDiscriminants, Debug)]
 pub enum CombatState {
     Idle,
     StartAttack,
@@ -11,14 +17,14 @@ pub enum CombatState {
 }
 impl StateId for CombatState{
     fn usize(self) -> usize {
-        self as usize
+        CombatStateDiscriminants::from(self) as usize
     }
     fn bit_mask(self) -> u32 {
-        1u32 << (self as u32)
+        1u32 << (CombatStateDiscriminants::from(self) as u32)
     }
 }
 
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Clone, PartialEq, Eq, Debug)]
 pub enum MovementState {
     Idle,
     Falling,
@@ -39,8 +45,8 @@ impl StateId for MovementState {
     }
 }
 
-#[derive(Clone, PartialEq)]
-pub enum WalkerAnimState{
+#[derive(Clone, PartialEq, Debug)]
+pub enum WalkerAnimState {
     Idle,
     Falling,
     Rising,
@@ -61,7 +67,7 @@ impl WalkerAnimState {
     }
 }
 
-#[derive(Clone, PartialEq, Eq, Hash)]
+#[derive(Clone, PartialEq, Eq, Hash, Debug)]
 pub enum EnemyState {
     InAttackRange,
     Chasing,

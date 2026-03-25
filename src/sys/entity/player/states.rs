@@ -19,6 +19,14 @@ pub fn combat_state() -> StateMachine<CombatState> {
     state_m.add_state(stop_attacking());
     state_m
 }
+pub fn walker_anim() -> StateMachine<WalkerAnimState> {
+    let mut state_m = StateMachine::new(WalkerAnimState::Idle, idle_anim());
+    state_m.add_state(running_anim());
+    state_m.add_state(rising_anim());
+    state_m.add_state(falling_anim());
+    state_m.add_state(attacking_anim());
+    state_m
+}
 
 pub fn idle() -> State<MovementState> {
     State {
@@ -197,4 +205,20 @@ pub fn idle_combat() -> State<CombatState> {
         next_state: None,
         id: CombatState::Idle
     }
+}
+
+pub fn idle_anim() -> State<WalkerAnimState> {
+    State::accept_all(WalkerAnimState::Running)
+}
+pub fn running_anim() -> State<WalkerAnimState> {
+    State::accept_all(WalkerAnimState::Running)
+}
+pub fn rising_anim() -> State<WalkerAnimState> {
+    State::accept_all(WalkerAnimState::Rising)
+}
+pub fn falling_anim() -> State<WalkerAnimState> {
+    State::accept_all(WalkerAnimState::Falling)
+}
+pub fn attacking_anim() -> State<WalkerAnimState> {
+    State::accept_all(WalkerAnimState::Attacking)
 }

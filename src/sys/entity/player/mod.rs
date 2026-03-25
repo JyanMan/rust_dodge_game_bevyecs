@@ -71,6 +71,8 @@ pub fn timers_update(
 //     }
 // }
 
+
+
 pub fn state_handler(
     mut query: Query<(
         &mut PlayerData, &mut WalkerData, &mut Velocity, &mut Health, &PlayerInput,
@@ -98,13 +100,11 @@ pub fn state_handler(
                 player_movement::dodging(dodge_dir, &mut p_data, &mut vel, &mut health);
             },
             MovementState::DodgeLerping => {
-                println!("lerping");
                 health.set_immune();
                 player_movement::lerping(&mut vel);
             },
             MovementState::DodgeEnd => {
                 movement_state.set_state(MovementState::Idle);
-                println!("FUCKING ENDED DODGE");
                 gravity.0 = true;
             }
             MovementState::StartJump => {
@@ -117,7 +117,6 @@ pub fn state_handler(
                 }
             }
             MovementState::Idle => {
-                println!("IDLE");
                 if combat_state.curr_state() != CombatState::Attacking {
                     player_movement::left_right_motion(&mut walker_d, &mut vel, input);
                 }
@@ -141,15 +140,15 @@ pub fn state_handler(
             movement_state.set_state(MovementState::StartJump);
         }
 
-        if input.use_item {
+        if input.use_item && combat.can_attack {
             let attack_dir = mouse_input.dir_from_center();
             combat_state.set_state(CombatState::StartAttack);
-            combat.attack(attack_dir);
+            combat.attack_dir = attack_dir;
+            combat.can_attack = false;
         }
-        else {
-            combat.not_attack();
+        if !input.use_item {
+            combat.can_attack = true;
         }
-
     }
 }
 

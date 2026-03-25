@@ -48,13 +48,14 @@ impl Plugin for MainGame {
             sys::world::damage_counter::update,
             sys::world::damage_counter::despawn_update,
             sys::anim::update_all,
-            sys::anim::walker::update,
+            // sys::anim::walker::update,
         ));
         app.add_systems(FixedPreUpdate, (
             // sys::entity::player::movement_state_update,
             // sys::entity::zombie::movement_update,
             sys::entity::zombie::state_handler,
-            sys::entity::player::state_handler
+            sys::entity::player::state_handler,
+            sys::anim::walker::anim_state_handler
                 // .after(sys::entity::player::movement_state_update),
         ));
         app.add_systems(FixedUpdate, (

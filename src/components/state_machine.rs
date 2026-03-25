@@ -57,6 +57,15 @@ pub struct State<S: StateId> {
 
 #[allow(clippy::manual_map)]
 impl <S: StateId> State <S> {
+    pub fn accept_all(id: S) -> Self {
+        Self {
+            id,
+            entries: StateConditions::accept_all(),
+            exits: StateConditions::accept_all(),
+            duration: None,
+            next_state: None,
+        }
+    }
     pub fn exits(&self) -> &StateConditions<S> {
         &self.exits
     }

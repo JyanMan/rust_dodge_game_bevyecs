@@ -29,6 +29,7 @@ struct PlayerBundle {
     knock: KnockbackTrigger,
     movement_state: StateMachine<MovementState>,
     combat_state: StateMachine<CombatState>,
+    // walker_anim: StateMachine<WalkerAnimState>,
 }
 
 
@@ -70,7 +71,8 @@ pub fn spawn(world: &mut World) -> Entity {
          knock: KnockbackTrigger::default(),
          // state_machine: StateMachine::new(State::Idle),
          movement_state: super::states::movement_state(),
-         combat_state: super::states::combat_state()
+         combat_state: super::states::combat_state(),
+         // walker_anim: super::states::walker_state(),
     }).id();
 
     let mut player_ref_mut = world.entity_mut(player_e);

@@ -17,6 +17,7 @@ pub mod vector2;
 pub mod velocity;
 pub mod weapon;
 pub mod quad;
+pub mod dodge;
 
 pub mod states;
 
@@ -39,5 +40,5 @@ pub use vector2::*;
 pub use velocity::*;
 pub use weapon::*;
 pub use quad::*;
-
+pub use dodge::*;
 

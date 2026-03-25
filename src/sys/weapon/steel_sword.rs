@@ -187,7 +187,7 @@ pub fn steel_sword_start_attack(
     // user_vel.vec = attack_dir * 200.0;
     user_vel.vec = Vector2::zero();
     grav_affected.0 = false;
-    combat.attacking = true;
+    // combat.attacking = true;
 }
 
 pub fn steel_sword_end_attack(
@@ -202,7 +202,7 @@ pub fn steel_sword_end_attack(
     // anim_player.stop();
     user_vel.vec = Vector2::zero();
     grav_affected.0 = true;
-    combat.attacking = false;
+    // combat.attacking = false;
 }
 
 #[allow(dead_code)]

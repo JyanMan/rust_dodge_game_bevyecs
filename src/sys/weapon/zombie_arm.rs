@@ -184,7 +184,7 @@ pub fn zombie_arm_start_attack(
     weapon_d.attack_dir = attack_dir;
     user_vel.vec = attack_dir * 200.0;
     grav_affected.0 = false;
-    combat.attacking = true;
+    // combat.attacking = true;
 }
 
 pub fn zombie_arm_end_attack(
@@ -199,7 +199,7 @@ pub fn zombie_arm_end_attack(
     // anim_player.stop();
     user_vel.vec = Vector2::zero();
     grav_affected.0 = true;
-    combat.attacking = false;
+    // combat.attacking = false;
 }
 
 #[allow(dead_code)]

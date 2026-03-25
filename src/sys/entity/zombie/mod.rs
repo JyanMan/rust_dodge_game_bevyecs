@@ -12,10 +12,10 @@ pub mod states;
 
 pub fn mass_spawn(world: &mut World) {
     let mut rng = rand::thread_rng(); 
-    // for _ in 0..5 {
-    //     let z = super::zombie::spawn(world, rng.gen_range(30..80) as f32);
-    //     sys::weapon::zombie_arm::spawn(world, z);
-    // }
+    for _ in 0..5 {
+        let z = super::zombie::spawn(world, rng.gen_range(30..80) as f32);
+        sys::weapon::zombie_arm::spawn(world, z);
+    }
 }
 
 #[derive(Bundle)]
@@ -39,7 +39,8 @@ struct ZombieBundle {
     tag_container: EntityTagContainer,
     knock: KnockbackTrigger,
     movement_state: StateMachine<MovementState>,
-    combat_state: StateMachine<CombatState>
+    combat_state: StateMachine<CombatState>,
+    enemy_state: StateMachine<EnemyState>
 }
 
 pub fn spawn(world: &mut World, speed: f32) -> Entity {
@@ -78,6 +79,7 @@ pub fn spawn(world: &mut World, speed: f32) -> Entity {
         knock: KnockbackTrigger::default(),
         movement_state: states::movement_state(),
         combat_state: states::combat_state(),
+        enemy_state: states::enemy_state(),
         // StateMachine::default(),
     }).id();
 
@@ -150,7 +152,7 @@ pub fn spawn(world: &mut World, speed: f32) -> Entity {
 //         }
 //     }    
 // }
-pub fn movement_state_update(
+pub fn state_handler(
     player_query: Query<(&PlayerTag, &Transform)>, 
     mut query: Query<(
         &Transform,
@@ -186,25 +188,34 @@ pub fn movement_state_update(
         let x_dir = (1.0_f32).copysign(x_trans);
 
         if dist < enemy_d.attack_range {
-            enemy_state.set_state(EnemyState::InAttackRange);
             movement_state.set_state(MovementState::Idle);
             combat_state.set_state(CombatState::StartAttack);
 
             let attack_dir = dir_to_player;
-            combat.attack(attack_dir);
+            combat.attack_dir = attack_dir;
         }
         else {
-            combat.not_attack();
             combat_state.set_state(CombatState::Idle);
             if dist <= enemy_d.chase_range {
-                enemy_state.set_state(EnemyState::Chasing);
                 movement_state.set_state(MovementState::Running);
             }
             else {
-                enemy_state.set_state(EnemyState::Idle);
                 movement_state.set_state(MovementState::Idle);
-
                 walker_d.state = WalkerState::Idle;
+            }
+        }
+
+        match movement_state.curr_state() {
+            MovementState::Running => {
+                if walker_d.grounded && vel.vec.x.abs() <= 0.001 {
+                    vel.vec.y -= walker_d.jump_force;
+                }
+                vel.vec.x += x_dir * walker_d.accel;
+                if vel.vec.x.abs() >= walker_d.run_speed {
+                    vel.vec.x = walker_d.run_speed.copysign(vel.vec.x);
+                }
+            }
+            MovementState::Idle => {
                 let decel: f32 = x_dir.copysign(vel.vec.x) * walker_d.accel;
                 if !walker_d.grounded {
                     vel.vec.x -= decel * 0.2;
@@ -216,40 +227,9 @@ pub fn movement_state_update(
                     vel.vec.x = 0.0;
                 }
             }
-        }
-        if vel.vec.x.abs() >= walker_d.run_speed {
-            vel.vec.x = walker_d.run_speed.copysign(vel.vec.x);
-        }
-
-        match movement_state.curr_state() {
-            MovementState::Running => {
-                // jump ai
-                if vel.vec.x.abs() <= 0.001 && walker_d.state == WalkerState::Running {
-                    vel.vec.y -= walker_d.jump_force;
-                }
-                walker_d.state = WalkerState::Running;
-            }
-            MovementState::Idle => {
-            }
             _ => {}
         }
     }    
-}
-
-pub fn state_handler(
-    mut query: Query<(
-        &mut PlayerData, &mut WalkerData, &mut Velocity, &mut Health, &PlayerInput,
-        &Combat,
-        &mut StateMachine<MovementState>
-    )>, 
-    mouse_input: Res<MouseInput>
-) {
-    let mouse_pos = mouse_input.pos;
-
-    for (mut p_data, mut walker_d, mut vel, mut health, input, combat, mut state_m) in &mut query {
-
-
-    }
 }
 
 pub fn anim_init(anim_player: &mut AnimationPlayer, zombie_e: Entity) {
