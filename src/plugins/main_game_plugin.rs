@@ -29,44 +29,19 @@ impl Plugin for MainGame {
         );
 
         app.add_systems(Startup, (
-            // init_chunk_manager,
             sys::world::chunks::init,
         ));
 
-        // use crate::systems::entity_sys;
         app.add_systems(Update, (
-            sys::state_machine::update,
-            sys::particle::update_timer,
-            sys::entity::health::knock_timer,
-            sys::entity::dodge_stamina::timer,
-            sys::entity::player::timers_update,
             sys::entity::health::player::health_bar_update,
             sys::entity::hit_reaction::set_knocked_as_stunned,
-            sys::weapon::attack_timer_and_signal_update.before(sys::weapon::anim_state_update),
-            sys::anim::walker::anim_state_handler,
-            sys::weapon::anim_state_update.after(sys::weapon::attack_timer_and_signal_update),
             sys::weapon::lost_owner,
             sys::world::damage_counter::update,
             sys::world::damage_counter::despawn_update,
             sys::anim::update_all,
         ));
-        app.add_systems(PostUpdate, (
-            sys::entity::zombie::state_handler,
-            sys::entity::player::state_handler,
-            sys::entity::player::stat_update,
-        ));
-        app.add_systems(FixedUpdate, (
-            sys::physics::gravity,
-            sys::physics::walker_collision .after(sys::physics::gravity),
-            sys::physics::pos_vel_update.after(sys::physics::walker_collision),
-            sys::physics::transform_update.after(sys::physics::pos_vel_update),
-            sys::physics::area_update.after(sys::physics::transform_update),
-            sys::physics::obb_update.after(sys::physics::transform_update),
-            sys::world::entity_quad::update .after(sys::physics::gravity),
-            sys::world::entity_quad::update_overlapping_obbs .after(sys::world::entity_quad::update),
-            sys::entity::hit_reaction::update .after(sys::world::entity_quad::update_overlapping_obbs),
-        ));
         app.add_systems(FixedPostUpdate, (
+            sys::entity::hit_reaction::update,
             sys::entity::health::update,
             sys::world::chunks::generate,
             sys::world::entity_quad::generate,
@@ -74,11 +49,10 @@ impl Plugin for MainGame {
         ));
 
         app.add_systems(Render, (
-            sys::world::chunks::draw .before(sys::render::sprites_draw),
+            sys::world::chunks::draw.before(sys::render::sprites_draw),
             sys::render::sprites_draw,
             sys::render::health_bar_draw,
             sys::render::texts_draw.after(sys::render::sprites_draw),
-            // sys::debug::render_all_obb
         ));
 
         app.add_systems(Input, (

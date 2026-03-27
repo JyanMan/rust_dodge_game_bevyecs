@@ -15,8 +15,11 @@ use crate::core::renderer::*;
 pub fn main() {
     App::new()
         .add_plugins(SDLInit)
-        .add_plugins(Test)
         .add_plugins(MainGame)
+        .add_plugins(Physics2D)
+        .add_plugins(Timers)
+        .add_plugins(States)
+        .add_plugins(Test)
         .set_runner(custom_runner)
         .run();
 }
