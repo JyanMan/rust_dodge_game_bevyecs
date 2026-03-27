@@ -10,6 +10,7 @@ use crate::components::entity::*;
 #[derive(Bundle)]
 struct PlayerBundle {
     sprite: Sprite,
+    stat: Status,
     trans: Transform,
     vel: Velocity,
     area: Area,
@@ -46,6 +47,7 @@ pub fn spawn(world: &mut World) -> Entity {
 
     let player_e = world.spawn(PlayerBundle {
          sprite,
+         stat: Status::new(),
          trans: Transform::new(10.0, -1000.0),
          vel: Velocity::new(0.0, 0.0),
          area,

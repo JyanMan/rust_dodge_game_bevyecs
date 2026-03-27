@@ -71,6 +71,23 @@ pub fn timers_update(
 //     }
 // }
 
+pub fn stat_update(
+    mut query: Query<(&mut Status, &StateMachine<MovementState>)>
+) {
+    for (mut stat, move_state) in &mut query {
+        match move_state.curr_state() {
+            MovementState::Dodging => {
+                stat.set(StatusId::DodgeImmune)
+            },
+            MovementState::DodgeLerping => {
+                stat.set(StatusId::DodgeImmune)
+            }
+            _ => {
+                stat.unset(StatusId::DodgeImmune)
+            }
+        }
+    }
+}
 
 
 pub fn state_handler(

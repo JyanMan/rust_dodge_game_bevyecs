@@ -20,6 +20,7 @@ pub mod quad;
 pub mod dodge;
 pub mod timer;
 pub mod stamina;
+pub mod status;
 
 pub mod states;
 
@@ -45,3 +46,4 @@ pub use quad::*;
 pub use dodge::*;
 pub use timer::*;
 pub use stamina::*;
+pub use status::*;

@@ -25,7 +25,7 @@ pub fn per_frame_update(weapon_d: &WeaponData, obb: &mut OBB) {
 }
 
 
-pub fn anim_update(
+pub fn anim_state_update(
     mut query: Query<(&mut WeaponData, &mut Sprite, &mut Transform, &HeldBy, &WeaponFns, &mut AnimationPlayer)>, 
     mut owner_query: Query<(
             &mut Combat,

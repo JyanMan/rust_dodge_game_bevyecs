@@ -39,7 +39,9 @@ impl Plugin for SDLInit {
         app.init_schedule(PostRender);
         app.init_schedule(Input);
         app.init_schedule(Update);
+        app.init_schedule(PostUpdate);
         app.init_schedule(FixedUpdate);
+        app.init_schedule(FixedPreUpdate);
 
         // override main schedules
         
@@ -114,6 +116,7 @@ pub fn custom_runner(mut app: App) -> AppExit {
         let mut dt_res = app.world_mut().get_resource_mut::<DeltaTime>().unwrap();
         dt_res.0 = delta_time;
         app.world_mut().run_schedule(Update);
+        app.world_mut().run_schedule(PostUpdate);
 
         app.world_mut().run_schedule(PreRender);
         app.world_mut().run_schedule(Render);

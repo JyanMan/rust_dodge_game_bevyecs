@@ -12,6 +12,8 @@ pub fn update(
         &mut Health,
         &mut KnockbackTrigger,
         &Transform,
+        &mut Status,
+        Option<&mut DodgeStamina>
     )>,
     weapon_query: Query<(Entity, &WeaponData)>,
     mut commands: Commands,
@@ -20,10 +22,7 @@ pub fn update(
     for (e, weapon_d) in &weapon_query {
         weapon_cache.insert(e, weapon_d);
     }
-    for (_, tag, e_over_obbs, mut health, mut knock_trigger, trans) in &mut query {
-        if health.immune {
-            continue;
-        }
+    for (_, tag, e_over_obbs, mut health, mut knock_trigger, trans, status, dodge_stam) in &mut query {
         // this is matched manually as hit is mainly done by
         // entities with specific tags that are weapon against them
         match tag.0 {
@@ -33,6 +32,9 @@ pub fn update(
                         matches!(tag, EntityTag::PlayerWeapon)
                     }) 
                 {
+                    if health.immune {
+                        continue;
+                    }
                     //calc knock_dir
                     if let Some(hitter_wd) = weapon_cache.get(hitter_e) {
                         health.hit_and_immune(hitter_wd.damage);
@@ -43,11 +45,17 @@ pub fn update(
                 }
             },
             EntityTag::Player=> {
-                if  let Some((hitter_e, _)) = 
+                if let Some((hitter_e, _)) = 
                     e_over_obbs.0.iter().find(|(_, tag)| {
                         matches!(tag, EntityTag::EnemyWeapon)
                     }) 
                 {
+                    if health.immune {
+                        if let Some(mut dodge_stam) = dodge_stam && status.has(StatusId::DodgeImmune)  {
+                            dodge_stam.successful_dodge();
+                        }
+                        continue;
+                    }
                     //calc knock_dir
                     if let Some(hitter_wd) = weapon_cache.get(hitter_e) {
                         health.hit_and_immune(hitter_wd.damage);

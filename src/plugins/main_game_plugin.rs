@@ -42,22 +42,18 @@ impl Plugin for MainGame {
             sys::entity::player::timers_update,
             sys::entity::health::player::health_bar_update,
             sys::entity::hit_reaction::set_knocked_as_stunned,
-            // sys::weapon::from_player_input_update,
-            sys::weapon::attack_timer_and_signal_update.before(sys::weapon::anim_update),
-            sys::weapon::anim_update.after(sys::weapon::attack_timer_and_signal_update),
+            sys::weapon::attack_timer_and_signal_update.before(sys::weapon::anim_state_update),
+            sys::anim::walker::anim_state_handler,
+            sys::weapon::anim_state_update.after(sys::weapon::attack_timer_and_signal_update),
             sys::weapon::lost_owner,
             sys::world::damage_counter::update,
             sys::world::damage_counter::despawn_update,
             sys::anim::update_all,
-            // sys::anim::walker::update,
         ));
-        app.add_systems(FixedPreUpdate, (
-            // sys::entity::player::movement_state_update,
-            // sys::entity::zombie::movement_update,
+        app.add_systems(PostUpdate, (
             sys::entity::zombie::state_handler,
             sys::entity::player::state_handler,
-            sys::anim::walker::anim_state_handler
-                // .after(sys::entity::player::movement_state_update),
+            sys::entity::player::stat_update,
         ));
         app.add_systems(FixedUpdate, (
             sys::physics::gravity,

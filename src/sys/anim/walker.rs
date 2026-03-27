@@ -50,7 +50,7 @@ pub fn anim_state_handler(
             sprite.flip_x = true;
         }
         match (move_state.clone(), combat_state.curr_state()) {
-            (MovementState::Running | MovementState::Idle, CombatState::Idle) => {
+            (MovementState::Running | MovementState::Idle | MovementState::Dodging, CombatState::Idle) => {
                 if walker_d.grounded {
                     if move_state == MovementState::Idle {
                         anim_player.play(A::Idle.usize());

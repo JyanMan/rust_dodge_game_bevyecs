@@ -14,3 +14,6 @@ pub use health::*;
 // pub use zombie::*;
 // pub use walker_system::*;
 // pub use entity_system::*;
+pub fn test() {
+    
+}

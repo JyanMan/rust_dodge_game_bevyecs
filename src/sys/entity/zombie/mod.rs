@@ -27,6 +27,7 @@ struct ZombieBundle {
     vel: Velocity,
     area: Area,
     sprite: Sprite,
+    stat: Status,
     walker_d: WalkerData,
     anim_player: AnimationPlayer,
     health: Health,
@@ -60,6 +61,7 @@ pub fn spawn(world: &mut World, speed: f32) -> Entity {
         vel: Velocity::zero(),
         area,
         sprite,
+        stat: Status::new(),
         walker_d: WalkerData {
             grounded: false,
             jump_force: 200.0,

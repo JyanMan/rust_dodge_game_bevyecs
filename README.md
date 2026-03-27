@@ -1,7 +1,12 @@
 ## TODO
-* use the statemachine components for the weapon states
+* add dodge stamina bar
+* fix up again the new dodge_stamina, user can hold dodge, (maybe a feature??)
+* make dodge regenerates for each successful dodge (DONE)
+  - BUT the health.immune no longer is used for ignoring full collision check
+    since the player needs to get hit first to gain successful dodge
 * add stamina for dodging and skill uses
   - NEED TO TEST WHETHER immunity in lerping is viable or too easy
+* use the statemachine components for the weapon states
 * add player attack combos (different animation for some key combos)
   - if player attacks while dodging, play a different animation
   - if player uses some key: he can use the skill of the weapon
