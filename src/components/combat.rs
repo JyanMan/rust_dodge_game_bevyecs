@@ -11,7 +11,7 @@ pub struct Combat {
     damage: f32,
     pub attack_dir: Vector2,
     pub attack_cd: f32,
-    stunned: bool,
+    // stunned: bool,
 }
 
 impl Combat {
@@ -23,7 +23,7 @@ impl Combat {
             damage,
             attack_dir: Vector2::zero(),
             attack_cd,
-            stunned: false
+            // stunned: false
         }
     }
 
@@ -34,7 +34,7 @@ impl Combat {
     // pub fn not_attack(&mut self) {
     //     self.should_attack = false;
     // }
-    pub fn stun(&mut self) { self.stunned = true; }
-    pub fn unstun(&mut self) { self.stunned = false; }
-    pub fn stunned(&self) -> bool { self.stunned }
+    // pub fn stun(&mut self) { self.stunned = true; }
+    // pub fn unstun(&mut self) { self.stunned = false; }
+    // pub fn stunned(&self) -> bool { self.stunned }
 }

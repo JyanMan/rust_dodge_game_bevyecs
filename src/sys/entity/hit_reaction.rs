@@ -3,6 +3,7 @@ use crate::components::*;
 use crate::sys;
 use std::collections::HashMap;
 use crate::sys::world::damage_counter;
+use crate::components::states::*;
 
 pub fn update(
     mut query: Query<(
@@ -72,11 +73,12 @@ pub fn update(
 
 
 pub fn set_knocked_as_stunned(
-    mut query: Query<(&KnockbackTrigger, &mut Combat)>,
+    mut query: Query<(&KnockbackTrigger, &mut StateMachine<CombatState>)>,
 ) {
-    for (knock, mut combat) in &mut query {
+    for (knock, mut combat_state) in &mut query {
         if knock.knocked {
-            combat.stun()
+            combat_state.set_state(CombatState::Knocked);
+            // combat.stun()
         }
     }
 }

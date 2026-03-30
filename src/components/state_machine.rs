@@ -145,9 +145,10 @@ pub struct StateMachine <S: StateId + 'static> {
 /// ```
 impl <S: StateId + 'static> StateMachine <S> {
     // sets initial state and adds into set
-    pub fn new(id: S, init_state: State<S>) -> Self {
+    pub fn new(init_state: State<S>) -> Self {
         let mut states_set = SparseSet::new();
-        states_set.insert(id.usize(), init_state.clone());
+        let id = init_state.id.clone().usize();
+        states_set.insert(id, init_state.clone());
         Self {
             state: init_state,
             timer: 0.0,

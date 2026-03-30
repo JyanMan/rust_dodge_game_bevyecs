@@ -107,6 +107,8 @@ pub fn state_handler(
 
     for (mut p_data, mut walker_d, mut vel, mut health, input, mut combat, mut movement_state, mut combat_state, mut gravity, mut dodge_stam) in &mut query {
 
+        // println!("player combat state: {:?}", combat_state.curr_state());
+
         match movement_state.curr_state() {
             MovementState::StartDodge => {
                 p_data.dodge_timer = 0.0;
@@ -119,7 +121,7 @@ pub fn state_handler(
                 player_movement::dodging(dodge_dir, &mut p_data, &mut vel, &mut health);
             },
             MovementState::DodgeLerping => {
-                health.set_immune();
+                // health.set_immune();
                 player_movement::lerping(&mut vel);
             },
             MovementState::DodgeEnd => {
@@ -143,6 +145,7 @@ pub fn state_handler(
             _ => {}
         }
 
+        combat_state.set_state(CombatState::Idle);
         if input.dodge && dodge_stam.can_dodge() {
             movement_state.set_state(MovementState::StartDodge);
         }

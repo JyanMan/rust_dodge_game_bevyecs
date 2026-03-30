@@ -4,6 +4,7 @@ use std::f64::consts::PI;
 use crate::core::renderer::*;
 use crate::resources::asset_manager::*;
 use crate::components::*;
+use crate::components::states::*;
 
 #[derive(Bundle)]
 struct SteelSwordBundle {
@@ -19,6 +20,7 @@ struct SteelSwordBundle {
     target_tags: TargetEntityTags,
     tag_container: EntityTagContainer,
     funcs: WeaponFns,
+    state: StateMachine<WeaponState>,
 }
 
 pub fn spawn(world: &mut World, entity_owner: Entity) -> Entity {
@@ -43,7 +45,7 @@ pub fn spawn(world: &mut World, entity_owner: Entity) -> Entity {
     let steel_sword_e = world.spawn(SteelSwordBundle {
         trans: Transform::zero(),
         sprite,
-        weapon_d: WeaponData::new(5, 800.0, attack_dur, 0.1, 0.05, WeaponState::Owned, WeaponType::SteelSword), 
+        weapon_d: WeaponData::new(5, 1500.0, attack_dur, 0.1, 0.05, WeaponState::Owned, WeaponType::SteelSword), 
         tag: SteelSwordTag::default(),
         anim_player: AnimationPlayer::new(WeaponAnim::COUNT),
         held: HeldBy(entity_owner),
@@ -58,7 +60,8 @@ pub fn spawn(world: &mut World, entity_owner: Entity) -> Entity {
             while_attacking: steel_sword_while_attacking,
             after_effect: steel_sword_after_effect,
             end_attack: steel_sword_end_attack,
-        }
+        },
+        state: state_machine(),
         // EntityTagContainer(EntityTag::Weapon),
     }).id();
 
@@ -167,6 +170,7 @@ pub fn steel_sword_after_effect(
 ) {
     // user_vel.vec = user_vel.vec * 0.2;
     anim_player.stop();
+    println!("stopped sword anim");
 }
 
 // fn(&mut WeaponData, &mut GravityAffected, &mut Velocity, &mut Combat, &mut Sprite, &mut Transform)
@@ -180,6 +184,7 @@ pub fn steel_sword_start_attack(
     anim_player: &mut AnimationPlayer
     // attack_dir: Vector2,
 ) {
+    println!("started attack");
     let attack_dir = combat.attack_dir;
     steel_sword_animation(sprite, trans, attack_dir);
     anim_player.play(WeaponAnim::Attack.usize());
@@ -215,4 +220,17 @@ pub fn steel_sword_test_overlap(
             println!("sword is overlapping");
         }
     }
+}
+
+fn state_machine() -> StateMachine<WeaponState> {
+    let mut state_m = StateMachine::new(WeaponState::idle());
+    state_m.add_state(WeaponState::start_attack());
+    state_m.add_state(WeaponState::start_dodge_attack());
+    state_m.add_state(WeaponState::start_push_attack());
+    state_m.add_state(WeaponState::attacking());
+    state_m.add_state(WeaponState::dodge_attacking());
+    state_m.add_state(WeaponState::push_attacking());
+    state_m.add_state(WeaponState::after_effect_attack());
+    state_m.add_state(WeaponState::end_attack());
+    state_m
 }

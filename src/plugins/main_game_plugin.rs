@@ -10,7 +10,6 @@ use crate::resources::*;
 use crate::components::*;
 use crate::plugins::*;
 
-
 pub struct MainGame;
 
 impl Plugin for MainGame {
@@ -39,10 +38,10 @@ impl Plugin for MainGame {
             sys::world::damage_counter::update,
             sys::world::damage_counter::despawn_update,
             sys::anim::update_all,
+            sys::entity::health::update,
         ));
         app.add_systems(FixedPostUpdate, (
             sys::entity::hit_reaction::update,
-            sys::entity::health::update,
             sys::world::chunks::generate,
             sys::world::entity_quad::generate,
             sys::world::camera::update,
@@ -53,6 +52,7 @@ impl Plugin for MainGame {
             sys::render::sprites_draw,
             sys::render::health_bar_draw,
             sys::render::texts_draw.after(sys::render::sprites_draw),
+            sys::debug::render_all_obb,
         ));
 
         app.add_systems(Input, (

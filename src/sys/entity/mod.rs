@@ -6,6 +6,7 @@ pub mod walker;
 pub mod hit_reaction;
 pub mod blood_particles;
 pub mod dodge_stamina;
+pub mod combat;
 
 pub use health::*;
 

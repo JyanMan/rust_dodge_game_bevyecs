@@ -1,9 +1,9 @@
 use bevy_ecs::prelude::*;
 
-#[derive(Component)]
+#[derive(Component, Clone, PartialEq, Debug)]
 pub struct Timer {
     duration: f32,
-    timer: f32,
+    pub timer: f32,
     paused: bool
 }
 

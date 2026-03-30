@@ -13,6 +13,7 @@ impl Plugin for Timers {
             sys::entity::health::knock_timer,
             sys::entity::dodge_stamina::timer,
             sys::entity::player::timers_update,
+            // sys::entity::combat::timer,
         ));
     }
 }

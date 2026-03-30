@@ -4,6 +4,7 @@ use std::f64::consts::PI;
 use crate::core::renderer::*;
 use crate::resources::asset_manager::*;
 use crate::components::*;
+use crate::components::states::*;
 
 #[derive(Bundle)]
 struct ZombieArmBundle {
@@ -19,6 +20,7 @@ struct ZombieArmBundle {
     target_tags: TargetEntityTags,
     tag_container: EntityTagContainer,
     funcs: WeaponFns,
+    state: StateMachine<WeaponState>,
 }
 
 pub fn spawn(world: &mut World, entity_owner: Entity) -> Entity {
@@ -56,7 +58,8 @@ pub fn spawn(world: &mut World, entity_owner: Entity) -> Entity {
             while_attacking: zombie_arm_while_attacking,
             after_effect: zombie_arm_after_effect,
             end_attack: zombie_arm_end_attack,
-        }
+        },
+        state: state_machine(),
         // EntityTagContainer(EntityTag::Weapon),
     }).id();
 
@@ -211,4 +214,17 @@ pub fn zombie_arm_test_overlap(
             println!("sword is overlapping");
         }
     }
+}
+
+fn state_machine() -> StateMachine<WeaponState> {
+    let mut state_m = StateMachine::new(WeaponState::idle());
+    state_m.add_state(WeaponState::start_attack());
+    state_m.add_state(WeaponState::start_dodge_attack());
+    state_m.add_state(WeaponState::start_push_attack());
+    state_m.add_state(WeaponState::attacking());
+    state_m.add_state(WeaponState::dodge_attacking());
+    state_m.add_state(WeaponState::push_attacking());
+    state_m.add_state(WeaponState::after_effect_attack());
+    state_m.add_state(WeaponState::end_attack());
+    state_m
 }

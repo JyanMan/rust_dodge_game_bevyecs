@@ -2,18 +2,8 @@ use bevy_ecs::prelude::*;
 
 use super::*;
 use crate::components::*;
+use crate::components::states::*;
 
-#[derive(Clone, Default, PartialEq)]
-pub enum WeaponState {
-    #[default]
-    Unowned,
-    Owned,
-    Idle,
-    StartAttack,
-    Attacking,
-    EndAttack,
-    AfterEffectAttack,
-}
 
 #[derive(Component)]
 pub struct WeaponFns {
@@ -25,7 +15,7 @@ pub struct WeaponFns {
 
 #[derive(Component, Clone)]
 pub struct WeaponData {
-    pub state: WeaponState,
+    // pub state: WeaponState,
     pub damage: i32,
     pub knock_force: f32,
     pub attacking: bool,
@@ -44,7 +34,7 @@ pub struct WeaponData {
 impl Default for WeaponData {
     fn default() -> Self {
         Self {
-            state: WeaponState::default(),
+            // state: WeaponState::default(),
             damage: 1,
             knock_force: 5.0,
             attack_timer: 0.0,
@@ -65,7 +55,6 @@ impl Default for WeaponData {
 impl WeaponData {
     pub fn new(damage: i32, knock_force: f32, attack_duration: f32, attack_cd: f32, after_effect_duration: f32,  state: WeaponState, w_type: WeaponType) -> Self {
         Self {
-            state,
             damage,
             knock_force,
             attack_duration,
@@ -82,19 +71,19 @@ impl WeaponData {
         }
     }
 
-    pub fn attack_timer(&mut self, delta_time: f32) {
+    pub fn attack_timer(&mut self, delta_time: f32, state: &mut StateMachine<WeaponState>) {
         assert!(self.attacking);
         self.attack_timer += delta_time;
         if self.attack_timer >= self.attack_duration {
             self.attack_timer = 0.0;
             self.attacking = false;
             // self.state = WeaponState::EndAttack;
-            self.state = WeaponState::AfterEffectAttack;
+            state.set_state(WeaponState::AfterEffectAttack);
             self.after_effect = true;
             // self.can_attack = false;
         }
     }
-    pub fn attack_cd_timer(&mut self, delta_time: f32) {
+    pub fn attack_cd_timer(&mut self, delta_time: f32, state: &mut StateMachine<WeaponState>) {
         assert!(!self.can_attack);
         self.cd_timer += delta_time;
         if self.cd_timer >= (self.attack_cd + self.owner_attack_cd) {
@@ -105,24 +94,24 @@ impl WeaponData {
         }
     }
 
-    pub fn temporary_attack_disable(&mut self) {
+    pub fn temporary_attack_disable(&mut self, state: &mut StateMachine<WeaponState>) {
         // this waits for the timer for can_attack
         // see weapon_system attack_cd_timer usage
         self.can_attack = false;
     }
 
-    pub fn after_effect_timer(&mut self, delta_time: f32) {
+    pub fn after_effect_timer(&mut self, delta_time: f32, state: &mut StateMachine<WeaponState>) {
         assert!(self.after_effect);
         self.after_effect_timer += delta_time;
         if self.after_effect_timer >= self.after_effect_duration {
             self.after_effect_timer = 0.0;
             self.after_effect = false;
-            self.state = WeaponState::EndAttack;
+            state.set_state(WeaponState::EndAttack);
         }
     }
 
-    pub fn attack(&mut self, owner_attack_cd: f32) {
-        self.state = WeaponState::StartAttack;
+    pub fn attack(&mut self, owner_attack_cd: f32, state: &mut StateMachine<WeaponState>) {
+        state.set_state(WeaponState::StartAttack);
         self.attack_timer = 0.0;
         self.attacking = true;
         self.can_attack = false;
