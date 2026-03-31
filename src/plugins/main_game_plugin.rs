@@ -33,7 +33,7 @@ impl Plugin for MainGame {
 
         app.add_systems(Update, (
             sys::entity::health::player::health_bar_update,
-            sys::entity::hit_reaction::set_knocked_as_stunned,
+            // sys::entity::hit_reaction::set_knocked_as_stunned,
             sys::weapon::lost_owner,
             sys::world::damage_counter::update,
             sys::world::damage_counter::despawn_update,
@@ -52,7 +52,7 @@ impl Plugin for MainGame {
             sys::render::sprites_draw,
             sys::render::health_bar_draw,
             sys::render::texts_draw.after(sys::render::sprites_draw),
-            sys::debug::render_all_obb,
+            // sys::debug::render_all_obb,
         ));
 
         app.add_systems(Input, (

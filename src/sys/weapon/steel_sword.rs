@@ -45,7 +45,7 @@ pub fn spawn(world: &mut World, entity_owner: Entity) -> Entity {
     let steel_sword_e = world.spawn(SteelSwordBundle {
         trans: Transform::zero(),
         sprite,
-        weapon_d: WeaponData::new(5, 1500.0, attack_dur, 0.1, 0.05, WeaponState::Owned, WeaponType::SteelSword), 
+        weapon_d: WeaponData::new(5, 1000.0, attack_dur, 0.1, 0.05, WeaponState::Owned, WeaponType::SteelSword), 
         tag: SteelSwordTag::default(),
         anim_player: AnimationPlayer::new(WeaponAnim::COUNT),
         held: HeldBy(entity_owner),
@@ -170,7 +170,6 @@ pub fn steel_sword_after_effect(
 ) {
     // user_vel.vec = user_vel.vec * 0.2;
     anim_player.stop();
-    println!("stopped sword anim");
 }
 
 // fn(&mut WeaponData, &mut GravityAffected, &mut Velocity, &mut Combat, &mut Sprite, &mut Transform)
@@ -184,7 +183,6 @@ pub fn steel_sword_start_attack(
     anim_player: &mut AnimationPlayer
     // attack_dir: Vector2,
 ) {
-    println!("started attack");
     let attack_dir = combat.attack_dir;
     steel_sword_animation(sprite, trans, attack_dir);
     anim_player.play(WeaponAnim::Attack.usize());

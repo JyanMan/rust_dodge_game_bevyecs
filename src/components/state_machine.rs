@@ -160,6 +160,11 @@ impl <S: StateId + 'static> StateMachine <S> {
         self.states_set.insert(state.id.clone().usize(), state);
     }
 
+    pub fn change_state_val(&mut self, s: S) {
+        assert!(s.clone().usize() == self.state.id.clone().usize());
+        self.state.id = s;
+    }
+
     pub fn curr_state(&self) -> S { self.state.id.clone() }
 
     // only allows new state that is connected to the current state
@@ -176,6 +181,7 @@ impl <S: StateId + 'static> StateMachine <S> {
             if next_state.entries().contains(&self.state.id) {
                 // set to next state
                 self.state = next_state.clone();
+                self.state.id = id;
                 self.timer = 0.0;
             }
         }

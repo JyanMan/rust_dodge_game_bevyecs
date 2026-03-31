@@ -1,5 +1,6 @@
 use bevy_ecs::prelude::*;
 use crate::components::*;
+use crate::components::states::*;
 use crate::resources::*;
 use crate::core::*;
 use crate::sys;
@@ -77,19 +78,17 @@ pub mod player {
 
 
 pub fn knock_timer(
-    mut query: Query<(&mut Health, &mut KnockbackTrigger, &mut Velocity)>,
+    // mut query: Query<(&mut Health, &mut KnockbackTrigger, &mut Velocity)>,
+    mut query: Query<(&mut Health, &mut StateMachine<CombatState>, &mut Velocity)>,
     delta_time: Res<DeltaTime>,
 ) {
-    for (mut health, mut knock, mut vel) in &mut query {
+    for (mut health, mut combat_state, mut vel) in &mut query {
         health.timer(delta_time.0);
 
-        if knock.timer(delta_time.0) {
-            // knock timer ended
-            vel.vec = vel.vec * 0.1;
-        }
-        if knock.knocked { 
-            vel.vec = knock.dir * knock.knocked_force as f32;
-            knock.knocked_force = (knock.knocked_force as f32 * 0.5).round() as i32;
+        if let CombatState::Knocked{dir, force} = combat_state.curr_state() {
+            vel.vec = dir * force;
+            let new_force = (force * 0.5).round();
+            combat_state.change_state_val(CombatState::Knocked{dir, force: new_force});
         }
     } 
 }

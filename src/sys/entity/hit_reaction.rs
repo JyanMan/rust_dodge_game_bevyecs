@@ -11,7 +11,8 @@ pub fn update(
         &EntityTagContainer,
         &EntityOverlappingOBBs,
         &mut Health,
-        &mut KnockbackTrigger,
+        // &mut KnockbackTrigger,
+        &mut StateMachine<CombatState>,
         &Transform,
         &mut Status,
         Option<&mut DodgeStamina>
@@ -23,7 +24,7 @@ pub fn update(
     for (e, weapon_d) in &weapon_query {
         weapon_cache.insert(e, weapon_d);
     }
-    for (_, tag, e_over_obbs, mut health, mut knock_trigger, trans, status, dodge_stam) in &mut query {
+    for (_, tag, e_over_obbs, mut health, mut combat_state, trans, status, dodge_stam) in &mut query {
         // this is matched manually as hit is mainly done by
         // entities with specific tags that are weapon against them
         match tag.0 {
@@ -39,7 +40,15 @@ pub fn update(
                     //calc knock_dir
                     if let Some(hitter_wd) = weapon_cache.get(hitter_e) {
                         health.hit_and_immune(hitter_wd.damage);
-                        knock_trigger.trigger(hitter_wd.knock_force as i32, hitter_wd.attack_dir);
+
+                        combat_state.set_state(CombatState::Knocked {
+                            dir: hitter_wd.attack_dir,
+                            force: hitter_wd.knock_force
+                        });
+
+                        
+
+                        // knock_trigger.trigger(hitter_wd.knock_force as i32, hitter_wd.attack_dir);
                         damage_counter::spawn(&mut commands, trans.global, hitter_wd.damage);
                         super::blood_particles::spawn(&mut commands, *trans, hitter_wd.attack_dir);
                     }
@@ -60,25 +69,28 @@ pub fn update(
                     //calc knock_dir
                     if let Some(hitter_wd) = weapon_cache.get(hitter_e) {
                         health.hit_and_immune(hitter_wd.damage);
-                        knock_trigger.trigger(hitter_wd.knock_force as i32, hitter_wd.attack_dir);
+                        // knock_trigger.trigger(hitter_wd.knock_force as i32, hitter_wd.attack_dir);
+                        combat_state.set_state(CombatState::Knocked {
+                            dir: hitter_wd.attack_dir,
+                            force: hitter_wd.knock_force
+                        });
                         damage_counter::spawn(&mut commands, trans.global, hitter_wd.damage);
                     }
                 }
             }
             _ => {}
         }
-
     }
 }
 
 
-pub fn set_knocked_as_stunned(
-    mut query: Query<(&KnockbackTrigger, &mut StateMachine<CombatState>)>,
-) {
-    for (knock, mut combat_state) in &mut query {
-        if knock.knocked {
-            combat_state.set_state(CombatState::Knocked);
-            // combat.stun()
-        }
-    }
-}
+// pub fn set_knocked_as_stunned(
+//     mut query: Query<(&KnockbackTrigger, &mut StateMachine<CombatState>)>,
+// ) {
+//     for (knock, mut combat_state) in &mut query {
+//         if knock.knocked {
+//             combat_state.set_state(CombatState::Knocked);
+//             // combat.stun()
+//         }
+//     }
+// }

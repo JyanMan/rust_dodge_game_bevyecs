@@ -40,11 +40,10 @@ pub fn anim_state_update(
             &mut Velocity,
             &mut GravityAffected,
             &mut StateMachine<CombatState>,
-            &Status,
-            Option<&StateMachine<MovementState>>,
+            &HeldItem,
         ),
-        (With<HeldItem>, Without<HeldBy>
-    )>, 
+        Without<HeldBy>
+    >, 
 ) {
     for (mut weapon_d, mut sprite, mut trans, owned_by, weapon_fns, mut anim_player, mut weapon_state) in &mut query {
         if weapon_state.curr_state() == WeaponState::Unowned {
@@ -53,7 +52,29 @@ pub fn anim_state_update(
 
         let owner_entity = owned_by.0;
 
-        if let Ok((mut owner_combat, mut vel, mut grav_affected, mut combat_state, status, move_state)) = owner_query.get_mut(owner_entity) {
+        if let Ok((mut owner_combat, mut vel, mut grav_affected, mut combat_state, held_item)) = owner_query.get_mut(owner_entity) {
+
+            match held_item.action {
+                Action::Idle => {},
+                Action::Use => {
+                    if weapon_d.can_attack {
+                        combat_state.set_state(CombatState::StartAttack);
+                        weapon_state.set_state(WeaponState::StartAttack);
+                        weapon_d.attack(owner_combat.attack_cd);
+                    }
+                },
+                Action::ShiftUse => {
+                    if weapon_d.can_attack {
+                        combat_state.set_state(CombatState::StartAttack);
+                        weapon_state.set_state(WeaponState::StartDodgeAttack);
+                        weapon_d.attack(owner_combat.attack_cd);
+                    }
+                }
+            }
+
+            // println!("curr combat_state: {:?}", combat_state.curr_state());
+
+            // println!("held_item: {:?}", held_item);
 
             // if owner_combat.stunned() {
                 // combat_state.set_state(CombatState::Knocked);
@@ -63,27 +84,13 @@ pub fn anim_state_update(
             // else {
             //     combat_state.set_state(CombatState::Idle);
             // }
-            match combat_state.curr_state() {
-                CombatState::StartAttack => {
-                    // println!("hallor...");
-                    if weapon_d.can_attack {
-                        // println!("this dude was let in...");
-                        weapon_d.attack(owner_combat.attack_cd, &mut weapon_state);
-                    }
-                    
-                },
-                CombatState::Knocked => { continue; }
-                CombatState::KnockEnd => {
-                    combat_state.set_state(CombatState::Idle);
-                }
-                _ => {}
-            }
 
             // if owner_combat.should_attack && weapon_d.can_attack
             // if  combat_state.curr_state() == CombatState::StartAttack && weapon_d.can_attack {
             // } 
 
-            match weapon_state.curr_state() {
+            let curr_state = weapon_state.curr_state();
+            match curr_state {
                 WeaponState::StartAttack => {
                     combat_state.set_state(CombatState::Attacking);
                     weapon_state.set_state(WeaponState::Attacking);
@@ -91,7 +98,22 @@ pub fn anim_state_update(
                     let start_attack = weapon_fns.start_attack;
                     start_attack(&mut weapon_d, &mut grav_affected, &mut vel, &mut owner_combat, &mut sprite, &mut trans, &mut anim_player);
                 },
+                WeaponState::StartDodgeAttack => {
+                    combat_state.set_state(CombatState::Attacking);
+                    weapon_state.set_state(WeaponState::DodgeAttacking);
+
+                    let dir = owner_combat.attack_dir;
+                    owner_combat.attack_dir = Vector2::new(-dir.x, -dir.y);
+
+                    let start_attack = weapon_fns.start_attack;
+                    start_attack(&mut weapon_d, &mut grav_affected, &mut vel, &mut owner_combat, &mut sprite, &mut trans, &mut anim_player);
+                },
                 WeaponState::Attacking => {
+                    let while_attacking = weapon_fns.while_attacking;
+                    while_attacking(&mut weapon_d, &mut grav_affected, &mut vel, &mut owner_combat, &mut sprite, &mut trans, &mut anim_player);
+
+                },
+                WeaponState::DodgeAttacking => {
                     let while_attacking = weapon_fns.while_attacking;
                     while_attacking(&mut weapon_d, &mut grav_affected, &mut vel, &mut owner_combat, &mut sprite, &mut trans, &mut anim_player);
 

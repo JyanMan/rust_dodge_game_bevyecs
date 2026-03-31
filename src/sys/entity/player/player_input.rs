@@ -15,5 +15,7 @@ pub fn input_update(mut query: Query<&mut PlayerInput>, user_input_res: Res<KeyI
         input.dodge = user_input_res.0.contains(&Keycode::Q);
 
         input.use_item = user_input_res.0.contains(&Keycode::E);
+
+        input.shift = user_input_res.0.contains(&Keycode::LShift);
     }
 }

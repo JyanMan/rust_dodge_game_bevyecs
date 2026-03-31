@@ -97,7 +97,8 @@ pub fn state_handler(
         &mut StateMachine<MovementState>,
         &mut StateMachine<CombatState>,
         &mut GravityAffected,
-        &mut DodgeStamina
+        &mut DodgeStamina,
+        Option<&mut HeldItem>
     )>, 
     mouse_input: Res<MouseInput>
 ) {
@@ -105,7 +106,7 @@ pub fn state_handler(
 
     let mouse_pos = mouse_input.pos;
 
-    for (mut p_data, mut walker_d, mut vel, mut health, input, mut combat, mut movement_state, mut combat_state, mut gravity, mut dodge_stam) in &mut query {
+    for (mut p_data, mut walker_d, mut vel, mut health, input, mut combat, mut movement_state, mut combat_state, mut gravity, mut dodge_stam, mut held_item) in &mut query {
 
         // println!("player combat state: {:?}", combat_state.curr_state());
 
@@ -159,14 +160,24 @@ pub fn state_handler(
             movement_state.set_state(MovementState::StartJump);
         }
 
-        if input.use_item && combat.can_attack {
-            let attack_dir = mouse_input.dir_from_center();
-            combat_state.set_state(CombatState::StartAttack);
-            combat.attack_dir = attack_dir;
-            combat.can_attack = false;
-        }
-        if !input.use_item {
-            combat.can_attack = true;
+        if let Some(mut item) = held_item {
+            if input.use_item {
+                let attack_dir = mouse_input.dir_from_center();
+                if input.shift {
+                    item.set_shift_use();
+                }
+                else {
+                    item.set_use();
+                }
+                combat.attack_dir = attack_dir;
+                combat.can_attack = false;
+            }
+            else {
+                item.set_idle();
+            }
+            if !input.use_item {
+                combat.can_attack = true;
+            }
         }
     }
 }

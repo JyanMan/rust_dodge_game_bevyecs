@@ -110,8 +110,8 @@ impl WeaponData {
         }
     }
 
-    pub fn attack(&mut self, owner_attack_cd: f32, state: &mut StateMachine<WeaponState>) {
-        state.set_state(WeaponState::StartAttack);
+    pub fn attack(&mut self, owner_attack_cd: f32) {
+        // state.set_state(WeaponState::StartAttack);
         self.attack_timer = 0.0;
         self.attacking = true;
         self.can_attack = false;

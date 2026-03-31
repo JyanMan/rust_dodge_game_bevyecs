@@ -9,7 +9,7 @@ pub enum CombatState {
     // let Attacking and Stop Attacking be set by weapon
     Attacking,
     StopAttacking,
-    Knocked,
+    Knocked { dir: Vector2, force: f32 },
     KnockEnd,
 }
 impl StateId for CombatState{
@@ -21,6 +21,11 @@ impl StateId for CombatState{
     }
 }
 impl CombatState {
+
+    pub fn default_knocked() -> Self {
+        Self::Knocked { dir: Vector2::zero(), force: 0.0 }
+    }
+    
     pub fn start_attack() -> State<CombatState> {
         State {
             entries: StateConditions::accept_all() ,
@@ -53,13 +58,13 @@ impl CombatState {
             exits: StateConditions::new(&[ CombatState::KnockEnd]),
             duration: Some(KNOCK_TIME),
             next_state: Some(CombatState::KnockEnd),
-            id: CombatState::Knocked 
+            id: CombatState::default_knocked() 
         }
     }
 
     pub fn knock_end() -> State<CombatState> {
         State {
-            entries: StateConditions::new(&[ CombatState::Knocked ]),
+            entries: StateConditions::new(&[ CombatState::default_knocked() ]),
             exits: StateConditions::accept_all(),
             duration: None,
             next_state: None,

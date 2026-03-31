@@ -16,7 +16,7 @@ impl DodgeStamina {
         Self {
             stack: max_stack,
             max_stack,
-            in_between_timer: Timer::new_paused(0.15),
+            in_between_timer: Timer::new_paused(0.1),
             timer: Timer::new(DODGE_REGEN_DUR),
             // regen: false
         }

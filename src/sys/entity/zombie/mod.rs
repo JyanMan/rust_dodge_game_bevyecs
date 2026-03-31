@@ -12,10 +12,10 @@ pub mod states;
 
 pub fn mass_spawn(world: &mut World) {
     let mut rng = rand::thread_rng(); 
-    // for _ in 0..5 {
+    for _ in 0..5 {
         let z = super::zombie::spawn(world, rng.gen_range(30..80) as f32);
         sys::weapon::zombie_arm::spawn(world, z);
-    // }
+    }
 }
 
 #[derive(Bundle)]
@@ -38,7 +38,7 @@ struct ZombieBundle {
     e_over_obbs: EntityOverlappingOBBs,
     target_e_tags: TargetEntityTags,
     tag_container: EntityTagContainer,
-    knock: KnockbackTrigger,
+    // knock: KnockbackTrigger,
     movement_state: StateMachine<MovementState>,
     combat_state: StateMachine<CombatState>,
     enemy_state: StateMachine<EnemyState>
@@ -78,7 +78,7 @@ pub fn spawn(world: &mut World, speed: f32) -> Entity {
         e_over_obbs: EntityOverlappingOBBs::default(),
         target_e_tags: TargetEntityTags(vec![EntityTag::PlayerWeapon]),
         tag_container: EntityTagContainer(EntityTag::Zombie),
-        knock: KnockbackTrigger::default(),
+        // knock: KnockbackTrigger::default(),
         movement_state: states::movement_state(),
         combat_state: states::combat_state(),
         enemy_state: states::enemy_state(),
@@ -162,18 +162,18 @@ pub fn state_handler(
         &ZombieTag,
         &mut WalkerData,
         &EnemyData,
-        &KnockbackTrigger,
         &mut Combat,
         &mut StateMachine<MovementState>,
         &mut StateMachine<CombatState>,
         &mut StateMachine<EnemyState>,
+        Option<&mut HeldItem>
     )>,
 ) {
     let mut p_trans = Transform::zero();
     for (_p_tag, trans) in &player_query {
         p_trans = *trans;
     }
-    for (trans, mut vel, _, mut walker_d, enemy_d, knock, mut combat, mut movement_state, mut combat_state, mut enemy_state) in &mut query {
+    for (trans, mut vel, _, mut walker_d, enemy_d, mut combat, mut movement_state, mut combat_state, mut enemy_state, mut held_item) in &mut query {
 
         let x_trans = p_trans.global.x - trans.global.x;
         let y_trans = p_trans.global.y - trans.global.y;
@@ -191,12 +191,18 @@ pub fn state_handler(
 
         if dist < enemy_d.attack_range {
             movement_state.set_state(MovementState::Idle);
-            combat_state.set_state(CombatState::StartAttack);
+            if let Some(mut item) = held_item {
+                item.set_use(); 
+            }
+            // combat_state.set_state(CombatState::StartAttack);
 
             let attack_dir = dir_to_player;
             combat.attack_dir = attack_dir;
         }
         else {
+            if let Some(mut item) = held_item {
+                item.set_idle(); 
+            }
             combat_state.set_state(CombatState::Idle);
             if dist <= enemy_d.chase_range {
                 movement_state.set_state(MovementState::Running);
@@ -207,7 +213,7 @@ pub fn state_handler(
             }
         }
 
-        if let CombatState::Knocked = combat_state.curr_state() {
+        if let CombatState::Knocked{..} = combat_state.curr_state() {
             continue;
         }
 

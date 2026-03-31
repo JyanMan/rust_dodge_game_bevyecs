@@ -52,6 +52,7 @@ impl Default for PlayerData {
 #[derive(Component, Default, Clone)]
 pub struct PlayerInput {
     pub dodge: bool,
+    pub shift: bool,
     pub jump: bool,
     pub left: bool,
     pub right: bool,

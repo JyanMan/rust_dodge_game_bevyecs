@@ -33,6 +33,7 @@ impl Health {
 
     pub fn set_immune(&mut self) {
        self.immune = true; 
+       self.immune_timer = 0.0;
     }
 
     pub fn hit_and_immune(&mut self, damage: i32) {

@@ -1,11 +1,12 @@
 use bevy_ecs::prelude::*;
 // use crate::ecs::entity::*;
 
-#[derive(Default)]
-pub enum ItemType {
+#[derive(Default, Debug, PartialEq, Clone)]
+pub enum Action {
     #[default]
-    Normal,
-    Weapon,
+    Idle,
+    Use,
+    ShiftUse,
 }
 
 #[derive(Component, Clone)]
@@ -22,12 +23,24 @@ pub struct HeldBy(pub Entity);
 // 
 
 /// should go together with UsingHeldItem
-#[derive(Component)]
+#[derive(Component, Debug)]
 #[relationship_target(relationship = HeldBy)]
 pub struct HeldItem {
     #[relationship]
     item: Entity,
-    e_type: ItemType 
+    pub action: Action, 
+}
+impl HeldItem {
+    pub fn set_use(&mut self) {
+        self.action = Action::Use;
+    } 
+    pub fn set_shift_use(&mut self) {
+        self.action = Action::ShiftUse;
+    } 
+    pub fn set_idle(&mut self) {
+        self.action = Action::Idle;
+    } 
+    pub fn action(&self) -> Action { self.action.clone() }
 }
 
 /// should go together with HeldItem(Entity)
