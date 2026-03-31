@@ -11,24 +11,18 @@ use crate::bundles::*;
 #[derive(Bundle)]
 struct PlayerBundle {
     sprite: Sprite,
-    // stat: Status,
-    trans: Transform,
-    vel: Velocity,
-    area: Area,
+    physics: PhysicsBundle,
     player_d: PlayerData,
     dodge_stam: DodgeStamina,
     tag: PlayerTag,
     input: PlayerInput,
     walker_d: WalkerData,
     anim_player: AnimationPlayer,
-    grav_affected: GravityAffected,
     combat: Combat,
     hitbox: HitboxBundle,
     health: Health,
-    // knock: KnockbackTrigger,
     movement_state: StateMachine<MovementState>,
     combat_state: StateMachine<CombatState>,
-    // walker_anim: StateMachine<WalkerAnimState>,
 }
 
 
@@ -44,10 +38,12 @@ pub fn spawn(world: &mut World) -> Entity {
 
     let player_e = world.spawn(PlayerBundle {
          sprite,
-         // stat: Status::new(),
-         trans: Transform::new(10.0, -1000.0),
-         vel: Velocity::new(0.0, 0.0),
-         area,
+         physics: PhysicsBundle {
+             area,
+             grav_affected: GravityAffected(true),
+             trans: Transform::new(10.0, -1000.0),
+             vel: Velocity::new(0.0, 0.0),
+         },
          player_d: PlayerData::default(),
          dodge_stam: DodgeStamina::new(2),
          tag: PlayerTag {},
@@ -60,7 +56,6 @@ pub fn spawn(world: &mut World) -> Entity {
              state: WalkerState::default()
          },
          anim_player: AnimationPlayer::new(WalkerAnim::COUNT),
-         grav_affected: GravityAffected(true),
          combat: Combat::new(2.0, 0.0),
          hitbox: HitboxBundle {
              obb: OBB::new(10.0, 20.0, Vector2::new(10.0, -1000.0), false)

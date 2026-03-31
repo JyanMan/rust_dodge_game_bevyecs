@@ -116,10 +116,6 @@ pub fn state_handler(
 
         // println!("player combat state: {:?}", combat_state.curr_state());
 
-        if let CombatState::Knocked{..} = combat_state.curr_state() {
-            continue;
-        }
-
         match movement_state.curr_state() {
             MovementState::StartDodge => {
                 p_data.dodge_timer = 0.0;

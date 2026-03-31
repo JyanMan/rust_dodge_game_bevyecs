@@ -5,24 +5,19 @@ use crate::core::renderer::*;
 use crate::resources::asset_manager::*;
 use crate::components::*;
 use crate::components::states::*;
+use crate::bundles::*;
 
 #[derive(Bundle)]
 struct SteelSwordBundle {
-    trans: Transform,
     sprite: Sprite,
-    weapon_d: WeaponData,
+    // weapon_d: WeaponData,
     tag: SteelSwordTag,
     anim_player: AnimationPlayer,
     held: HeldBy,
-    obb: OBB,
-    cell_pos: CellPos,
-    over_obbs: EntityOverlappingOBBs,
-    target_tags: TargetEntityTags,
-    tag_container: EntityTagContainer,
-    funcs: WeaponFns,
-    state: StateMachine<WeaponState>,
+    weapon: WeaponBundle,
 }
 
+// TODO: HeldBy shouldn't be set on spawn, it should be set dynamically if someone's holding the weapon
 pub fn spawn(world: &mut World, entity_owner: Entity) -> Entity {
 
     let renderer = world.get_non_send_resource::<Renderer>().unwrap();
@@ -43,26 +38,29 @@ pub fn spawn(world: &mut World, entity_owner: Entity) -> Entity {
     let attack_dur = 0.2;
 
     let steel_sword_e = world.spawn(SteelSwordBundle {
-        trans: Transform::zero(),
         sprite,
-        weapon_d: WeaponData::new(5, 1000.0, attack_dur, 0.1, 0.05, WeaponState::Owned, WeaponType::SteelSword), 
         tag: SteelSwordTag::default(),
         anim_player: AnimationPlayer::new(WeaponAnim::COUNT),
         held: HeldBy(entity_owner),
-        obb: OBB::new(30.0, 30.0, Vector2::zero(), true),
-        cell_pos: CellPos(Vec::new()),
-        over_obbs: EntityOverlappingOBBs::default(),
-        // target_entity_tags,
-        target_tags: TargetEntityTags(vec![]),
-        tag_container: entity_tag_container,
-        funcs: WeaponFns {
-            start_attack: steel_sword_start_attack,
-            start_dodge_attack,
-            while_attacking: steel_sword_while_attacking,
-            after_effect: steel_sword_after_effect,
-            end_attack: steel_sword_end_attack,
+        weapon: WeaponBundle {
+            trans: Transform::zero(),
+            hitbox: HitboxBundle {
+                obb: OBB::new(30.0, 30.0, Vector2::zero(), true),
+                cell_pos: CellPos(Vec::new()),
+                e_over_obbs: EntityOverlappingOBBs::default(),
+                target_e_tags: TargetEntityTags(vec![]),
+                e_tag_container: entity_tag_container,
+            },
+            fns: WeaponFns {
+                start_attack: steel_sword_start_attack,
+                start_dodge_attack,
+                while_attacking: steel_sword_while_attacking,
+                after_effect: steel_sword_after_effect,
+                end_attack: steel_sword_end_attack,
+            },
+            state: state_machine(),
+            data: WeaponData::new(5, 1000.0, attack_dur, 0.1, 0.05, WeaponState::Owned, WeaponType::SteelSword), 
         },
-        state: state_machine(),
         // EntityTagContainer(EntityTag::Weapon),
     }).id();
 

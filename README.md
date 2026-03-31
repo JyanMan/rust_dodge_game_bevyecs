@@ -1,5 +1,8 @@
 ## TODO
 * add dodge stamina bar
+* make it so that some statemachines are added only once they receive the weapon...
+  - like the combat state machine should only be added once received steelsword or zombie_arm
+  - some other state would be for like potions, planting, or some other item held by player
 * fix up again the new dodge_stamina, user can hold dodge, (maybe a feature??)
 * make dodge regenerates for each successful dodge (DONE)
   - BUT the health.immune no longer is used for ignoring full collision check
@@ -14,7 +17,7 @@
     - if skill is used
 
   - hold dodge before attacking to do dodge attack (allows dodge attack)
-    - cannot dodge while attacking
+    - cannot dodge while attaacking
   - slam attack
 * now make the weapon have a chance to drop
 * add zombie hit animation
