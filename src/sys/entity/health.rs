@@ -78,7 +78,6 @@ pub mod player {
 
 
 pub fn knock_timer(
-    // mut query: Query<(&mut Health, &mut KnockbackTrigger, &mut Velocity)>,
     mut query: Query<(&mut Health, &mut StateMachine<CombatState>, &mut Velocity)>,
     delta_time: Res<DeltaTime>,
 ) {

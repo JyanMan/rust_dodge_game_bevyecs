@@ -5,6 +5,7 @@ use crate::components::*;
 use crate::resources::asset_manager::*;
 use crate::components::states::*;
 use crate::components::entity::*;
+use crate::bundles::*;
 // use super::anim_init;
 
 #[derive(Bundle)]
@@ -14,7 +15,6 @@ struct PlayerBundle {
     trans: Transform,
     vel: Velocity,
     area: Area,
-    obb: OBB,
     player_d: PlayerData,
     dodge_stam: DodgeStamina,
     tag: PlayerTag,
@@ -23,10 +23,7 @@ struct PlayerBundle {
     anim_player: AnimationPlayer,
     grav_affected: GravityAffected,
     combat: Combat,
-    e_over_obbs: EntityOverlappingOBBs,
-    target_e_tags: TargetEntityTags,
-    cell_pos: CellPos,
-    e_tag_container: EntityTagContainer,
+    hitbox: HitboxBundle,
     health: Health,
     // knock: KnockbackTrigger,
     movement_state: StateMachine<MovementState>,
@@ -51,8 +48,6 @@ pub fn spawn(world: &mut World) -> Entity {
          trans: Transform::new(10.0, -1000.0),
          vel: Velocity::new(0.0, 0.0),
          area,
-         obb: OBB::new(10.0, 20.0, Vector2::new(10.0, -1000.0), false)
-             .with_offset(Vector2::new(0.0, 3.0)),
          player_d: PlayerData::default(),
          dodge_stam: DodgeStamina::new(2),
          tag: PlayerTag {},
@@ -67,10 +62,14 @@ pub fn spawn(world: &mut World) -> Entity {
          anim_player: AnimationPlayer::new(WalkerAnim::COUNT),
          grav_affected: GravityAffected(true),
          combat: Combat::new(2.0, 0.0),
-         e_over_obbs: EntityOverlappingOBBs::default(),
-         target_e_tags: TargetEntityTags(vec![EntityTag::EnemyWeapon]),
-         cell_pos: CellPos(Vec::new()),
-         e_tag_container: EntityTagContainer(EntityTag::Player),
+         hitbox: HitboxBundle {
+             obb: OBB::new(10.0, 20.0, Vector2::new(10.0, -1000.0), false)
+                 .with_offset(Vector2::new(0.0, 3.0)),
+             e_over_obbs: EntityOverlappingOBBs::default(),
+             target_e_tags: TargetEntityTags(vec![EntityTag::EnemyWeapon]),
+             cell_pos: CellPos(Vec::new()),
+             e_tag_container: EntityTagContainer(EntityTag::Player),
+         },
          health: Health::new(100),
          // knock: KnockbackTrigger::default(),
          // state_machine: StateMachine::new(State::Idle),

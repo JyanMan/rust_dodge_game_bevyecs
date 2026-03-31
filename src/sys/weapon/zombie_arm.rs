@@ -185,6 +185,7 @@ pub fn zombie_arm_start_attack(
     zombie_arm_animation(sprite, trans, attack_dir);
     anim_player.play(WeaponAnim::Attack.usize());
 
+    weapon_d.knock_dir = attack_dir;
     weapon_d.attack_dir = attack_dir;
     user_vel.vec = attack_dir * 200.0;
     grav_affected.0 = false;

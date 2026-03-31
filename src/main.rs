@@ -7,6 +7,7 @@ mod math_helper;
 mod tests;
 mod events;
 mod plugins;
+mod bundles;
 
 use bevy_app::prelude::*;
 use crate::plugins::*;
