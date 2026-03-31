@@ -57,6 +57,7 @@ pub fn spawn(world: &mut World, entity_owner: Entity) -> Entity {
         tag_container: entity_tag_container,
         funcs: WeaponFns {
             start_attack: steel_sword_start_attack,
+            start_dodge_attack,
             while_attacking: steel_sword_while_attacking,
             after_effect: steel_sword_after_effect,
             end_attack: steel_sword_end_attack,
@@ -187,6 +188,29 @@ pub fn steel_sword_start_attack(
     steel_sword_animation(sprite, trans, attack_dir);
     anim_player.play(WeaponAnim::Attack.usize());
 
+    weapon_d.knock_dir = attack_dir;
+    weapon_d.attack_dir = attack_dir;
+    // user_vel.vec = attack_dir * 200.0;
+    user_vel.vec = Vector2::zero();
+    grav_affected.0 = false;
+    // combat.attacking = true;
+}
+
+fn start_dodge_attack(
+    weapon_d: &mut WeaponData,
+    grav_affected: &mut GravityAffected,
+    user_vel: &mut Velocity,
+    combat: &mut Combat,
+    sprite: &mut Sprite,
+    trans: &mut Transform,
+    anim_player: &mut AnimationPlayer
+    // attack_dir: Vector2,
+) {
+    let attack_dir = combat.attack_dir;
+    steel_sword_animation(sprite, trans, attack_dir);
+    anim_player.play(WeaponAnim::Attack.usize());
+
+    weapon_d.knock_dir = Vector2::new(-attack_dir.x, -attack_dir.y);
     weapon_d.attack_dir = attack_dir;
     // user_vel.vec = attack_dir * 200.0;
     user_vel.vec = Vector2::zero();

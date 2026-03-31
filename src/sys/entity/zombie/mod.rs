@@ -12,10 +12,10 @@ pub mod states;
 
 pub fn mass_spawn(world: &mut World) {
     let mut rng = rand::thread_rng(); 
-    for _ in 0..5 {
+    // for _ in 0..5 {
         let z = super::zombie::spawn(world, rng.gen_range(30..80) as f32);
         sys::weapon::zombie_arm::spawn(world, z);
-    }
+    // }
 }
 
 #[derive(Bundle)]
@@ -27,7 +27,7 @@ struct ZombieBundle {
     vel: Velocity,
     area: Area,
     sprite: Sprite,
-    stat: Status,
+    // stat: Status,
     walker_d: WalkerData,
     anim_player: AnimationPlayer,
     health: Health,
@@ -61,7 +61,7 @@ pub fn spawn(world: &mut World, speed: f32) -> Entity {
         vel: Velocity::zero(),
         area,
         sprite,
-        stat: Status::new(),
+        // stat: Status::new(),
         walker_d: WalkerData {
             grounded: false,
             jump_force: 200.0,

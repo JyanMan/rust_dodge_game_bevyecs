@@ -8,6 +8,7 @@ use crate::components::states::*;
 #[derive(Component)]
 pub struct WeaponFns {
     pub start_attack: fn(&mut WeaponData, &mut GravityAffected, &mut Velocity, &mut Combat, &mut Sprite, &mut Transform, &mut AnimationPlayer),
+    pub start_dodge_attack: fn(&mut WeaponData, &mut GravityAffected, &mut Velocity, &mut Combat, &mut Sprite, &mut Transform, &mut AnimationPlayer),
     pub while_attacking: fn(&mut WeaponData, &mut GravityAffected, &mut Velocity, &mut Combat, &mut Sprite, &mut Transform, &mut AnimationPlayer),
     pub after_effect: fn(&mut WeaponData, &mut GravityAffected, &mut Velocity, &mut Combat, &mut Sprite, &mut Transform, &mut AnimationPlayer),
     pub end_attack: fn(&mut WeaponData, &mut GravityAffected, &mut Velocity, &mut Combat, &mut Sprite, &mut Transform, &mut AnimationPlayer),
@@ -20,7 +21,8 @@ pub struct WeaponData {
     pub knock_force: f32,
     pub attacking: bool,
     pub can_attack: bool,
-    pub attack_dir: Vector2,
+    pub attack_dir: Vector2, // for animation
+    pub knock_dir: Vector2, // actual knock for hit targets
     pub after_effect: bool,
     pub after_effect_timer: f32,
     pub after_effect_duration: f32,
@@ -45,6 +47,7 @@ impl Default for WeaponData {
             after_effect_duration: 0.0,
             attacking: false,
             attack_dir: Vector2::zero(),
+            knock_dir: Vector2::zero(),
             can_attack: true,
             cd_timer: 0.0,
             owner_attack_cd: 0.0,
@@ -62,6 +65,7 @@ impl WeaponData {
             after_effect_timer: 0.0,
             after_effect_duration,
             attack_dir: Vector2::zero(),
+            knock_dir: Vector2::zero(),
             attack_timer: 0.0,
             attacking: false,
             can_attack: true,

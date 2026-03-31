@@ -14,17 +14,19 @@ pub fn update(
         // &mut KnockbackTrigger,
         &mut StateMachine<CombatState>,
         &Transform,
-        &mut Status,
-        Option<&mut DodgeStamina>
+        // &mut Status,
+        Option<&mut DodgeStamina>,
+        Option<&DodgeImmune>
     )>,
     weapon_query: Query<(Entity, &WeaponData)>,
     mut commands: Commands,
 ) {
+    // use sparseset for speed
     let mut weapon_cache: HashMap<Entity, &WeaponData> = HashMap::new();
     for (e, weapon_d) in &weapon_query {
         weapon_cache.insert(e, weapon_d);
     }
-    for (_, tag, e_over_obbs, mut health, mut combat_state, trans, status, dodge_stam) in &mut query {
+    for (_, tag, e_over_obbs, mut health, mut combat_state, trans, dodge_stam, dodge_immune) in &mut query {
         // this is matched manually as hit is mainly done by
         // entities with specific tags that are weapon against them
         match tag.0 {
@@ -42,11 +44,9 @@ pub fn update(
                         health.hit_and_immune(hitter_wd.damage);
 
                         combat_state.set_state(CombatState::Knocked {
-                            dir: hitter_wd.attack_dir,
+                            dir: hitter_wd.knock_dir,
                             force: hitter_wd.knock_force
                         });
-
-                        
 
                         // knock_trigger.trigger(hitter_wd.knock_force as i32, hitter_wd.attack_dir);
                         damage_counter::spawn(&mut commands, trans.global, hitter_wd.damage);
@@ -61,7 +61,7 @@ pub fn update(
                     }) 
                 {
                     if health.immune {
-                        if let Some(mut dodge_stam) = dodge_stam && status.has(StatusId::DodgeImmune)  {
+                        if let Some(mut dodge_stam) = dodge_stam && dodge_immune.is_some() {
                             dodge_stam.successful_dodge();
                         }
                         continue;
@@ -71,7 +71,7 @@ pub fn update(
                         health.hit_and_immune(hitter_wd.damage);
                         // knock_trigger.trigger(hitter_wd.knock_force as i32, hitter_wd.attack_dir);
                         combat_state.set_state(CombatState::Knocked {
-                            dir: hitter_wd.attack_dir,
+                            dir: hitter_wd.knock_dir,
                             force: hitter_wd.knock_force
                         });
                         damage_counter::spawn(&mut commands, trans.global, hitter_wd.damage);

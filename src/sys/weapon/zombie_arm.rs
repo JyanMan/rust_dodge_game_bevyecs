@@ -55,6 +55,7 @@ pub fn spawn(world: &mut World, entity_owner: Entity) -> Entity {
         tag_container: entity_tag_container,
         funcs: WeaponFns {
             start_attack: zombie_arm_start_attack,
+            start_dodge_attack: zombie_arm_start_attack,
             while_attacking: zombie_arm_while_attacking,
             after_effect: zombie_arm_after_effect,
             end_attack: zombie_arm_end_attack,

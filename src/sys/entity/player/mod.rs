@@ -72,18 +72,24 @@ pub fn timers_update(
 // }
 
 pub fn stat_update(
-    mut query: Query<(&mut Status, &StateMachine<MovementState>)>
+    mut commands: Commands,
+    mut query: Query<(Entity, &StateMachine<MovementState>, Option<&DodgeImmune>)>
 ) {
-    for (mut stat, move_state) in &mut query {
+    for (e, move_state, dodge_immune) in &mut query {
         match move_state.curr_state() {
             MovementState::Dodging => {
-                stat.set(StatusId::DodgeImmune)
+                if dodge_immune.is_none() {
+                    commands.entity(e).insert(DodgeImmune);
+                }
+                // stat.set(StatusId::DodgeImmune)
+
             },
             MovementState::DodgeLerping => {
-                stat.set(StatusId::DodgeImmune)
+                commands.entity(e).remove::<DodgeImmune>();
+                // stat.set(StatusId::DodgeImmune)
             }
             _ => {
-                stat.unset(StatusId::DodgeImmune)
+                // stat.unset(StatusId::DodgeImmune)
             }
         }
     }

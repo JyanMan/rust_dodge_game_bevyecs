@@ -102,11 +102,11 @@ pub fn anim_state_update(
                     combat_state.set_state(CombatState::Attacking);
                     weapon_state.set_state(WeaponState::DodgeAttacking);
 
-                    let dir = owner_combat.attack_dir;
-                    owner_combat.attack_dir = Vector2::new(-dir.x, -dir.y);
+                    // let dir = owner_combat.attack_dir;
+                    // owner_combat.attack_dir = Vector2::new(-dir.x, -dir.y);
 
-                    let start_attack = weapon_fns.start_attack;
-                    start_attack(&mut weapon_d, &mut grav_affected, &mut vel, &mut owner_combat, &mut sprite, &mut trans, &mut anim_player);
+                    let start_dodge_attack = weapon_fns.start_dodge_attack;
+                    start_dodge_attack(&mut weapon_d, &mut grav_affected, &mut vel, &mut owner_combat, &mut sprite, &mut trans, &mut anim_player);
                 },
                 WeaponState::Attacking => {
                     let while_attacking = weapon_fns.while_attacking;
@@ -114,6 +114,7 @@ pub fn anim_state_update(
 
                 },
                 WeaponState::DodgeAttacking => {
+                    println!("dodge attacking");
                     let while_attacking = weapon_fns.while_attacking;
                     while_attacking(&mut weapon_d, &mut grav_affected, &mut vel, &mut owner_combat, &mut sprite, &mut trans, &mut anim_player);
 
