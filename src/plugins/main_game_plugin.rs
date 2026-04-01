@@ -15,12 +15,10 @@ pub struct MainGame;
 impl Plugin for MainGame {
     fn build(&self, app: &mut App) {
 
-        app.init_resource::<AreaManager>();
         app.init_resource::<DeltaTime>();
         app.init_resource::<TimeStep>();
         app.init_resource::<KeyInput>();
         app.init_resource::<MouseInput>();
-        app.init_resource::<TagRegistry>();
 
         app.insert_resource(
             EntityQuadMap::new(
@@ -40,16 +38,13 @@ impl Plugin for MainGame {
             sys::world::damage_counter::despawn_update,
             sys::anim::update_all,
             sys::entity::health::update,
+            sys::weapon::newly_owned,
         ));
         app.add_systems(FixedPostUpdate, (
             sys::entity::hit_reaction::update,
             sys::entity::status_inflictor::update::<DamageOverTime>,
             sys::world::chunks::generate,
             sys::world::entity_quad::generate,
-            sys::entity::tag::handle::<PlayerTag>,
-            sys::entity::tag::handle::<PlayerWeaponTag>,
-            sys::entity::tag::handle::<EnemyWeaponTag>,
-            sys::entity::tag::handle::<EnemyTag>,
             sys::world::camera::update,
         ));
 
@@ -78,8 +73,7 @@ impl Plugin for Test {
 
 pub fn init_spawn(world: &mut World) {
     let player_e = sys::entity::player::spawn(world);
-    let steel_sword = sys::weapon::steel_sword::spawn(world, player_e);
-    world.entity_mut(steel_sword).insert(PlayerWeaponTag);
+    sys::weapon::steel_sword::spawn(world, player_e);
     sys::entity::health::player::health_bar_spawn(world);
     sys::entity::zombie::mass_spawn(world);
 }

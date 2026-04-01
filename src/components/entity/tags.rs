@@ -10,6 +10,9 @@ pub struct ZombieTag {}
 pub struct EnemyTag {}
 
 #[derive(Component, Clone, Default)]
+pub struct AllyTag;
+
+#[derive(Component, Clone, Default)]
 pub struct HealthBarTag{}
 
 #[derive(Component, Clone, Default)]
@@ -31,4 +34,5 @@ pub struct WeaponTag;
 pub struct EnemyWeaponTag;
 
 #[derive(Component, Clone, Default)]
-pub struct PlayerWeaponTag;
+pub struct AllyWeaponTag;
+

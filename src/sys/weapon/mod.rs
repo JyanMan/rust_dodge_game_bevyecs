@@ -8,6 +8,7 @@ pub mod zombie_arm;
 
 use bevy_ecs::prelude::*;
 use std::collections::HashMap;
+use std::any::TypeId;
 
 use crate::components::*;
 use crate::components::states::*;
@@ -165,4 +166,24 @@ pub fn lost_owner(mut removed: RemovedComponents<HeldBy>, mut commands: Commands
     removed.read().for_each(|e| {
         commands.entity(e).despawn();
     });
+}
+
+pub fn newly_owned(
+    mut query: Query<(Entity, &WeaponTag, &HeldBy, &mut TargetEntityTags), Added<TargetEntityTags>>,
+    allies: Query<&AllyTag>,
+    enemies: Query<&EnemyTag>,
+    mut commands: Commands
+) {
+    for (e, _, held_by, mut target_tags) in &mut query {
+        let owner_e = held_by.0;
+        if allies.contains(owner_e) {
+            target_tags.0.push(TypeId::of::<EnemyTag>());
+            commands.entity(e).insert(AllyWeaponTag);
+
+        }
+        else if enemies.contains(owner_e) {
+            target_tags.0.push(TypeId::of::<AllyTag>());
+            commands.entity(e).insert(EnemyWeaponTag);
+        }
+    }
 }

@@ -64,7 +64,7 @@ pub fn spawn(world: &mut World, entity_owner: Entity) -> Entity {
             state: state_machine(),
             data: WeaponData::new(5, 1000.0, attack_dur, 0.1, 0.05, WeaponState::Owned, WeaponType::SteelSword), 
         },
-        test_only: StatusInflictor(DamageOverTime{damage: 3.0,duration_s:0.2}),
+        test_only: StatusInflictor( DamageOverTime { damage: 3.0, duration_s: 0.2 }),
 
         // EntityTagContainer(EntityTag::Weapon),
     }).id();

@@ -2,6 +2,7 @@ use crate::components::*;
 use crate::resources::*;
 use bevy_ecs::prelude::*;
 use bevy_ecs::storage::SparseSet;
+use std::any::TypeId;
 // use xsparseset::*;
 
 /* PHYSICS */

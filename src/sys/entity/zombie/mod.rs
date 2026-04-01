@@ -15,8 +15,7 @@ pub fn mass_spawn(world: &mut World) {
     let mut rng = rand::thread_rng(); 
     for _ in 0..5 {
         let z = super::zombie::spawn(world, rng.gen_range(30..80) as f32);
-        let weapon = sys::weapon::zombie_arm::spawn(world, z);
-        world.entity_mut(weapon).insert(EnemyWeaponTag);
+        sys::weapon::zombie_arm::spawn(world, z);
     }
 }
 
@@ -78,7 +77,7 @@ pub fn spawn(world: &mut World, speed: f32) -> Entity {
         cell_pos: CellPos(Vec::new()),
         combat: Combat::new(1.0, 0.2),
         e_over_obbs: EntityOverlappingOBBs::default(),
-        target_e_tags: TargetEntityTags(vec![TypeId::of::<PlayerWeaponTag>()]),
+        target_e_tags: TargetEntityTags(vec![TypeId::of::<AllyWeaponTag>()]),
         // tag_container: EntityTagContainer(EntityTag::Zombie),
         // knock: KnockbackTrigger::default(),
         movement_state: states::movement_state(),

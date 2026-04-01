@@ -1,12 +1,16 @@
 use bevy_ecs::prelude::*;
 use bevy_app::prelude::*;
 
+use crate::resources::AreaManager;
+
 use crate::sys;
 
 pub struct Physics2D;
 
 impl Plugin for Physics2D {
     fn build(&self, app: &mut App) {
+        app.init_resource::<AreaManager>();
+
         app.add_systems(FixedUpdate, (
             sys::physics::gravity,
             sys::physics::walker_collision .after(sys::physics::gravity),

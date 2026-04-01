@@ -20,6 +20,7 @@ pub fn main() {
         .add_plugins(Physics2D)
         .add_plugins(Timers)
         .add_plugins(States)
+        .add_plugins(TagsRegistry)
         .add_plugins(Test)
         .set_runner(custom_runner)
         .run();
