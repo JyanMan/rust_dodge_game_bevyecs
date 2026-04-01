@@ -1,5 +1,6 @@
 use rand::*;
 use bevy_ecs::prelude::*;
+use std::any::TypeId;
 use crate::core::renderer::*;
 use crate::components::*;
 // use crate::ecs::ecs::*;
@@ -12,10 +13,11 @@ pub mod states;
 
 pub fn mass_spawn(world: &mut World) {
     let mut rng = rand::thread_rng(); 
-    // for _ in 0..5 {
+    for _ in 0..5 {
         let z = super::zombie::spawn(world, rng.gen_range(30..80) as f32);
-        sys::weapon::zombie_arm::spawn(world, z);
-    // }
+        let weapon = sys::weapon::zombie_arm::spawn(world, z);
+        world.entity_mut(weapon).insert(EnemyWeaponTag);
+    }
 }
 
 #[derive(Bundle)]
@@ -37,7 +39,7 @@ struct ZombieBundle {
     combat: Combat,
     e_over_obbs: EntityOverlappingOBBs,
     target_e_tags: TargetEntityTags,
-    tag_container: EntityTagContainer,
+    // tag_container: EntityTagContainer,
     // knock: KnockbackTrigger,
     movement_state: StateMachine<MovementState>,
     combat_state: StateMachine<CombatState>,
@@ -76,8 +78,8 @@ pub fn spawn(world: &mut World, speed: f32) -> Entity {
         cell_pos: CellPos(Vec::new()),
         combat: Combat::new(1.0, 0.2),
         e_over_obbs: EntityOverlappingOBBs::default(),
-        target_e_tags: TargetEntityTags(vec![EntityTag::PlayerWeapon]),
-        tag_container: EntityTagContainer(EntityTag::Zombie),
+        target_e_tags: TargetEntityTags(vec![TypeId::of::<PlayerWeaponTag>()]),
+        // tag_container: EntityTagContainer(EntityTag::Zombie),
         // knock: KnockbackTrigger::default(),
         movement_state: states::movement_state(),
         combat_state: states::combat_state(),

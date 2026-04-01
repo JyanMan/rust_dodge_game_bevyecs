@@ -7,6 +7,8 @@ pub mod hit_reaction;
 pub mod blood_particles;
 pub mod dodge_stamina;
 pub mod combat;
+pub mod status_inflictor;
+pub mod tag;
 
 pub use health::*;
 

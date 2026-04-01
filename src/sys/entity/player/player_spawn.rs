@@ -1,3 +1,4 @@
+use std::any::TypeId;
 use bevy_ecs::prelude::*;
 use crate::core::renderer::*;
 use crate::components::entity::{ WalkerData, WalkerState };
@@ -61,9 +62,9 @@ pub fn spawn(world: &mut World) -> Entity {
              obb: OBB::new(10.0, 20.0, Vector2::new(10.0, -1000.0), false)
                  .with_offset(Vector2::new(0.0, 3.0)),
              e_over_obbs: EntityOverlappingOBBs::default(),
-             target_e_tags: TargetEntityTags(vec![EntityTag::EnemyWeapon]),
+             target_e_tags: TargetEntityTags(vec![TypeId::of::<EnemyWeaponTag>()]),
              cell_pos: CellPos(Vec::new()),
-             e_tag_container: EntityTagContainer(EntityTag::Player),
+             // e_tag_container: EntityTagContainer(EntityTag::Player),
          },
          health: Health::new(100),
          // knock: KnockbackTrigger::default(),

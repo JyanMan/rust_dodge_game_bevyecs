@@ -18,8 +18,17 @@ pub struct HealthBarFillTag{}
 #[derive(Component, Clone, Default)]
 pub struct HealthBarTextTag{}
 
-#[derive(Component, Clone, Default)]
-pub struct SteelSwordTag { }
+#[derive(Component, Clone)]
+pub struct SteelSwordTag;
 
 #[derive(Component, Clone, Default)]
 pub struct ZombieArmTag { }
+
+#[derive(Component, Clone, Default)]
+pub struct WeaponTag;
+
+#[derive(Component, Clone, Default)]
+pub struct EnemyWeaponTag;
+
+#[derive(Component, Clone, Default)]
+pub struct PlayerWeaponTag;

@@ -3,39 +3,40 @@ use std::vec::*;
 use sdl2::rect::*;
 use sdl2::pixels::Color;
 use bevy_ecs::storage::SparseSet;
+use std::any::TypeId;
 
 use crate::components::*;
 use crate::core::Renderer;
 
-#[derive(PartialEq, Eq, Clone, Debug)]
-#[allow(unused)]
-pub enum EntityTag { Zombie, Enemy, EnemyWeapon, Player, PlayerWeapon, Weapon }
+// #[derive(PartialEq, Eq, Clone, Debug)]
+// #[allow(unused)]
+// pub enum EntityTag { Zombie, Enemy, EnemyWeapon, Player, PlayerWeapon, Weapon }
 
-#[derive(Component, Clone)]
-#[component(storage = "Table")]
-pub struct EntityTagContainer(pub EntityTag);
+// #[derive(Component, Clone)]
+// #[component(storage = "Table")]
+// pub struct EntityTagContainer(pub EntityTag);
 
 #[derive(Component)]
 #[component(storage = "Table")]
-pub struct TargetEntityTags(pub Vec<EntityTag>);
+pub struct TargetEntityTags(pub Vec<TypeId>);
 
 #[derive(Component, Default)]
 #[component(storage = "Table")]
-pub struct EntityOverlappingOBBs(pub SparseSet<Entity, EntityTag>);
+pub struct EntityOverlappingOBBs(pub SparseSet<Entity, Entity>);
 
-impl EntityOverlappingOBBs {
-    pub fn entities_with_tag(&self, tag: &EntityTag) -> Vec<Entity> {
-        let mut entities = Vec::new();
+// impl EntityOverlappingOBBs {
+//     pub fn entities_with_tag(&self, tag: &EntityTag) -> Vec<Entity> {
+//         let mut entities = Vec::new();
 
-        for (overlapped_e, _overlapped_tag) in self.0.iter() {
-            if matches!(tag, _overlapped_tag) {
-                entities.push(*overlapped_e);
-            }
-        }
+//         for (overlapped_e, _overlapped_tag) in self.0.iter() {
+//             if matches!(tag, _overlapped_tag) {
+//                 entities.push(*overlapped_e);
+//             }
+//         }
 
-        entities
-    }
-}
+//         entities
+//     }
+// }
 
 /* WARNING: changing atts require that you call compute_vertices to apply check fn inside first */
 #[derive(Component, Clone)]

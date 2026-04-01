@@ -8,7 +8,7 @@ pub struct HitboxBundle {
     pub e_over_obbs: EntityOverlappingOBBs,
     pub target_e_tags: TargetEntityTags,
     pub cell_pos: CellPos,
-    pub e_tag_container: EntityTagContainer,
+    // pub e_tag_container: EntityTagContainer,
 }
 
 #[derive(Bundle)]
@@ -21,6 +21,7 @@ pub struct PhysicsBundle {
 
 #[derive(Bundle)]
 pub struct WeaponBundle {
+    pub tag: WeaponTag,
     pub trans: Transform,
     pub hitbox: HitboxBundle,
     pub fns: WeaponFns,

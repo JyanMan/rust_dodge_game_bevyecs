@@ -20,6 +20,7 @@ impl Plugin for MainGame {
         app.init_resource::<TimeStep>();
         app.init_resource::<KeyInput>();
         app.init_resource::<MouseInput>();
+        app.init_resource::<TagRegistry>();
 
         app.insert_resource(
             EntityQuadMap::new(
@@ -42,8 +43,13 @@ impl Plugin for MainGame {
         ));
         app.add_systems(FixedPostUpdate, (
             sys::entity::hit_reaction::update,
+            sys::entity::status_inflictor::update::<DamageOverTime>,
             sys::world::chunks::generate,
             sys::world::entity_quad::generate,
+            sys::entity::tag::handle::<PlayerTag>,
+            sys::entity::tag::handle::<PlayerWeaponTag>,
+            sys::entity::tag::handle::<EnemyWeaponTag>,
+            sys::entity::tag::handle::<EnemyTag>,
             sys::world::camera::update,
         ));
 
@@ -72,7 +78,8 @@ impl Plugin for Test {
 
 pub fn init_spawn(world: &mut World) {
     let player_e = sys::entity::player::spawn(world);
-    sys::weapon::steel_sword::spawn(world, player_e);
+    let steel_sword = sys::weapon::steel_sword::spawn(world, player_e);
+    world.entity_mut(steel_sword).insert(PlayerWeaponTag);
     sys::entity::health::player::health_bar_spawn(world);
     sys::entity::zombie::mass_spawn(world);
 }

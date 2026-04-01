@@ -4,14 +4,15 @@ use super::*;
 use crate::components::*;
 use crate::components::states::*;
 
+type WeaponFn = fn(&mut WeaponData, &mut GravityAffected, &mut Velocity, &mut Combat, &mut Sprite, &mut Transform, &mut AnimationPlayer);
 
 #[derive(Component)]
 pub struct WeaponFns {
-    pub start_attack: fn(&mut WeaponData, &mut GravityAffected, &mut Velocity, &mut Combat, &mut Sprite, &mut Transform, &mut AnimationPlayer),
-    pub start_dodge_attack: fn(&mut WeaponData, &mut GravityAffected, &mut Velocity, &mut Combat, &mut Sprite, &mut Transform, &mut AnimationPlayer),
-    pub while_attacking: fn(&mut WeaponData, &mut GravityAffected, &mut Velocity, &mut Combat, &mut Sprite, &mut Transform, &mut AnimationPlayer),
-    pub after_effect: fn(&mut WeaponData, &mut GravityAffected, &mut Velocity, &mut Combat, &mut Sprite, &mut Transform, &mut AnimationPlayer),
-    pub end_attack: fn(&mut WeaponData, &mut GravityAffected, &mut Velocity, &mut Combat, &mut Sprite, &mut Transform, &mut AnimationPlayer),
+    pub start_attack: WeaponFn,
+    pub start_dodge_attack: WeaponFn,
+    pub while_attacking: WeaponFn,
+    pub after_effect: WeaponFn,
+    pub end_attack: WeaponFn,
 }
 
 #[derive(Component, Clone)]

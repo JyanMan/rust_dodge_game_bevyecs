@@ -1,5 +1,6 @@
 use bevy_ecs::prelude::*;
 use std::f64::consts::PI;
+use std::any::TypeId;
 
 use crate::core::renderer::*;
 use crate::resources::asset_manager::*;
@@ -15,6 +16,7 @@ struct SteelSwordBundle {
     anim_player: AnimationPlayer,
     held: HeldBy,
     weapon: WeaponBundle,
+    test_only: StatusInflictor<DamageOverTime> 
 }
 
 // TODO: HeldBy shouldn't be set on spawn, it should be set dynamically if someone's holding the weapon
@@ -23,12 +25,12 @@ pub fn spawn(world: &mut World, entity_owner: Entity) -> Entity {
     let renderer = world.get_non_send_resource::<Renderer>().unwrap();
 
     let owner_ref = world.entity(entity_owner);
-    let owner_tag = owner_ref.get::<EntityTagContainer>().unwrap();
-    let entity_tag_container = EntityTagContainer(match owner_tag.0 {
-        EntityTag::Zombie => EntityTag::EnemyWeapon,
-        EntityTag::Player => EntityTag::PlayerWeapon,
-        _ => EntityTag::Weapon,
-    });
+    // let owner_tag = owner_ref.get::<EntityTagContainer>().unwrap();
+    // let entity_tag_container = EntityTagContainer(match owner_tag.0 {
+    //     EntityTag::Zombie => EntityTag::EnemyWeapon,
+    //     EntityTag::Player => EntityTag::PlayerWeapon,
+    //     _ => EntityTag::Weapon,
+    // });
 
     
     let mut sprite = Sprite::new(&renderer.asset_m, TextureId::SteelSword);
@@ -39,17 +41,18 @@ pub fn spawn(world: &mut World, entity_owner: Entity) -> Entity {
 
     let steel_sword_e = world.spawn(SteelSwordBundle {
         sprite,
-        tag: SteelSwordTag::default(),
+        tag: SteelSwordTag,
         anim_player: AnimationPlayer::new(WeaponAnim::COUNT),
         held: HeldBy(entity_owner),
         weapon: WeaponBundle {
+            tag: WeaponTag,
             trans: Transform::zero(),
             hitbox: HitboxBundle {
                 obb: OBB::new(30.0, 30.0, Vector2::zero(), true),
                 cell_pos: CellPos(Vec::new()),
                 e_over_obbs: EntityOverlappingOBBs::default(),
                 target_e_tags: TargetEntityTags(vec![]),
-                e_tag_container: entity_tag_container,
+                // e_tag_container: entity_tag_container,
             },
             fns: WeaponFns {
                 start_attack: steel_sword_start_attack,
@@ -61,6 +64,8 @@ pub fn spawn(world: &mut World, entity_owner: Entity) -> Entity {
             state: state_machine(),
             data: WeaponData::new(5, 1000.0, attack_dur, 0.1, 0.05, WeaponState::Owned, WeaponType::SteelSword), 
         },
+        test_only: StatusInflictor(DamageOverTime{damage: 3.0,duration_s:0.2}),
+
         // EntityTagContainer(EntityTag::Weapon),
     }).id();
 

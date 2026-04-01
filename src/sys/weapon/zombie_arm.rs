@@ -1,38 +1,32 @@
 use bevy_ecs::prelude::*;
 use std::f64::consts::PI;
+use std::any::TypeId;
 
 use crate::core::renderer::*;
 use crate::resources::asset_manager::*;
 use crate::components::*;
 use crate::components::states::*;
+use crate::bundles::*;
 
 #[derive(Bundle)]
 struct ZombieArmBundle {
-    trans: Transform,
     sprite: Sprite,
-    weapon_d: WeaponData,
     tag: ZombieArmTag,
     anim_player: AnimationPlayer,
     held: HeldBy,
-    obb: OBB,
-    cell_pos: CellPos,
-    over_obbs: EntityOverlappingOBBs,
-    target_tags: TargetEntityTags,
-    tag_container: EntityTagContainer,
-    funcs: WeaponFns,
-    state: StateMachine<WeaponState>,
+    weapon: WeaponBundle,
 }
 
 pub fn spawn(world: &mut World, entity_owner: Entity) -> Entity {
 
     let renderer = world.get_non_send_resource::<Renderer>().unwrap();
     let owner_ref = world.entity(entity_owner);
-    let owner_tag = owner_ref.get::<EntityTagContainer>().unwrap();
-    let entity_tag_container = EntityTagContainer(match owner_tag.0 {
-        EntityTag::Zombie => EntityTag::EnemyWeapon,
-        EntityTag::Player => EntityTag::PlayerWeapon,
-        _ => EntityTag::Weapon,
-    });
+    // let owner_tag = owner_ref.get::<EntityTagContainer>().unwrap();
+    // let entity_tag_container = EntityTagContainer(match owner_tag.0 {
+    //     EntityTag::Zombie => EntityTag::EnemyWeapon,
+    //     EntityTag::Player => EntityTag::PlayerWeapon,
+    //     _ => EntityTag::Weapon,
+    // });
     
     let mut sprite = Sprite::new(&renderer.asset_m, TextureId::ZombieArm);
     sprite.set_sprite_sheet(2, 2);
@@ -41,26 +35,31 @@ pub fn spawn(world: &mut World, entity_owner: Entity) -> Entity {
     let attack_dur = 0.2;
 
     let zombie_arm_e = world.spawn(ZombieArmBundle {
-        trans: Transform::zero(),
         sprite,
-        weapon_d: WeaponData::new(2, 800.0, attack_dur, 0.4, 0.1, WeaponState::Owned, WeaponType::ZombieArm), 
         tag: ZombieArmTag::default(),
         anim_player: AnimationPlayer::new(WeaponAnim::COUNT),
         held: HeldBy(entity_owner),
-        obb: OBB::new(20.0, 20.0, Vector2::zero(), true),
-        cell_pos: CellPos(Vec::new()),
-        over_obbs: EntityOverlappingOBBs::default(),
-        // target_entity_tags,
-        target_tags: TargetEntityTags(vec![]),
-        tag_container: entity_tag_container,
-        funcs: WeaponFns {
-            start_attack: zombie_arm_start_attack,
-            start_dodge_attack: zombie_arm_start_attack,
-            while_attacking: zombie_arm_while_attacking,
-            after_effect: zombie_arm_after_effect,
-            end_attack: zombie_arm_end_attack,
+        weapon: WeaponBundle {
+            hitbox: HitboxBundle {
+                obb: OBB::new(20.0, 20.0, Vector2::zero(), true),
+                cell_pos: CellPos(Vec::new()),
+                e_over_obbs: EntityOverlappingOBBs::default(),
+                // target_entity_tags,
+                target_e_tags: TargetEntityTags(vec![]),
+                // e_tag_container: entity_tag_container,
+            },
+            tag: WeaponTag,
+            trans: Transform::zero(),
+            fns: WeaponFns {
+                start_attack: zombie_arm_start_attack,
+                start_dodge_attack: zombie_arm_start_attack,
+                while_attacking: zombie_arm_while_attacking,
+                after_effect: zombie_arm_after_effect,
+                end_attack: zombie_arm_end_attack,
+            },
+            state: state_machine(),
+            data: WeaponData::new(2, 800.0, attack_dur, 0.4, 0.1, WeaponState::Owned, WeaponType::ZombieArm), 
         },
-        state: state_machine(),
         // EntityTagContainer(EntityTag::Weapon),
     }).id();
 

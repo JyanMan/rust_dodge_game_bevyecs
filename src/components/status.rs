@@ -1,15 +1,43 @@
 use bevy_ecs::prelude::*;
-use std::vec::Vec;
-use strum_macros::EnumDiscriminants;
 
 #[derive(Component)]
 pub struct DodgeImmune;
 
-#[derive(Component)]
+#[derive(Component, Clone)]
 pub struct DamageOverTime {
-    damage: f32,
-    time_s: f32,
+    pub damage: f32,
+    pub duration_s: f32,
 }
+
+#[derive(Component)]
+pub struct StatusInflictor<S: Component + Clone>(pub S);
+impl <S: Component + Clone> StatusInflictor <S> {
+    pub fn inflict(&self, e: Entity, commands: &mut Commands) {
+        commands.entity(e).insert(self.0.clone());
+    }
+}
+
+// pub enum StatusEffect {
+//     DodgeImmune,
+//     DamageOverTime { damage: f32, duration_s: f32 },
+// }
+
+// pub struct StatusInflictor(Vec<StatusEffect>);
+// impl StatusInflictor {
+//     pub fn inflict(&self, e: Entity, commands: &mut Commands) {
+//         for stat in &self.0 {
+//             match stat {
+//                 StatusEffect::DodgeImmune => { 
+//                     commands.entity(e).insert(DodgeImmune); 
+//                 }
+//                 StatusEffect::DamageOverTime { damage, duration_s } => { 
+//                     commands.entity(e).insert(DamageOverTime { damage: *damage, duration_s: *duration_s }); 
+//                 }
+//             }
+//         }
+//     }
+// }
+
 // use bevy_ecs::prelude::*;
 // use std::vec::Vec;
 // use strum_macros::EnumDiscriminants;
