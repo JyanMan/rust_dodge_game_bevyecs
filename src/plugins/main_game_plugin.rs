@@ -39,10 +39,11 @@ impl Plugin for MainGame {
             sys::anim::update_all,
             sys::entity::health::update,
             sys::weapon::newly_owned,
+            sys::entity::status::damage_over_time,
         ));
         app.add_systems(FixedPostUpdate, (
             sys::entity::hit_reaction::update,
-            sys::entity::status_inflictor::update::<DamageOverTime>,
+            sys::entity::status::inflictor::<DamageOverTime>,
             sys::world::chunks::generate,
             sys::world::entity_quad::generate,
             sys::world::camera::update,

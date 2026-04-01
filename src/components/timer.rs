@@ -28,6 +28,7 @@ impl Timer {
         }
         self
     }
+    pub fn curr_time(&self) -> f32 { self.timer }
     pub fn just_finished(&self) -> bool {
         self.timer == 0.0
     }

@@ -1,4 +1,7 @@
 ## TODO
+* so far there is a crash when a lot of entities and the die
+  - it seems that due to the damage over time being removed, possibly accessing the timer
+    but entity is already dead
 * add dodge stamina bar
 * make it so that some statemachines are added only once they receive the weapon...
   - like the combat state machine should only be added once received steelsword or zombie_arm

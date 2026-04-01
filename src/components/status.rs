@@ -1,4 +1,5 @@
 use bevy_ecs::prelude::*;
+use crate::components::Timer;
 
 #[derive(Component)]
 pub struct DodgeImmune;
@@ -6,7 +7,8 @@ pub struct DodgeImmune;
 #[derive(Component, Clone)]
 pub struct DamageOverTime {
     pub damage: f32,
-    pub duration_s: f32,
+    pub duration_s: Timer,
+    pub dot_timer: Timer,
 }
 
 #[derive(Component)]
