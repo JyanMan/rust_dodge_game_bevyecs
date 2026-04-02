@@ -99,7 +99,8 @@ pub fn update(
 
     for (e, health) in &mut query {
         if health.current <= 0 {
-            commands.entity(e).despawn();
+            commands.entity(e).insert(Dying);
+            // commands.entity(e).despawn();
         }
     }
 }

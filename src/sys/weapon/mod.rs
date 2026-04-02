@@ -75,24 +75,7 @@ pub fn anim_state_update(
                 }
             }
 
-            // println!("curr combat_state: {:?}", combat_state.curr_state());
 
-            // println!("held_item: {:?}", held_item);
-
-            // if owner_combat.stunned() {
-                // combat_state.set_state(CombatState::Knocked);
-                // weapon_d.temporary_attack_disable();
-                // owner_combat.unstun();
-            // }
-            // else {
-            //     combat_state.set_state(CombatState::Idle);
-            // }
-
-            // if owner_combat.should_attack && weapon_d.can_attack
-            // if  combat_state.curr_state() == CombatState::StartAttack && weapon_d.can_attack {
-            // } 
-
-            let curr_state = weapon_state.curr_state();
             let mut weapon_ctx = WeaponContext {
                 self_e: weapon_e,
                 commands: &mut commands,
@@ -104,6 +87,11 @@ pub fn anim_state_update(
                 combat: &mut owner_combat,
                 weapon_d: &mut weapon_d
             };
+
+            let curr_state = weapon_state.curr_state();
+
+            // println!("curr weaopn state: {:?}", curr_state);
+
             match curr_state {
                 WeaponState::StartAttack => {
                     combat_state.set_state(CombatState::Attacking);
@@ -125,14 +113,17 @@ pub fn anim_state_update(
 
                 },
                 WeaponState::DodgeAttacking => {
-                    println!("dodge attacking");
-                    let while_attacking = weapon_fns.while_attacking;
-                    while_attacking(&mut weapon_ctx);
+                    let while_dodge_attacking = weapon_fns.while_dodge_attacking;
+                    while_dodge_attacking(&mut weapon_ctx);
 
                 },
                 WeaponState::AfterEffectAttack => {
-                    let after_effect_attack = weapon_fns.after_effect;
-                    after_effect_attack(&mut weapon_ctx);
+                    let after_effect = weapon_fns.after_effect;
+                    after_effect(&mut weapon_ctx);
+                },
+                WeaponState::AfterEffectDodgeAttack => {
+                    let after_dodge_effect= weapon_fns.after_dodge_effect;
+                    after_dodge_effect(&mut weapon_ctx);
                 },
                 WeaponState::EndAttack => {
                     // weapon_d.state = WeaponState::Idle;
@@ -140,6 +131,13 @@ pub fn anim_state_update(
                     combat_state.set_state(CombatState::StopAttacking);
                     let end_attack = weapon_fns.end_attack;
                     end_attack(&mut weapon_ctx);
+                },
+                WeaponState::EndDodgeAttack => {
+                    // weapon_d.state = WeaponState::Idle;
+                    weapon_state.set_state(WeaponState::Idle);
+                    combat_state.set_state(CombatState::StopAttacking);
+                    let end_dodge_attack = weapon_fns.end_dodge_attack;
+                    end_dodge_attack(&mut weapon_ctx);
                 },
                 _ => {}
             }
@@ -149,26 +147,53 @@ pub fn anim_state_update(
 
 pub fn attack_timer_and_signal_update(
     mut query: Query<(&mut Sprite, &mut WeaponData, &mut OBB, &mut StateMachine<WeaponState>), With<HeldBy>>,
-    delta_time: Res<DeltaTime>
+    dt: Res<DeltaTime>
 ) {
     for (mut sprite, mut weapon_d, mut obb, mut weapon_state) in &mut query {
-        if weapon_d.attacking {
-            obb.disabled = false;
-            sprite.visible = true;
-            // anim_player.play(WeaponAnim::Attack.usize());
-            weapon_d.attack_timer(delta_time.0, &mut weapon_state);
-        }
-        else {
-            obb.disabled = true;
-            sprite.visible = false;
-            // cooldown
-            if !weapon_d.can_attack {
-                weapon_d.attack_cd_timer(delta_time.0, &mut weapon_state);
+        match weapon_state.curr_state() {
+            WeaponState::Attacking | WeaponState::DodgeAttacking => {
+                obb.disabled = false;
+                sprite.visible = true;
+                if weapon_d.attack_timer.tick(dt.0).just_finished() {
+                    weapon_state.set_next_state();
+                    obb.disabled = true;
+                    sprite.visible = false;
+                }
+            },
+            WeaponState::AfterEffectAttack | WeaponState::AfterEffectDodgeAttack => {
+                if weapon_d.after_effect_timer.tick(dt.0).just_finished() {
+                    // weapon_state.set_state(WeaponState::EndAttack);
+                    // println!("wtf??");
+                    weapon_state.set_next_state();
+                }
             }
-            if weapon_d.after_effect {
-                weapon_d.after_effect_timer(delta_time.0, &mut weapon_state);
+            WeaponState::Idle => {
+                obb.disabled = true;
+                sprite.visible = false;
+                if !weapon_d.can_attack
+                    && weapon_d.attack_cd_timer.tick(dt.0).just_finished() {
+                    weapon_d.can_attack = true;
+                }
             }
+            _ => {}
         }
+        // if weapon_d.attacking {
+        //     obb.disabled = false;
+        //     sprite.visible = true;
+        //     // anim_player.play(WeaponAnim::Attack.usize());
+        //     weapon_d.attack_timer(delta_time.0, &mut weapon_state);
+        // }
+        // else {
+        //     obb.disabled = true;
+        //     sprite.visible = false;
+        //     // cooldown
+        //     if !weapon_d.can_attack {
+        //         weapon_d.attack_cd_timer(delta_time.0, &mut weapon_state);
+        //     }
+        //     if weapon_d.after_effect {
+        //         weapon_d.after_effect_timer(delta_time.0, &mut weapon_state);
+        //     }
+        // }
     }
 }
 

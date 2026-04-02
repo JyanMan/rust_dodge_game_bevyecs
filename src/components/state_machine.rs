@@ -50,7 +50,10 @@ impl <S: StateId> StateConditions <S> {
 pub struct State<S: StateId> {
     pub entries: StateConditions<S>,
     pub exits: StateConditions<S>,
-    pub duration: Option<f32>,
+    // set this to None for manual transition handling
+    pub duration: Option<f32>, 
+    // this can be set to Some value while duration is None,
+    // to allow calling next without the need to explicitly say which to go to
     pub next_state: Option<S>,
     pub id: S
 }
@@ -187,6 +190,12 @@ impl <S: StateId + 'static> StateMachine <S> {
         }
     }
 
+    pub fn set_next_state(&mut self) {
+        let next_state_id = self.state.next_state()
+            .expect("there is no next state set");
+        self.state = self.states_set.get(next_state_id.usize()).unwrap().clone();
+    }
+
     pub fn update_next_state_timer(&mut self, delta_time: f32) {
         let duration = {
             if let Some(duration) = self.state.duration() {
@@ -199,9 +208,7 @@ impl <S: StateId + 'static> StateMachine <S> {
 
         self.timer += delta_time;
         if self.timer >= duration {
-            let next_state_id = self.state.next_state()
-                .expect("unexpected next_state not defined when duration was set...");
-            self.state = self.states_set.get(next_state_id.usize()).unwrap().clone();
+            self.set_next_state();
         }
     }
 }

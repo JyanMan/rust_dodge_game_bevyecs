@@ -9,6 +9,7 @@ pub mod dodge_stamina;
 pub mod combat;
 pub mod status;
 pub mod tag;
+pub mod dying;
 
 pub use health::*;
 

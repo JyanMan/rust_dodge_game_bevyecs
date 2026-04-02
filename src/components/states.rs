@@ -253,7 +253,7 @@ impl StateId for EnemyState {
     }
 }
 
-#[derive(Clone, Default, PartialEq, EnumDiscriminants)]
+#[derive(Clone, Default, PartialEq, EnumDiscriminants, Debug)]
 pub enum WeaponState {
     #[default]
     Unowned,
@@ -265,8 +265,12 @@ pub enum WeaponState {
     DodgeAttacking,
     StartPushAttack,
     PushAttacking,
-    EndAttack,
     AfterEffectAttack,
+    AfterEffectPushAttack,
+    AfterEffectDodgeAttack,
+    EndAttack,
+    EndDodgeAttack,
+    EndPushAttack,
 }
 impl StateId for WeaponState {
     fn usize(self) -> usize {
@@ -291,7 +295,7 @@ impl WeaponState {
             entries:  StateConditions::accept_all() ,
             exits:  StateConditions::new(&[ WeaponState::Attacking ]),
             duration: None,
-            next_state: None,
+            next_state: Some(WeaponState::Attacking),
             id: WeaponState::StartAttack
         }
     }
@@ -300,7 +304,7 @@ impl WeaponState {
             entries:  StateConditions::accept_all() ,
             exits:  StateConditions::new(&[ WeaponState::DodgeAttacking ]),
             duration: None,
-            next_state: None,
+            next_state: Some(WeaponState::DodgeAttacking),
             id: WeaponState::StartDodgeAttack
         }
     }
@@ -309,7 +313,7 @@ impl WeaponState {
             entries:  StateConditions::accept_all() ,
             exits:  StateConditions::new(&[ WeaponState::PushAttacking ]),
             duration: None,
-            next_state: None,
+            next_state: Some(WeaponState::PushAttacking),
             id: WeaponState::StartPushAttack
         }
     }
@@ -319,39 +323,53 @@ impl WeaponState {
             entries:  StateConditions::new(&[ WeaponState::StartAttack ]) ,
             exits:  StateConditions::new(&[ WeaponState::AfterEffectAttack ]) ,
             duration: None,
-            next_state: None,
+            next_state: Some(WeaponState::AfterEffectAttack),
             id: WeaponState::Attacking
         }
     }
     pub fn dodge_attacking() -> State<WeaponState> {
         State {
             entries:  StateConditions::new(&[ WeaponState::StartDodgeAttack ]) ,
-            exits:  StateConditions::new(&[ WeaponState::AfterEffectAttack ]) ,
+            exits:  StateConditions::new(&[ WeaponState::AfterEffectDodgeAttack ]) ,
             duration: None,
-            next_state: None,
+            next_state: Some(WeaponState::AfterEffectDodgeAttack),
             id: WeaponState::DodgeAttacking
         }
     }
     pub fn push_attacking() -> State<WeaponState> {
         State {
             entries:  StateConditions::new(&[ WeaponState::StartPushAttack ]) ,
-            exits:  StateConditions::new(&[ WeaponState::AfterEffectAttack ]) ,
+            exits:  StateConditions::new(&[ WeaponState::AfterEffectPushAttack ]) ,
             duration: None,
-            next_state: None,
+            next_state: Some(WeaponState::AfterEffectPushAttack),
             id: WeaponState::PushAttacking
         }
     }
     pub fn after_effect_attack() -> State<WeaponState> {
         State {
-            entries:  StateConditions::new(&[
-                WeaponState::Attacking,
-                WeaponState::DodgeAttacking,
-                WeaponState::PushAttacking,
-            ]) ,
+            entries:  StateConditions::new(&[ WeaponState::Attacking, ]) ,
             exits:  StateConditions::new(&[ WeaponState::EndAttack ]) ,
             duration: None,
-            next_state: None,
+            next_state: Some(WeaponState::EndAttack),
             id: WeaponState::AfterEffectAttack
+        }
+    }
+    pub fn after_effect_dodge_attack() -> State<WeaponState> {
+        State {
+            entries:  StateConditions::new(&[ WeaponState::DodgeAttacking, ]) ,
+            exits:  StateConditions::new(&[ WeaponState::EndDodgeAttack ]) ,
+            duration: None,
+            next_state: Some(WeaponState::EndDodgeAttack),
+            id: WeaponState::AfterEffectDodgeAttack
+        }
+    }
+    pub fn after_effect_push_attack() -> State<WeaponState> {
+        State {
+            entries:  StateConditions::new(&[ WeaponState::PushAttacking, ]) ,
+            exits:  StateConditions::new(&[ WeaponState::EndPushAttack ]) ,
+            duration: None,
+            next_state: Some(WeaponState::EndPushAttack),
+            id: WeaponState::AfterEffectPushAttack
         }
     }
     pub fn end_attack() -> State<WeaponState> {
@@ -361,6 +379,24 @@ impl WeaponState {
             duration: None,
             next_state: None,
             id: WeaponState::EndAttack
+        }
+    }
+    pub fn end_dodge_attack() -> State<WeaponState> {
+        State {
+            entries:  StateConditions::new(&[ WeaponState::AfterEffectDodgeAttack ]),
+            exits:  StateConditions::accept_all() ,
+            duration: None,
+            next_state: None,
+            id: WeaponState::EndDodgeAttack
+        }
+    }
+    pub fn end_push_attack() -> State<WeaponState> {
+        State {
+            entries:  StateConditions::new(&[ WeaponState::AfterEffectPushAttack ]),
+            exits:  StateConditions::accept_all() ,
+            duration: None,
+            next_state: None,
+            id: WeaponState::EndPushAttack
         }
     }
 }

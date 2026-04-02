@@ -31,6 +31,7 @@ impl Plugin for MainGame {
         ));
 
         app.add_systems(Update, (
+            sys::entity::dying::update,
             sys::entity::health::player::health_bar_update,
             // sys::entity::hit_reaction::set_knocked_as_stunned,
             sys::weapon::lost_owner,

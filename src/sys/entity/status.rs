@@ -15,7 +15,7 @@ pub fn inflictor<S: Component + Clone>(
 }
 
 pub fn damage_over_time(
-    mut query: Query<(Entity, &mut DamageOverTime, &mut Health, &Transform)>,
+    mut query: Query<(Entity, &mut DamageOverTime, &mut Health, &Transform), Without<Dying>>,
     dt: Res<DeltaTime>,
     mut commands: Commands
 ) {

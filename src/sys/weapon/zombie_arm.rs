@@ -51,11 +51,14 @@ pub fn spawn(world: &mut World, entity_owner: Entity) -> Entity {
             tag: WeaponTag,
             trans: Transform::zero(),
             fns: WeaponFns {
-                start_attack: zombie_arm_start_attack,
-                start_dodge_attack: zombie_arm_start_attack,
-                while_attacking: zombie_arm_while_attacking,
-                after_effect: zombie_arm_after_effect,
-                end_attack: zombie_arm_end_attack,
+                start_attack,
+                start_dodge_attack,
+                while_attacking,
+                while_dodge_attacking,
+                after_effect,
+                after_dodge_effect,
+                end_attack,
+                end_dodge_attack,
             },
             state: state_machine(),
             data: WeaponData::new(2, 800.0, attack_dur, 0.4, 0.1, WeaponState::Owned, WeaponType::ZombieArm), 
@@ -143,20 +146,30 @@ pub fn zombie_arm_animation(sprite: &mut Sprite, trans: &mut Transform, attack_d
     trans.local = attack_dir * attack_range;
 }
 
-pub fn zombie_arm_while_attacking(
+pub fn while_attacking(
     ctx: &mut WeaponContext
 ) {
     ctx.anim_player.play(WeaponAnim::Attack.usize());
     ctx.vel.vec = ctx.vel.vec * 0.5;
 }
-pub fn zombie_arm_after_effect(
+pub fn while_dodge_attacking(
+    ctx: &mut WeaponContext
+) {
+    while_attacking(ctx);
+}
+pub fn after_effect(
     ctx: &mut WeaponContext
 ) {
     ctx.vel.vec = ctx.vel.vec * 0.2;
     ctx.anim_player.stop();
 }
+pub fn after_dodge_effect(
+    ctx: &mut WeaponContext
+) {
+    after_effect(ctx)
+}
 
-pub fn zombie_arm_start_attack(
+pub fn start_attack(
     ctx: &mut WeaponContext
 ) {
     let attack_dir = ctx.combat.attack_dir;
@@ -169,14 +182,25 @@ pub fn zombie_arm_start_attack(
     ctx.grav.0 = false;
     // combat.attacking = true;
 }
+pub fn start_dodge_attack(
+    ctx: &mut WeaponContext
+) {
+    start_attack(ctx)
+}
 
-pub fn zombie_arm_end_attack(
+pub fn end_attack(
     ctx: &mut WeaponContext
 ) {
     // ctx.anim_player.stop();
     ctx.vel.vec = Vector2::zero();
     ctx.grav.0 = true;
     // combat.attacking = false;
+}
+
+pub fn end_dodge_attack(
+    ctx: &mut WeaponContext
+) {
+    end_attack(ctx);
 }
 
 #[allow(dead_code)]
@@ -199,6 +223,10 @@ fn state_machine() -> StateMachine<WeaponState> {
     state_m.add_state(WeaponState::dodge_attacking());
     state_m.add_state(WeaponState::push_attacking());
     state_m.add_state(WeaponState::after_effect_attack());
+    state_m.add_state(WeaponState::after_effect_dodge_attack());
+    state_m.add_state(WeaponState::after_effect_push_attack());
     state_m.add_state(WeaponState::end_attack());
+    state_m.add_state(WeaponState::end_dodge_attack());
+    state_m.add_state(WeaponState::end_push_attack());
     state_m
 }
