@@ -1,4 +1,5 @@
 ## TODO
+* make the dot only apply to steelsword dodge attack
 * so far there is a crash when a lot of entities and the die
   - it seems that due to the damage over time being removed, possibly accessing the timer
     but entity is already dead

@@ -150,89 +150,58 @@ pub fn steel_sword_animation(sprite: &mut Sprite, trans: &mut Transform, attack_
 }
 
 pub fn steel_sword_while_attacking(
-    _: &mut WeaponData,
-    _: &mut GravityAffected,
-    user_vel: &mut Velocity,
-    _: &mut Combat,
-    _: &mut Sprite,
-    _: &mut Transform,
-    anim_player: &mut AnimationPlayer
-    // attack_dir: Vector2,
+    ctx: &mut WeaponContext
 ) {
-    anim_player.play(WeaponAnim::Attack.usize());
-    user_vel.vec = Vector2::zero();
+    ctx.anim_player.play(WeaponAnim::Attack.usize());
+    ctx.vel.vec = Vector2::zero();
     // user_vel.vec = user_vel.vec * 0.5;
 }
 pub fn steel_sword_after_effect(
-    _: &mut WeaponData,
-    _: &mut GravityAffected,
-    _: &mut Velocity,
-    _: &mut Combat,
-    _: &mut Sprite,
-    _: &mut Transform,
-    anim_player: &mut AnimationPlayer
+    ctx: &mut WeaponContext
 ) {
     // user_vel.vec = user_vel.vec * 0.2;
-    anim_player.stop();
+    ctx.anim_player.stop();
 }
 
 // fn(&mut WeaponData, &mut GravityAffected, &mut Velocity, &mut Combat, &mut Sprite, &mut Transform)
 pub fn steel_sword_start_attack(
-    weapon_d: &mut WeaponData,
-    grav_affected: &mut GravityAffected,
-    user_vel: &mut Velocity,
-    combat: &mut Combat,
-    sprite: &mut Sprite,
-    trans: &mut Transform,
-    anim_player: &mut AnimationPlayer
+    weapon_ctx: &mut WeaponContext
     // attack_dir: Vector2,
 ) {
-    let attack_dir = combat.attack_dir;
-    steel_sword_animation(sprite, trans, attack_dir);
-    anim_player.play(WeaponAnim::Attack.usize());
+    let attack_dir = weapon_ctx.combat.attack_dir;
+    steel_sword_animation(weapon_ctx.sprite, weapon_ctx.trans, attack_dir);
+    weapon_ctx.anim_player.play(WeaponAnim::Attack.usize());
 
-    weapon_d.knock_dir = attack_dir;
-    weapon_d.attack_dir = attack_dir;
+    weapon_ctx.weapon_d.knock_dir = attack_dir;
+    weapon_ctx.weapon_d.attack_dir = attack_dir;
     // user_vel.vec = attack_dir * 200.0;
-    user_vel.vec = Vector2::zero();
-    grav_affected.0 = false;
+    weapon_ctx.vel.vec = Vector2::zero();
+    weapon_ctx.grav.0 = false;
     // combat.attacking = true;
 }
 
 fn start_dodge_attack(
-    weapon_d: &mut WeaponData,
-    grav_affected: &mut GravityAffected,
-    user_vel: &mut Velocity,
-    combat: &mut Combat,
-    sprite: &mut Sprite,
-    trans: &mut Transform,
-    anim_player: &mut AnimationPlayer
+    ctx: &mut WeaponContext
     // attack_dir: Vector2,
 ) {
-    let attack_dir = combat.attack_dir;
-    steel_sword_animation(sprite, trans, attack_dir);
-    anim_player.play(WeaponAnim::Attack.usize());
+    let attack_dir = ctx.combat.attack_dir;
+    steel_sword_animation(ctx.sprite, ctx.trans, attack_dir);
+    ctx.anim_player.play(WeaponAnim::Attack.usize());
 
-    weapon_d.knock_dir = Vector2::new(-attack_dir.x, -attack_dir.y);
-    weapon_d.attack_dir = attack_dir;
+    ctx.weapon_d.knock_dir = Vector2::new(-attack_dir.x, -attack_dir.y);
+    ctx.weapon_d.attack_dir = attack_dir;
     // user_vel.vec = attack_dir * 200.0;
-    user_vel.vec = Vector2::zero();
-    grav_affected.0 = false;
+    ctx.vel.vec = Vector2::zero();
+    ctx.grav.0 = false;
     // combat.attacking = true;
 }
 
 pub fn steel_sword_end_attack(
-    _: &mut WeaponData,
-    grav_affected: &mut GravityAffected,
-    user_vel: &mut Velocity,
-    combat: &mut Combat,
-    _: &mut Sprite,
-    _: &mut Transform,
-    _: &mut AnimationPlayer
+    ctx: &mut WeaponContext
 ) {
     // anim_player.stop();
-    user_vel.vec = Vector2::zero();
-    grav_affected.0 = true;
+    ctx.vel.vec = Vector2::zero();
+    ctx.grav.0 = true;
     // combat.attacking = false;
 }
 

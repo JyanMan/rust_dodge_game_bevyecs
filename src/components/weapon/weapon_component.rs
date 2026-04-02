@@ -4,7 +4,19 @@ use super::*;
 use crate::components::*;
 use crate::components::states::*;
 
-type WeaponFn = fn(&mut WeaponData, &mut GravityAffected, &mut Velocity, &mut Combat, &mut Sprite, &mut Transform, &mut AnimationPlayer);
+pub struct WeaponContext<'a, 'w, 's> {
+    pub self_e: Entity,
+    pub combat: &'a mut Combat,
+    pub weapon_d: &'a mut WeaponData,
+    pub commands: &'a mut Commands<'w, 's>,
+    pub grav: &'a mut GravityAffected,
+    pub vel: &'a mut Velocity,
+    pub sprite: &'a mut Sprite,
+    pub trans: &'a mut Transform,
+    pub anim_player: &'a mut AnimationPlayer
+}
+
+type WeaponFn = fn(&mut WeaponContext);
 
 #[derive(Component)]
 pub struct WeaponFns {

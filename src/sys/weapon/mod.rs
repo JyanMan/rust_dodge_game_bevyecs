@@ -28,6 +28,7 @@ pub fn per_frame_update(weapon_d: &WeaponData, obb: &mut OBB) {
 
 pub fn anim_state_update(
     mut query: Query<(
+        Entity,
         &mut WeaponData,
         &mut Sprite,
         &mut Transform,
@@ -45,8 +46,9 @@ pub fn anim_state_update(
         ),
         Without<HeldBy>
     >, 
+    mut commands: Commands
 ) {
-    for (mut weapon_d, mut sprite, mut trans, owned_by, weapon_fns, mut anim_player, mut weapon_state) in &mut query {
+    for (weapon_e, mut weapon_d, mut sprite, mut trans, owned_by, weapon_fns, mut anim_player, mut weapon_state) in &mut query {
         if weapon_state.curr_state() == WeaponState::Unowned {
             continue;
         }
@@ -91,45 +93,53 @@ pub fn anim_state_update(
             // } 
 
             let curr_state = weapon_state.curr_state();
+            let mut weapon_ctx = WeaponContext {
+                self_e: weapon_e,
+                commands: &mut commands,
+                grav: &mut grav_affected,
+                vel: &mut vel,
+                sprite: &mut sprite,
+                trans: &mut trans,
+                anim_player: &mut anim_player,
+                combat: &mut owner_combat,
+                weapon_d: &mut weapon_d
+            };
             match curr_state {
                 WeaponState::StartAttack => {
                     combat_state.set_state(CombatState::Attacking);
                     weapon_state.set_state(WeaponState::Attacking);
 
                     let start_attack = weapon_fns.start_attack;
-                    start_attack(&mut weapon_d, &mut grav_affected, &mut vel, &mut owner_combat, &mut sprite, &mut trans, &mut anim_player);
+                    start_attack(&mut weapon_ctx);
                 },
                 WeaponState::StartDodgeAttack => {
                     combat_state.set_state(CombatState::Attacking);
                     weapon_state.set_state(WeaponState::DodgeAttacking);
 
-                    // let dir = owner_combat.attack_dir;
-                    // owner_combat.attack_dir = Vector2::new(-dir.x, -dir.y);
-
                     let start_dodge_attack = weapon_fns.start_dodge_attack;
-                    start_dodge_attack(&mut weapon_d, &mut grav_affected, &mut vel, &mut owner_combat, &mut sprite, &mut trans, &mut anim_player);
+                    start_dodge_attack(&mut weapon_ctx);
                 },
                 WeaponState::Attacking => {
                     let while_attacking = weapon_fns.while_attacking;
-                    while_attacking(&mut weapon_d, &mut grav_affected, &mut vel, &mut owner_combat, &mut sprite, &mut trans, &mut anim_player);
+                    while_attacking(&mut weapon_ctx);
 
                 },
                 WeaponState::DodgeAttacking => {
                     println!("dodge attacking");
                     let while_attacking = weapon_fns.while_attacking;
-                    while_attacking(&mut weapon_d, &mut grav_affected, &mut vel, &mut owner_combat, &mut sprite, &mut trans, &mut anim_player);
+                    while_attacking(&mut weapon_ctx);
 
                 },
                 WeaponState::AfterEffectAttack => {
                     let after_effect_attack = weapon_fns.after_effect;
-                    after_effect_attack(&mut weapon_d, &mut grav_affected, &mut vel, &mut owner_combat, &mut sprite, &mut trans, &mut anim_player);
+                    after_effect_attack(&mut weapon_ctx);
                 },
                 WeaponState::EndAttack => {
                     // weapon_d.state = WeaponState::Idle;
                     weapon_state.set_state(WeaponState::Idle);
                     combat_state.set_state(CombatState::StopAttacking);
                     let end_attack = weapon_fns.end_attack;
-                    end_attack(&mut weapon_d, &mut grav_affected, &mut vel, &mut owner_combat, &mut sprite, &mut trans, &mut anim_player);
+                    end_attack(&mut weapon_ctx);
                 },
                 _ => {}
             }

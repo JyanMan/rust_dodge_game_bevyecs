@@ -144,65 +144,38 @@ pub fn zombie_arm_animation(sprite: &mut Sprite, trans: &mut Transform, attack_d
 }
 
 pub fn zombie_arm_while_attacking(
-    _: &mut WeaponData,
-    _: &mut GravityAffected,
-    user_vel: &mut Velocity,
-    _: &mut Combat,
-    _: &mut Sprite,
-    _: &mut Transform,
-    anim_player: &mut AnimationPlayer
-    // attack_dir: Vector2,
+    ctx: &mut WeaponContext
 ) {
-    anim_player.play(WeaponAnim::Attack.usize());
-    user_vel.vec = user_vel.vec * 0.5;
+    ctx.anim_player.play(WeaponAnim::Attack.usize());
+    ctx.vel.vec = ctx.vel.vec * 0.5;
 }
 pub fn zombie_arm_after_effect(
-    _: &mut WeaponData,
-    _: &mut GravityAffected,
-    user_vel: &mut Velocity,
-    _: &mut Combat,
-    _: &mut Sprite,
-    _: &mut Transform,
-    anim_player: &mut AnimationPlayer
+    ctx: &mut WeaponContext
 ) {
-    user_vel.vec = user_vel.vec * 0.2;
-    anim_player.stop();
+    ctx.vel.vec = ctx.vel.vec * 0.2;
+    ctx.anim_player.stop();
 }
 
-// fn(&mut WeaponData, &mut GravityAffected, &mut Velocity, &mut Combat, &mut Sprite, &mut Transform)
 pub fn zombie_arm_start_attack(
-    weapon_d: &mut WeaponData,
-    grav_affected: &mut GravityAffected,
-    user_vel: &mut Velocity,
-    combat: &mut Combat,
-    sprite: &mut Sprite,
-    trans: &mut Transform,
-    anim_player: &mut AnimationPlayer
-    // attack_dir: Vector2,
+    ctx: &mut WeaponContext
 ) {
-    let attack_dir = combat.attack_dir;
-    zombie_arm_animation(sprite, trans, attack_dir);
-    anim_player.play(WeaponAnim::Attack.usize());
+    let attack_dir = ctx.combat.attack_dir;
+    zombie_arm_animation(ctx.sprite, ctx.trans, attack_dir);
+    ctx.anim_player.play(WeaponAnim::Attack.usize());
 
-    weapon_d.knock_dir = attack_dir;
-    weapon_d.attack_dir = attack_dir;
-    user_vel.vec = attack_dir * 200.0;
-    grav_affected.0 = false;
+    ctx.weapon_d.knock_dir = attack_dir;
+    ctx.weapon_d.attack_dir = attack_dir;
+    ctx.vel.vec = attack_dir * 200.0;
+    ctx.grav.0 = false;
     // combat.attacking = true;
 }
 
 pub fn zombie_arm_end_attack(
-    _: &mut WeaponData,
-    grav_affected: &mut GravityAffected,
-    user_vel: &mut Velocity,
-    combat: &mut Combat,
-    _: &mut Sprite,
-    _: &mut Transform,
-    _: &mut AnimationPlayer
+    ctx: &mut WeaponContext
 ) {
-    // anim_player.stop();
-    user_vel.vec = Vector2::zero();
-    grav_affected.0 = true;
+    // ctx.anim_player.stop();
+    ctx.vel.vec = Vector2::zero();
+    ctx.grav.0 = true;
     // combat.attacking = false;
 }
 
