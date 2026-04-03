@@ -202,9 +202,7 @@ fn while_dodge_attacking(ctx: &mut WeaponContext) {
 }
 fn end_dodge_attack(ctx: &mut WeaponContext) {
     end_attack(ctx);
-    println!("ended dodgeattack");
     ctx.commands.entity(ctx.self_e).remove::<StatusInflictor<DamageOverTime>>();
-
 }
 
 fn end_attack(

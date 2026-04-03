@@ -1,7 +1,11 @@
 use bevy_ecs::prelude::*;
 use crate::components::timer::*;
+use std::vec::Vec;
 
-const DODGE_REGEN_DUR: f32 = 1.0;
+const DODGE_REGEN_DUR: f32 = 2.0;
+
+#[derive(Component)]
+pub struct Dodge(pub i32);
 
 #[derive(Component)]
 pub struct DodgeStamina {
@@ -9,8 +13,10 @@ pub struct DodgeStamina {
     pub in_between_timer: Timer, // prevent holding dodge
     pub max_stack: i32,
     pub stack: i32,
+    pub dodge_entities: Vec<Entity>
     // pub regen: bool
 }
+
 impl DodgeStamina {
     pub fn new(max_stack: i32) -> Self {
         Self {
@@ -18,6 +24,7 @@ impl DodgeStamina {
             max_stack,
             in_between_timer: Timer::new_paused(0.1),
             timer: Timer::new(DODGE_REGEN_DUR),
+            dodge_entities: Vec::new()
             // regen: false
         }
     }

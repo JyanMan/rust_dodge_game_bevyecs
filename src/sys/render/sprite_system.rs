@@ -3,7 +3,7 @@ use bevy_ecs::prelude::*;
 use crate::core::renderer::*;
 use crate::components::*;
 
-pub fn sprites_draw(query: Query<(&Transform, &Sprite), Without<HealthBarTag>>, mut renderer: NonSendMut<Renderer>) {
+pub fn sprites_draw(query: Query<(&Transform, &Sprite), (Without<HealthBarTag>, Without<Dodge>)>, mut renderer: NonSendMut<Renderer>) {
 
     for (trans, sprite) in &query {
         if !sprite.visible {
@@ -23,6 +23,17 @@ pub fn texts_draw(
         text.set_pos(trans.global);
         renderer.render_text(&mut text);
     }
+}
+
+pub fn dodge_stamina_draw(
+    mut query: Query<(&Dodge, &mut Transform, &mut Sprite)>,
+    mut renderer: NonSendMut<Renderer>
+) {
+    for (dodge, mut trans, mut sprite) in &mut query {
+        // println!("wtf??");
+        renderer.draw(&sprite, trans.global, sprite.scale);
+    }
+   
 }
 
 pub fn health_bar_draw(

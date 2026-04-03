@@ -22,7 +22,7 @@ pub fn damage_over_time(
     for (e, mut dot, mut health, trans) in &mut query {
         if dot.dot_timer.tick(dt.0).just_finished() {
             let damage = dot.damage.round() as i32;
-            health.hit_and_immune(damage);
+            health.raw_damage(damage);
             damage_counter::spawn(&mut commands, trans.global, damage);
         }
         if dot.duration_s.tick(dt.0).just_finished() {

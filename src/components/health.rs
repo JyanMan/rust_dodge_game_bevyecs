@@ -13,7 +13,7 @@ impl Health {
     pub fn new(max: i32) -> Self {
         Self {
             current: max,
-            max: max,
+            max,
             immune: false,
             immune_timer: 0.0,
         }
@@ -36,6 +36,12 @@ impl Health {
        self.immune_timer = 0.0;
     }
 
+    /// use only for status effects: e.g. Poison
+    pub fn raw_damage(&mut self, damage: i32) {
+        self.current -= damage;
+    }
+
+    /// use for weapon hits
     pub fn hit_and_immune(&mut self, damage: i32) {
         self.current -= damage; 
         self.set_immune();

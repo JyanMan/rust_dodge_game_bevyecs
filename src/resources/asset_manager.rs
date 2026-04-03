@@ -22,7 +22,8 @@ pub enum TextureId {
     SteelSword,
     ZombieArm,
     HealthBar,
-    BloodParticle
+    BloodParticle,
+    DodgeStamina
 }
 
 impl TextureId {
@@ -73,6 +74,7 @@ impl AssetManager {
         Self::new_texture(&mut texture_set, t_creator, "assets/zombie_arm.png", TextureId::ZombieArm);
         Self::new_texture(&mut texture_set, t_creator, "assets/health_bar.png", TextureId::HealthBar);
         Self::new_texture(&mut texture_set, t_creator, "assets/blood_color.png", TextureId::BloodParticle);
+        Self::new_texture(&mut texture_set, t_creator, "assets/dodge_stamina.png", TextureId::DodgeStamina);
 
         let mut fonts_map = HashMap::new();
 

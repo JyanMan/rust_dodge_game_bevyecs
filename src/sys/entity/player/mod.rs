@@ -114,8 +114,6 @@ pub fn state_handler(
 
     for (mut p_data, mut walker_d, mut vel, mut health, input, mut combat, mut movement_state, mut combat_state, mut gravity, mut dodge_stam, mut held_item) in &mut query {
 
-        // println!("player combat state: {:?}", combat_state.curr_state());
-
         match movement_state.curr_state() {
             MovementState::StartDodge => {
                 p_data.dodge_timer = 0.0;

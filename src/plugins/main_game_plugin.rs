@@ -32,6 +32,7 @@ impl Plugin for MainGame {
 
         app.add_systems(Update, (
             sys::entity::dying::update,
+            sys::entity::dodge_stamina::update_sprites,
             sys::entity::health::player::health_bar_update,
             // sys::entity::hit_reaction::set_knocked_as_stunned,
             sys::weapon::lost_owner,
@@ -54,6 +55,7 @@ impl Plugin for MainGame {
             sys::world::chunks::draw.before(sys::render::sprites_draw),
             sys::render::sprites_draw,
             sys::render::health_bar_draw,
+            sys::render::dodge_stamina_draw,
             sys::render::texts_draw.after(sys::render::sprites_draw),
             // sys::debug::render_all_obb,
         ));

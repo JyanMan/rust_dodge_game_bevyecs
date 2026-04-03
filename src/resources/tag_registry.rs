@@ -11,13 +11,14 @@ pub struct TagRegistry {
 
 impl TagRegistry {
     pub fn entity_contains_tag_id(&self, e: Entity, type_id: TypeId) -> bool {
-
-        if let Some(ids) = self.set.get(e) {
-            if ids.contains(&type_id) {
-                return true;
-            }
+        if let Some(ids) = self.set.get(e)
+            && ids.contains(&type_id)
+        {
+            true
         }
-        return false;
+        else {
+            false
+        }
     }
 
     pub fn entity_insert<T: 'static>(&mut self, e: Entity) {
@@ -25,19 +26,17 @@ impl TagRegistry {
             ids.push(TypeId::of::<T>());
         }
         else {
-            let mut ids = Vec::new();
-            ids.push(TypeId::of::<T>());
+            let ids = vec![TypeId::of::<T>()];
             self.set.insert(e, ids);
         }
     }
 
     pub fn entity_remove<T: 'static>(&mut self, e: Entity) {
-        if let Some(ids) = self.set.get_mut(e) {
-
-            if let Some(index) = ids.iter().position(|&x| x == TypeId::of::<T>()) {
-                // Use swap_remove for efficiency if order doesn't matter
-                ids.swap_remove(index);
-            }
+        if let Some(ids) = self.set.get_mut(e)
+        && let Some(index) = ids.iter().position(|&x| x == TypeId::of::<T>())
+        {
+            // Use swap_remove for efficiency if order doesn't matter
+            ids.swap_remove(index);
         }
     }
 }
