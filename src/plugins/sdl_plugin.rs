@@ -124,6 +124,7 @@ pub fn custom_runner(mut app: App) -> AppExit {
         app.world_mut().run_schedule(PreRender);
         app.world_mut().run_schedule(Render);
         app.world_mut().run_schedule(PostRender);
+        println!("frame");
 
         if let Some(exit) = app.should_exit() {
             return exit;

@@ -41,19 +41,15 @@ impl ChunkManager {
         let chunks_map = HashMap::new();
 
         // init default values of chunk manager
-        let cm = ChunkManager {
-            render_dist: render_dist,
-            chunks_map: chunks_map,
+        ChunkManager {
+            render_dist,
+            chunks_map,
             // init values of chunks within array
-            chunks_arr: chunks_arr,             
-            world_pos: world_pos.clone(),
-            new_chunk_points: new_chunk_points,
-            sprite: sprite,
-        };
-
-        //cm.generate(world_pos.clone());
-
-        cm
+            chunks_arr,             
+            world_pos,
+            new_chunk_points,
+            sprite,
+        }
     }
 
     pub fn generate(&mut self, world_pos: &Vector2, area_m: &mut AreaManager) {

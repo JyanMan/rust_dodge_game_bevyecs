@@ -7,7 +7,6 @@ use crate::resources::asset_manager::*;
 use crate::components::states::*;
 use crate::components::entity::*;
 use crate::bundles::*;
-// use super::anim_init;
 
 #[derive(Bundle)]
 struct PlayerBundle {

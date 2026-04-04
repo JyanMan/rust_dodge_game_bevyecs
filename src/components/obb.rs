@@ -22,6 +22,9 @@ pub struct TargetEntityTags(pub Vec<TypeId>);
 
 #[derive(Component, Default)]
 #[component(storage = "Table")]
+/// <WARNING>: do when accessing the entities, check if its still alive...
+/// since it is only updated during fixedupdate, updates can run more frequently
+/// and can access dead entities within
 pub struct EntityOverlappingOBBs(pub SparseSet<Entity, Entity>);
 
 // impl EntityOverlappingOBBs {

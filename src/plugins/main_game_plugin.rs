@@ -30,6 +30,9 @@ impl Plugin for MainGame {
             sys::world::chunks::init,
         ));
 
+        app.add_systems(PreUpdate, 
+            sys::entity::health::update,
+        );
         app.add_systems(Update, (
             sys::entity::dying::update,
             sys::entity::dodge_stamina::update_sprites,
@@ -39,14 +42,14 @@ impl Plugin for MainGame {
             sys::world::damage_counter::update,
             sys::world::damage_counter::despawn_update,
             sys::anim::update_all,
-            sys::entity::health::update,
+            // sys::entity::health::update,
             sys::weapon::newly_owned,
             sys::entity::status::damage_over_time,
         ));
         app.add_systems(FixedPostUpdate, (
             sys::entity::hit_reaction::update,
-            sys::entity::status::inflictor::<DamageOverTime>,
             sys::world::chunks::generate,
+            sys::entity::status::inflictor::<DamageOverTime>,
             sys::world::entity_quad::generate,
             sys::world::camera::update,
         ));

@@ -15,7 +15,9 @@ pub struct DamageOverTime {
 pub struct StatusInflictor<S: Component + Clone>(pub S);
 impl <S: Component + Clone> StatusInflictor <S> {
     pub fn inflict(&self, e: Entity, commands: &mut Commands) {
-        commands.entity(e).insert(self.0.clone());
+        if let Ok(mut entity) = commands.get_entity(e) {
+            entity.insert(self.0.clone());
+        }
     }
 }
 
