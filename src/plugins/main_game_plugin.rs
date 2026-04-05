@@ -57,9 +57,11 @@ impl Plugin for MainGame {
         app.add_systems(Render, (
             sys::world::chunks::draw.before(sys::render::sprites_draw),
             sys::render::sprites_draw,
+            sys::render::texts_draw.after(sys::render::sprites_draw),
+        ));
+        app.add_systems(PostRender, (
             sys::render::health_bar_draw,
             sys::render::dodge_stamina_draw,
-            sys::render::texts_draw.after(sys::render::sprites_draw),
             // sys::debug::render_all_obb,
         ));
 
