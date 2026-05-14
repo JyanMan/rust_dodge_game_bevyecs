@@ -10,7 +10,7 @@ pub fn sprites_draw(query: Query<(&Transform, &Sprite), (Without<HealthBarTag>, 
             continue;
         }
 
-        renderer.draw_to_cam(sprite, trans.global, sprite.scale);
+        renderer.draw_to_cam(sprite, trans.pos, sprite.scale);
     }
 }
 
@@ -20,7 +20,7 @@ pub fn texts_draw(
 ) {
     // let mut query = world.query::<(&mut TextObject, &Transform)>();
     for (mut text, trans) in &mut query {
-        text.set_pos(trans.global);
+        text.set_pos(trans.pos);
         renderer.render_text(&mut text);
     }
 }
@@ -31,7 +31,7 @@ pub fn dodge_stamina_draw(
 ) {
     for (dodge, mut trans, mut sprite) in &mut query {
         // println!("wtf??");
-        renderer.draw(&sprite, trans.global, sprite.scale);
+        renderer.draw(&sprite, trans.pos, sprite.scale);
     }
    
 }
@@ -46,14 +46,14 @@ pub fn health_bar_draw(
             continue;
         }
 
-        renderer.draw(sprite, trans.global, sprite.scale);
+        renderer.draw(sprite, trans.pos, sprite.scale);
     }
     for (trans, sprite) in &mut query_without {
         if !sprite.visible {
             continue;
         }
 
-        renderer.draw(sprite, trans.global, sprite.scale);
+        renderer.draw(sprite, trans.pos, sprite.scale);
     }
 }
 

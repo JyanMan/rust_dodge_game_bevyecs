@@ -7,7 +7,8 @@ use crate::components::Vector2;
 #[derive(Clone)]
 pub enum AnimData {
     SpriteFrame { value: i32, target: Entity },
-    OBBOffset { offset: Vector2, target: Entity },
+    TransformLocal { value: Vector2, target: Entity },
+    // OBBOffset { offset: Vector2, target: Entity },
     Debug { msg: String },
     OBBUpdate { target: Entity }
 }

@@ -23,7 +23,7 @@ pub fn damage_over_time(
         if dot.dot_timer.tick(dt.0).just_finished() {
             let damage = dot.damage.round() as i32;
             health.raw_damage(damage);
-            damage_counter::spawn(&mut commands, trans.global, damage);
+            damage_counter::spawn(&mut commands, trans.pos, damage);
         }
         if dot.duration_s.tick(dt.0).just_finished() {
             commands.entity(e).remove::<DamageOverTime>(); 

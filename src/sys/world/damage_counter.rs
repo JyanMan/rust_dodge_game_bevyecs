@@ -28,7 +28,7 @@ pub fn update(
         }
         timer.timer(delta_time.0);
         // increase at a decreasing rate
-        trans.global.y -= 0.1 / timer.0;
+        trans.pos.y -= 0.1 / timer.0;
     }
 }
 

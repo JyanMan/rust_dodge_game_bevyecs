@@ -70,7 +70,7 @@ impl AssetManager {
         Self::new_texture(&mut texture_set, t_creator, "assets/player.png", TextureId::Player);
         Self::new_texture(&mut texture_set, t_creator, "assets/zombie.png", TextureId::Zombie);
         Self::new_texture(&mut texture_set, t_creator, "assets/tile_atlas.png", TextureId::TileAtlas);
-        Self::new_texture(&mut texture_set, t_creator, "assets/steel_sword.png", TextureId::SteelSword);
+        Self::new_texture(&mut texture_set, t_creator, "assets/steel_sword_v2.png", TextureId::SteelSword);
         Self::new_texture(&mut texture_set, t_creator, "assets/zombie_arm.png", TextureId::ZombieArm);
         Self::new_texture(&mut texture_set, t_creator, "assets/health_bar.png", TextureId::HealthBar);
         Self::new_texture(&mut texture_set, t_creator, "assets/blood_color.png", TextureId::BloodParticle);

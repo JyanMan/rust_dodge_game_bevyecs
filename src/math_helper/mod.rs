@@ -93,3 +93,16 @@ pub fn tile_to_world(tile_pos: &Point) -> Vector2 {
     }
 }
 
+pub fn rotate_around(other: Vector2, center: Vector2, angle_rad: f32) -> Vector2 {
+
+    let x = other.x - center.x;
+    let y = other.y - center.y;
+
+    let s = angle_rad.sin();
+    let c = angle_rad.cos();
+
+    let x_rot = x * c - y * s;
+    let y_rot = x * s + y * c;
+
+    Vector2 { x: x_rot + center.x, y: y_rot + center.y }
+}

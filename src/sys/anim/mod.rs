@@ -12,6 +12,8 @@ pub fn update_all(
     mut sprite_query: Query<&mut Sprite>,
     mut obb_query: Query<&mut OBB>,
     mut weapon_query: Query<&mut WeaponData>,
+    // mut trans_query: Query<&mut Transform>,
+    mut local_trans_query: Query<&mut LocalTransform>,
     delta_time: Res<DeltaTime>, 
 ) {
 
@@ -32,16 +34,23 @@ pub fn update_all(
                         sprite.frame = *value;
                     }
                 },
-                AnimData::OBBOffset { offset, target } => {
-                    if let Ok(mut obb) = obb_query.get_mut(*target) {
-                        obb.offset = *offset;
-                    }
-                },
+                // AnimData::OBBOffset { offset, target } => {
+                //     if let Ok(mut obb) = obb_query.get_mut(*target) {
+                //         obb.offset = *offset;
+                //     }
+                // },
                 AnimData::OBBUpdate { target } => {
                     if let (Ok(mut obb), Ok(weapon_d)) =
                         (obb_query.get_mut(*target), weapon_query.get(*target))
                     {
                         sys::weapon::per_frame_update(weapon_d, &mut obb);
+                    }
+                },
+                AnimData::TransformLocal{ value, target } => {
+                    if let Ok(mut trans) =
+                        local_trans_query.get_mut(*target)
+                    {
+                        trans.pos = *value;
                     }
                 },
                 AnimData::Debug{ msg } => {

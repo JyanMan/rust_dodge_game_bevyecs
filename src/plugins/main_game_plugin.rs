@@ -62,7 +62,7 @@ impl Plugin for MainGame {
         app.add_systems(PostRender, (
             sys::render::health_bar_draw,
             sys::render::dodge_stamina_draw,
-            // sys::debug::render_all_obb,
+            sys::debug::render_all_obb,
         ));
 
         app.add_systems(Input, (

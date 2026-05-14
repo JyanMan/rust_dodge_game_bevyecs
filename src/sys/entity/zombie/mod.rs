@@ -14,8 +14,8 @@ pub mod states;
 pub fn mass_spawn(world: &mut World) {
     let mut rng = rand::thread_rng(); 
     // for _ in 0..50 {
-    //     let z = super::zombie::spawn(world, rng.gen_range(30..80) as f32);
-    //     sys::weapon::zombie_arm::spawn(world, z);
+        let z = super::zombie::spawn(world, rng.gen_range(30..80) as f32);
+        sys::weapon::zombie_arm::spawn(world, z);
     // }
 }
 
@@ -176,8 +176,8 @@ pub fn state_handler(
     }
     for (trans, mut vel, _, mut walker_d, enemy_d, mut combat, mut movement_state, mut combat_state, mut enemy_state, mut held_item) in &mut query {
 
-        let x_trans = p_trans.global.x - trans.global.x;
-        let y_trans = p_trans.global.y - trans.global.y;
+        let x_trans = p_trans.pos.x - trans.pos.x;
+        let y_trans = p_trans.pos.y - trans.pos.y;
 
         // calc dist
         let mut dist = (x_trans*x_trans + y_trans*y_trans).sqrt();

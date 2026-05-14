@@ -12,7 +12,7 @@ pub fn generate(
     query: Query<&Transform, With<PlayerTag>>
 ){
     for transform in &query {
-        chunk_m.generate(&transform.global, &mut area_m);
+        chunk_m.generate(&transform.pos, &mut area_m);
     }
 }
 

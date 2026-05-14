@@ -1,4 +1,5 @@
 use bevy_ecs::prelude::*;
+use crate::components::{LocalTransform, Transform};
 // use crate::ecs::entity::*;
 
 #[derive(Default, Debug, PartialEq, Clone)]
@@ -11,6 +12,7 @@ pub enum Action {
 
 #[derive(Component, Clone)]
 #[relationship(relationship_target = HeldItem)]
+#[require(LocalTransform, Transform)]
 pub struct HeldBy(pub Entity);
 
 // impl Owner {

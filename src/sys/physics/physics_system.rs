@@ -33,7 +33,7 @@ pub fn walker_collision(
     query.par_iter_mut().for_each(|(mut trans, mut vel, mut area, mut walker_d)| {
 
         // pass area_m as &AreaManager
-        area_colliding_to_tile(&mut area, &mut trans.global, &mut vel.vec, &mut walker_d.grounded, &area_m, time_step.0);
+        area_colliding_to_tile(&mut area, &mut trans.pos, &mut vel.vec, &mut walker_d.grounded, &area_m, time_step.0);
 
         // if !walker_d.grounded {
         //     walker_d.state = WalkerState::Aired;
@@ -43,7 +43,7 @@ pub fn walker_collision(
 
 pub fn pos_vel_update(mut query: Query<(&mut Transform, &Velocity)>, time_step: Res<TimeStep>) {
     query.par_iter_mut().for_each(|(mut trans, vel)| {
-        trans.global.x += vel.vec.x * time_step.0;
-        trans.global.y += vel.vec.y * time_step.0;
+        trans.pos.x += vel.vec.x * time_step.0;
+        trans.pos.y += vel.vec.y * time_step.0;
     });
 }

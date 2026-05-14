@@ -47,7 +47,7 @@ pub fn update(
                 });
 
                 // knock_trigger.trigger(hitter_wd.knock_force as i32, hitter_wd.attack_dir);
-                damage_counter::spawn(&mut commands, trans.global, hitter_wd.damage);
+                damage_counter::spawn(&mut commands, trans.pos, hitter_wd.damage);
                 super::blood_particles::spawn(&mut commands, *trans, hitter_wd.attack_dir);
             }
         }
@@ -69,7 +69,7 @@ pub fn update(
                     dir: hitter_wd.knock_dir,
                     force: hitter_wd.knock_force
                 });
-                damage_counter::spawn(&mut commands, trans.global, hitter_wd.damage);
+                damage_counter::spawn(&mut commands, trans.pos, hitter_wd.damage);
             }
         }
     }

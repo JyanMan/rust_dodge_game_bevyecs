@@ -20,7 +20,7 @@ pub fn generate(
     query: Query<&Transform, With<PlayerTag>>,
 ) {
     for transform in &query {
-        e_quad_map.generate(&transform.global);
+        e_quad_map.generate(&transform.pos);
     }
 }
 

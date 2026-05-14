@@ -13,6 +13,7 @@ pub struct WeaponContext<'a, 'w, 's> {
     pub vel: &'a mut Velocity,
     pub sprite: &'a mut Sprite,
     pub trans: &'a mut Transform,
+    pub local: &'a mut LocalTransform,
     pub anim_player: &'a mut AnimationPlayer
 }
 

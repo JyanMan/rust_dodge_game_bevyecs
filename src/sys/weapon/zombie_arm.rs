@@ -14,6 +14,7 @@ struct ZombieArmBundle {
     tag: ZombieArmTag,
     anim_player: AnimationPlayer,
     held: HeldBy,
+    parent: AttachedTo,
     weapon: WeaponBundle,
 }
 
@@ -39,6 +40,7 @@ pub fn spawn(world: &mut World, entity_owner: Entity) -> Entity {
         tag: ZombieArmTag::default(),
         anim_player: AnimationPlayer::new(WeaponAnim::COUNT),
         held: HeldBy(entity_owner),
+        parent: AttachedTo(entity_owner),
         weapon: WeaponBundle {
             hitbox: HitboxBundle {
                 obb: OBB::new(20.0, 20.0, Vector2::zero(), true),
@@ -74,49 +76,49 @@ pub fn spawn(world: &mut World, entity_owner: Entity) -> Entity {
     let attack_anim = Animation::new(attack_dur / 8.0, &[
         AnimFrame::new(&[
             AnimData::SpriteFrame { value: 0, target: zombie_arm_e},
-            AnimData::OBBOffset { offset: Vector2::new(0.0, -8.0), target: zombie_arm_e},
+            AnimData::TransformLocal { value: Vector2::new(0.0, -8.0), target: zombie_arm_e},
             AnimData::OBBUpdate { target: zombie_arm_e },
         ]),
         
         AnimFrame::new(&[
             AnimData::SpriteFrame { value: 0, target: zombie_arm_e},
-            AnimData::OBBOffset { offset: Vector2::new(4.0, -4.0), target: zombie_arm_e},
+            AnimData::TransformLocal { value: Vector2::new(4.0, -4.0), target: zombie_arm_e},
             AnimData::OBBUpdate { target: zombie_arm_e },
         ]),
         
         AnimFrame::new(&[
             AnimData::SpriteFrame { value: 1, target: zombie_arm_e},
-            AnimData::OBBOffset { offset: Vector2::new(9.0, -2.0), target: zombie_arm_e},
+            AnimData::TransformLocal { value: Vector2::new(9.0, -2.0), target: zombie_arm_e},
             AnimData::OBBUpdate { target: zombie_arm_e },
         ]),
         
         AnimFrame::new(&[
             AnimData::SpriteFrame { value: 1, target: zombie_arm_e},
-            AnimData::OBBOffset { offset: Vector2::new(11.0, 0.0), target: zombie_arm_e},
+            AnimData::TransformLocal { value: Vector2::new(11.0, 0.0), target: zombie_arm_e},
             AnimData::OBBUpdate { target: zombie_arm_e },
         ]),
         
         AnimFrame::new(&[
             AnimData::SpriteFrame { value: 2, target: zombie_arm_e},
-            AnimData::OBBOffset { offset: Vector2::new(11.0, 0.0), target: zombie_arm_e},
+            AnimData::TransformLocal { value: Vector2::new(11.0, 0.0), target: zombie_arm_e},
             AnimData::OBBUpdate { target: zombie_arm_e },
         ]),
         
         AnimFrame::new(&[
             AnimData::SpriteFrame { value: 2, target: zombie_arm_e},
-            AnimData::OBBOffset { offset: Vector2::new(9.0, 2.0), target: zombie_arm_e},
+            AnimData::TransformLocal { value: Vector2::new(9.0, 2.0), target: zombie_arm_e},
             AnimData::OBBUpdate { target: zombie_arm_e },
         ]),
         
         AnimFrame::new(&[
             AnimData::SpriteFrame { value: 3, target: zombie_arm_e},
-            AnimData::OBBOffset { offset: Vector2::new(4.0, 4.0), target: zombie_arm_e},
+            AnimData::TransformLocal { value: Vector2::new(4.0, 4.0), target: zombie_arm_e},
             AnimData::OBBUpdate { target: zombie_arm_e },
         ]),
         
         AnimFrame::new(&[
             AnimData::SpriteFrame { value: 3, target: zombie_arm_e},
-            AnimData::OBBOffset { offset: Vector2::new(0.0, 8.0), target: zombie_arm_e},
+            AnimData::TransformLocal { value: Vector2::new(0.0, 8.0), target: zombie_arm_e},
             AnimData::OBBUpdate { target: zombie_arm_e },
         ]),
     ]);
@@ -126,7 +128,7 @@ pub fn spawn(world: &mut World, entity_owner: Entity) -> Entity {
     zombie_arm_e
 }
 
-pub fn zombie_arm_animation(sprite: &mut Sprite, trans: &mut Transform, attack_dir: Vector2) {
+pub fn zombie_arm_animation(sprite: &mut Sprite, local: &mut LocalTransform, attack_dir: Vector2) {
     // flip y if left side 
     // this allows animation to be consistent not flipped on another direction
     if attack_dir.x < 0.0 {
@@ -143,7 +145,7 @@ pub fn zombie_arm_animation(sprite: &mut Sprite, trans: &mut Transform, attack_d
     sprite.angle = angle_deg;
 
     let attack_range: f32 = 3.0;
-    trans.local = attack_dir * attack_range;
+    local.pos = attack_dir * attack_range;
 }
 
 pub fn while_attacking(
@@ -173,7 +175,7 @@ pub fn start_attack(
     ctx: &mut WeaponContext
 ) {
     let attack_dir = ctx.combat.attack_dir;
-    zombie_arm_animation(ctx.sprite, ctx.trans, attack_dir);
+    zombie_arm_animation(ctx.sprite, ctx.local, attack_dir);
     ctx.anim_player.play(WeaponAnim::Attack.usize());
 
     ctx.weapon_d.knock_dir = attack_dir;

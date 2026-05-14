@@ -8,7 +8,7 @@ pub fn update(query: Query<&Transform, With<PlayerTag>>, mut renderer: NonSendMu
     // let mut query = world.query_filtered::<&Transform, With<PlayerTag>>();
 
     for trans in &query {
-        renderer.camera.set_target(trans.global);
+        renderer.camera.set_target(trans.pos);
         renderer.camera.update();
     }
 }

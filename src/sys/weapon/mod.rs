@@ -32,6 +32,7 @@ pub fn anim_state_update(
         &mut WeaponData,
         &mut Sprite,
         &mut Transform,
+        &mut LocalTransform,
         &HeldBy,
         &WeaponFns,
         &mut AnimationPlayer,
@@ -48,7 +49,7 @@ pub fn anim_state_update(
     >, 
     mut commands: Commands
 ) {
-    for (weapon_e, mut weapon_d, mut sprite, mut trans, owned_by, weapon_fns, mut anim_player, mut weapon_state) in &mut query {
+    for (weapon_e, mut weapon_d, mut sprite, mut trans, mut local, owned_by, weapon_fns, mut anim_player, mut weapon_state) in &mut query {
         if weapon_state.curr_state() == WeaponState::Unowned {
             continue;
         }
@@ -75,7 +76,6 @@ pub fn anim_state_update(
                 }
             }
 
-
             let mut weapon_ctx = WeaponContext {
                 self_e: weapon_e,
                 commands: &mut commands,
@@ -83,6 +83,7 @@ pub fn anim_state_update(
                 vel: &mut vel,
                 sprite: &mut sprite,
                 trans: &mut trans,
+                local: &mut local,
                 anim_player: &mut anim_player,
                 combat: &mut owner_combat,
                 weapon_d: &mut weapon_d
@@ -146,18 +147,18 @@ pub fn anim_state_update(
 }
 
 pub fn attack_timer_and_signal_update(
-    mut query: Query<(&mut Sprite, &mut WeaponData, &mut OBB, &mut StateMachine<WeaponState>), With<HeldBy>>,
+    mut query: Query<(&mut WeaponData, &mut OBB, &mut StateMachine<WeaponState>), With<HeldBy>>,
     dt: Res<DeltaTime>
 ) {
-    for (mut sprite, mut weapon_d, mut obb, mut weapon_state) in &mut query {
+    for (mut weapon_d, mut obb, mut weapon_state) in &mut query {
         match weapon_state.curr_state() {
             WeaponState::Attacking | WeaponState::DodgeAttacking => {
                 obb.disabled = false;
-                sprite.visible = true;
+                // sprite.visible = true;
                 if weapon_d.attack_timer.tick(dt.0).just_finished() {
                     weapon_state.set_next_state();
                     obb.disabled = true;
-                    sprite.visible = false;
+                    // sprite.visible = false;
                 }
             },
             WeaponState::AfterEffectAttack | WeaponState::AfterEffectDodgeAttack => {
@@ -169,7 +170,7 @@ pub fn attack_timer_and_signal_update(
             }
             WeaponState::Idle => {
                 obb.disabled = true;
-                sprite.visible = false;
+                // sprite.visible = false;
                 if !weapon_d.can_attack
                     && weapon_d.attack_cd_timer.tick(dt.0).just_finished() {
                     weapon_d.can_attack = true;

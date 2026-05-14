@@ -4,24 +4,32 @@ use bevy_ecs::prelude::*;
 #[derive(Component, Debug, Copy, Clone, Default, PartialEq)]
 #[component(storage = "Table")]
 pub struct Transform {
-    pub global: Vector2,
-    pub local: Vector2,
-    pub rotation: f32,
+    pub pos: Vector2,
+    // pub local: Vector2,
+    pub rot: f32,
+}
+
+#[derive(Component, Debug, Copy, Clone, Default, PartialEq)]
+#[component(storage = "Table")]
+pub struct LocalTransform {
+    pub pos: Vector2,
+    pub origin: Vector2,
+    pub rot: f32,
 }
 
 impl Transform {
     pub fn new(x: f32, y: f32) -> Self {
         Self {
-            global: Vector2::new( x, y ), 
-            local: Vector2::zero(),
-            rotation: 0.0,
+            pos: Vector2::new( x, y ), 
+            // local: Vector2::zero(),
+            rot: 0.0,
         }
     }
     pub fn zero() -> Self {
         Self { 
-            global: Vector2::new( 0.0, 0.0 ), 
-            local: Vector2::zero() ,
-            rotation: 0.0,
+            pos: Vector2::new( 0.0, 0.0 ), 
+            // local: Vector2::zero() ,
+            rot: 0.0,
         }
     }
 }

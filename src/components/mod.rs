@@ -22,6 +22,7 @@ pub mod timer;
 pub mod stamina;
 pub mod status;
 pub mod dying;
+pub mod parent;
 
 pub mod states;
 
@@ -49,3 +50,4 @@ pub use timer::*;
 pub use stamina::*;
 pub use status::*;
 pub use dying::*;
+pub use parent::*;
