@@ -26,5 +26,5 @@ pub struct WeaponBundle {
     pub hitbox: HitboxBundle,
     pub fns: WeaponFns,
     pub state: StateMachine<WeaponState>,
-    pub data: WeaponData,
+    pub data: WeaponConfig,
 }

@@ -57,7 +57,20 @@ pub fn spawn(world: &mut World, entity_owner: Entity) -> Entity {
                 end_dodge_attack,
             },
             state: state_machine(),
-            data: WeaponData::new(5, 1000.0, attack_dur, 0.1, 0.05, WeaponState::Owned, WeaponType::SteelSword), 
+            // data: WeaponData::new(5, 1000.0, attack_dur, 0.1, 0.05, WeaponState::Owned, WeaponType::SteelSword), 
+            data: WeaponConfig {
+                damage: 5,
+                knock_force: 1000.0,
+                attack_timer: Timer::new(attack_dur),
+                attack_cd_timer: Timer::new(0.1),
+                after_effect_timer: Timer::new(0.05),
+                attacking: false,
+                can_attack: true,
+                attack_dir: Vector2::zero(),
+                knock_dir: Vector2::zero(),
+                // after_effect: true
+                // WeaponState::Owned, WeaponType::SteelSword
+            }, 
         },
         // test_only: StatusInflictor( DamageOverTime { damage: 2.0, duration_s: Timer::new(0.3), dot_timer: Timer::new(0.1) }),
 
@@ -76,56 +89,48 @@ pub fn spawn(world: &mut World, entity_owner: Entity) -> Entity {
             // AnimData::SpriteFrame { value: 0, target: steel_sword_e},
             // AnimData::TransformLocal { value: Vector2::new(0.0, -20.0), target: steel_sword_e },
             AnimData::TransformLocal { value: Vector2::new(0.0, -20.0), target: steel_sword_e },
-            AnimData::OBBUpdate { target: steel_sword_e },
         ]),
         
         AnimFrame::new(&[
             // AnimData::SpriteFrame { value: 0, target: steel_sword_e},
             // AnimData::TransformLocal { value: Vector2::new(8.0, -13.0), target: steel_sword_e},
             AnimData::TransformLocal { value: Vector2::new(8.0, -13.0), target: steel_sword_e},
-            AnimData::OBBUpdate { target: steel_sword_e },
         ]),
         
         AnimFrame::new(&[
             // AnimData::SpriteFrame { value: 1, target: steel_sword_e},
             // AnimData::TransformLocal { value: Vector2::new(14.0, -6.0), target: steel_sword_e},
             AnimData::TransformLocal { value: Vector2::new(14.0, -6.0), target: steel_sword_e},
-            AnimData::OBBUpdate { target: steel_sword_e },
         ]),
         
         AnimFrame::new(&[
             // AnimData::SpriteFrame { value: 1, target: steel_sword_e},
             // AnimData::TransformLocal { value: Vector2::new(18.0, 0.0), target: steel_sword_e},
             AnimData::TransformLocal { value: Vector2::new(18.0, 0.0), target: steel_sword_e},
-            AnimData::OBBUpdate { target: steel_sword_e },
         ]),
         
         AnimFrame::new(&[
             // AnimData::SpriteFrame { value: 2, target: steel_sword_e},
             // AnimData::TransformLocal { value: Vector2::new(18.0, 0.0), target: steel_sword_e},
             AnimData::TransformLocal { value: Vector2::new(18.0, 0.0), target: steel_sword_e},
-            AnimData::OBBUpdate { target: steel_sword_e },
         ]),
         
         AnimFrame::new(&[
             // AnimData::SpriteFrame { value: 2, target: steel_sword_e},
             // AnimData::TransformLocal { value: Vector2::new(14.0, 6.0), target: steel_sword_e},
             AnimData::TransformLocal { value: Vector2::new(14.0, 6.0), target: steel_sword_e},
-            AnimData::OBBUpdate { target: steel_sword_e },
         ]),
         
         AnimFrame::new(&[
             // AnimData::SpriteFrame { value: 3, target: steel_sword_e},
             // AnimData::TransformLocal { value: Vector2::new(8.0, 13.0), target: steel_sword_e},
             AnimData::TransformLocal { value: Vector2::new(8.0, 13.0), target: steel_sword_e},
-            AnimData::OBBUpdate { target: steel_sword_e },
         ]),
         
         AnimFrame::new(&[
             // AnimData::SpriteFrame { value: 3, target: steel_sword_e},
             // AnimData::TransformLocal { value: Vector2::new(0.0, 20.0), target: steel_sword_e},
             AnimData::TransformLocal { value: Vector2::new(0.0, 20.0), target: steel_sword_e},
-            AnimData::OBBUpdate { target: steel_sword_e },
         ]),
     ]);
 
@@ -134,7 +139,7 @@ pub fn spawn(world: &mut World, entity_owner: Entity) -> Entity {
     steel_sword_e
 }
 
-pub fn steel_sword_animation(sprite: &mut Sprite, trans: &mut LocalTransform, attack_dir: Vector2) {
+pub fn steel_sword_animation(sprite: &mut Sprite, trans: &mut Transform, local: &mut LocalTransform, attack_dir: Vector2) {
     // flip y if left side 
     // this allows animation to be consistent not flipped on another direction
     if attack_dir.x < 0.0 {
@@ -146,13 +151,15 @@ pub fn steel_sword_animation(sprite: &mut Sprite, trans: &mut LocalTransform, at
 
     // convert normalized vec to ang in deg
     let angle_to_mouse = attack_dir.y.atan2(attack_dir.x);
-    let angle_deg = angle_to_mouse as f64 * (180.0 / PI);
+    let angle_deg = angle_to_mouse as f64 * (180.0 / PI) as f64;
     // adjust sprite angle
     sprite.angle = angle_deg; // to make it point forward
 
+
     let attack_range: f32 = 3.0;
-    trans.pos = attack_dir * attack_range;
-    trans.rot = angle_to_mouse;
+    local.pos = attack_dir * attack_range;
+    local.rot = angle_to_mouse;
+
 }
 
 pub fn while_attacking(
@@ -160,8 +167,8 @@ pub fn while_attacking(
 ) {
     ctx.anim_player.play(WeaponAnim::Attack.usize());
     ctx.vel.vec = Vector2::zero();
-    // user_vel.vec = user_vel.vec * 0.5;
 }
+
 pub fn after_effect(
     ctx: &mut WeaponContext
 ) {
@@ -176,13 +183,12 @@ pub fn after_dodge_effect(
     after_effect(ctx);
 }
 
-// fn(&mut WeaponData, &mut GravityAffected, &mut Velocity, &mut Combat, &mut Sprite, &mut Transform)
 fn start_attack(
     ctx: &mut WeaponContext
     // attack_dir: Vector2,
 ) {
     let attack_dir = ctx.combat.attack_dir;
-    steel_sword_animation(ctx.sprite, ctx.local, attack_dir);
+    steel_sword_animation(ctx.sprite, ctx.trans, ctx.local, attack_dir);
     ctx.anim_player.play(WeaponAnim::Attack.usize());
 
     ctx.weapon_d.knock_dir = attack_dir;
@@ -212,6 +218,7 @@ fn start_dodge_attack(
 }
 fn while_dodge_attacking(ctx: &mut WeaponContext) {
     while_attacking(ctx);
+
 }
 fn end_dodge_attack(ctx: &mut WeaponContext) {
     end_attack(ctx);

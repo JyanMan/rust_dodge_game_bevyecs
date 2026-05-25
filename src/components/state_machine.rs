@@ -212,3 +212,36 @@ impl <S: StateId + 'static> StateMachine <S> {
         }
     }
 }
+
+#[macro_export]
+macro_rules! create_state {
+    (
+        $state:ident,
+        // $next:ident,
+        $id:ident => $($other:ident),+
+    ) => { {
+        use $state::*;
+        use $crate::comp::state::*;
+        State {
+            exits: StateConditions::new(&[ $($other),+ ]),
+            duration: None,
+            next_state: None,
+            id: $id 
+        }
+        
+    } };
+    ($state:ident, $id:ident) => {{
+        use $state::*;
+        use $crate::comp::state::*;
+
+        State {
+            exits: StateConditions::accept_all(),
+            duration: None,
+            next_state: None,
+            id: $id
+        }
+    }}
+}
+
+pub use create_state;
+

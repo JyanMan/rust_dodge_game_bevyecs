@@ -1,35 +1,37 @@
-// pub mod weapon_system;
 pub mod steel_sword;
 pub mod zombie_arm;
 
-// pub use weapon_system::*;
-// pub use steel_sword_system::*;
-// pub use zombie_arm_system::*;
-
 use bevy_ecs::prelude::*;
-use std::collections::HashMap;
 use std::any::TypeId;
 
 use crate::components::*;
 use crate::components::states::*;
 use crate::resources::*;
 
+pub fn adjust_sprite_flip(
+    mut query: Query<(&mut Sprite, &mut WeaponConfig, &LocalTransform)>
+) {
+    for (mut sprite, _data, local) in &mut query {
+         use std::f32::consts::PI;
+        let ninety_deg = PI / 2.0;
+        let mut rot = local.rot;
+        let mut temp_offset = local.pos;
 
-pub fn per_frame_update(weapon_d: &WeaponData, obb: &mut OBB) {
-    let attack_dir = weapon_d.attack_dir;
-
-    let ang_rad = attack_dir.y.atan2(attack_dir.x);
-
-    obb.rotation = ang_rad ;
-    obb.rotate_around(Vector2::zero());
-    obb.compute_vertices();
+        // if rotated towards left, mirror the heck out of it
+        if local.rot > ninety_deg || local.rot < -ninety_deg {
+            rot -= PI;
+            temp_offset.x = -temp_offset.x;
+        }
+               
+    }
 }
 
 
+#[allow(clippy::type_complexity)]
 pub fn anim_state_update(
     mut query: Query<(
         Entity,
-        &mut WeaponData,
+        &mut WeaponConfig,
         &mut Sprite,
         &mut Transform,
         &mut LocalTransform,
@@ -37,6 +39,7 @@ pub fn anim_state_update(
         &WeaponFns,
         &mut AnimationPlayer,
         &mut StateMachine<WeaponState>,
+        &mut OBB
     )>, 
     mut owner_query: Query<(
             &mut Combat,
@@ -49,7 +52,7 @@ pub fn anim_state_update(
     >, 
     mut commands: Commands
 ) {
-    for (weapon_e, mut weapon_d, mut sprite, mut trans, mut local, owned_by, weapon_fns, mut anim_player, mut weapon_state) in &mut query {
+    for (weapon_e, mut weapon_d, mut sprite, mut trans, mut local, owned_by, weapon_fns, mut anim_player, mut weapon_state, mut obb) in &mut query {
         if weapon_state.curr_state() == WeaponState::Unowned {
             continue;
         }
@@ -86,7 +89,8 @@ pub fn anim_state_update(
                 local: &mut local,
                 anim_player: &mut anim_player,
                 combat: &mut owner_combat,
-                weapon_d: &mut weapon_d
+                weapon_d: &mut weapon_d,
+                obb: &mut obb,
             };
 
             let curr_state = weapon_state.curr_state();
@@ -100,6 +104,21 @@ pub fn anim_state_update(
 
                     let start_attack = weapon_fns.start_attack;
                     start_attack(&mut weapon_ctx);
+
+                    use std::f32::consts::PI;
+                    let ninety_deg = PI / 2.0;
+                    let mut rot = local.rot;
+
+                    // if rotated towards left, mirror the heck out of it
+                    if local.rot > ninety_deg || local.rot < -ninety_deg {
+                        rot = PI - rot;
+                        trans.scale.x = -1.0;
+                    }
+                    else {
+                        trans.scale.x = 1.0;
+                    }
+
+                    local.rot = rot;
                 },
                 WeaponState::StartDodgeAttack => {
                     combat_state.set_state(CombatState::Attacking);
@@ -147,7 +166,7 @@ pub fn anim_state_update(
 }
 
 pub fn attack_timer_and_signal_update(
-    mut query: Query<(&mut WeaponData, &mut OBB, &mut StateMachine<WeaponState>), With<HeldBy>>,
+    mut query: Query<(&mut WeaponConfig, &mut OBB, &mut StateMachine<WeaponState>), With<HeldBy>>,
     dt: Res<DeltaTime>
 ) {
     for (mut weapon_d, mut obb, mut weapon_state) in &mut query {

@@ -272,6 +272,7 @@ pub enum WeaponState {
     EndDodgeAttack,
     EndPushAttack,
 }
+
 impl StateId for WeaponState {
     fn usize(self) -> usize {
         WeaponStateDiscriminants::from(self) as usize
@@ -280,6 +281,7 @@ impl StateId for WeaponState {
         1u32 << (WeaponStateDiscriminants::from(self) as u32)
     }
 }
+
 impl WeaponState {
     pub fn idle() -> State<WeaponState> {
         State {

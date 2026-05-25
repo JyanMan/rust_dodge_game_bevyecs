@@ -63,7 +63,22 @@ pub fn spawn(world: &mut World, entity_owner: Entity) -> Entity {
                 end_dodge_attack,
             },
             state: state_machine(),
-            data: WeaponData::new(2, 800.0, attack_dur, 0.4, 0.1, WeaponState::Owned, WeaponType::ZombieArm), 
+            // data: WeaponData::new(2, 800.0, attack_dur, 0.4, 0.1, WeaponState::Owned, WeaponType::ZombieArm), 
+            data: WeaponConfig {
+                damage: 2,
+                knock_force: 800.0,
+                attacking: false,
+                // after_effect: false,
+                // attack_dur,
+                attack_timer: Timer::new(attack_dur),
+                attack_cd_timer: Timer::new(0.1),
+                after_effect_timer: Timer::new(0.1),
+                can_attack: true,
+                attack_dir: Vector2::zero(),
+                knock_dir: Vector2::zero(),
+                // state: WeaponState::Owned,
+                // WeaponType::ZombieArm
+            }, 
         },
         // EntityTagContainer(EntityTag::Weapon),
     }).id();
@@ -77,49 +92,41 @@ pub fn spawn(world: &mut World, entity_owner: Entity) -> Entity {
         AnimFrame::new(&[
             AnimData::SpriteFrame { value: 0, target: zombie_arm_e},
             AnimData::TransformLocal { value: Vector2::new(0.0, -8.0), target: zombie_arm_e},
-            AnimData::OBBUpdate { target: zombie_arm_e },
         ]),
         
         AnimFrame::new(&[
             AnimData::SpriteFrame { value: 0, target: zombie_arm_e},
             AnimData::TransformLocal { value: Vector2::new(4.0, -4.0), target: zombie_arm_e},
-            AnimData::OBBUpdate { target: zombie_arm_e },
         ]),
         
         AnimFrame::new(&[
             AnimData::SpriteFrame { value: 1, target: zombie_arm_e},
             AnimData::TransformLocal { value: Vector2::new(9.0, -2.0), target: zombie_arm_e},
-            AnimData::OBBUpdate { target: zombie_arm_e },
         ]),
         
         AnimFrame::new(&[
             AnimData::SpriteFrame { value: 1, target: zombie_arm_e},
             AnimData::TransformLocal { value: Vector2::new(11.0, 0.0), target: zombie_arm_e},
-            AnimData::OBBUpdate { target: zombie_arm_e },
         ]),
         
         AnimFrame::new(&[
             AnimData::SpriteFrame { value: 2, target: zombie_arm_e},
             AnimData::TransformLocal { value: Vector2::new(11.0, 0.0), target: zombie_arm_e},
-            AnimData::OBBUpdate { target: zombie_arm_e },
         ]),
         
         AnimFrame::new(&[
             AnimData::SpriteFrame { value: 2, target: zombie_arm_e},
             AnimData::TransformLocal { value: Vector2::new(9.0, 2.0), target: zombie_arm_e},
-            AnimData::OBBUpdate { target: zombie_arm_e },
         ]),
         
         AnimFrame::new(&[
             AnimData::SpriteFrame { value: 3, target: zombie_arm_e},
             AnimData::TransformLocal { value: Vector2::new(4.0, 4.0), target: zombie_arm_e},
-            AnimData::OBBUpdate { target: zombie_arm_e },
         ]),
         
         AnimFrame::new(&[
             AnimData::SpriteFrame { value: 3, target: zombie_arm_e},
             AnimData::TransformLocal { value: Vector2::new(0.0, 8.0), target: zombie_arm_e},
-            AnimData::OBBUpdate { target: zombie_arm_e },
         ]),
     ]);
 
@@ -146,6 +153,7 @@ pub fn zombie_arm_animation(sprite: &mut Sprite, local: &mut LocalTransform, att
 
     let attack_range: f32 = 3.0;
     local.pos = attack_dir * attack_range;
+    local.rot = angle_to_mouse;
 }
 
 pub fn while_attacking(
@@ -175,8 +183,10 @@ pub fn start_attack(
     ctx: &mut WeaponContext
 ) {
     let attack_dir = ctx.combat.attack_dir;
+    ctx.sprite.visible = true;
     zombie_arm_animation(ctx.sprite, ctx.local, attack_dir);
     ctx.anim_player.play(WeaponAnim::Attack.usize());
+
 
     ctx.weapon_d.knock_dir = attack_dir;
     ctx.weapon_d.attack_dir = attack_dir;
@@ -193,9 +203,14 @@ pub fn start_dodge_attack(
 pub fn end_attack(
     ctx: &mut WeaponContext
 ) {
+
+    ctx.sprite.visible = false;
     // ctx.anim_player.stop();
     ctx.vel.vec = Vector2::zero();
     ctx.grav.0 = true;
+
+    ctx.local.rot = 0.0;
+    ctx.local.pos = Vector2::zero();
     // combat.attacking = false;
 }
 

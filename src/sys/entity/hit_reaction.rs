@@ -25,9 +25,9 @@ pub fn update(
         Option<&mut DodgeStamina>,
         Option<&DodgeImmune>
     ), Without<EnemyTag>>,
-    weapon_query: Query<(Entity, &WeaponData)>,
+    weapon_query: Query<(Entity, &WeaponConfig)>,
     mut commands: Commands,
-    mut weapon_cache: Local<SparseSet<Entity, WeaponData>>
+    mut weapon_cache: Local<SparseSet<Entity, WeaponConfig>>
 ) {
     for (e, weapon_d) in &weapon_query {
         weapon_cache.insert(e, weapon_d.clone());

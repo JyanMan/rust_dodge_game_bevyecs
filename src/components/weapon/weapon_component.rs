@@ -7,14 +7,15 @@ use crate::components::states::*;
 pub struct WeaponContext<'a, 'w, 's> {
     pub self_e: Entity,
     pub combat: &'a mut Combat,
-    pub weapon_d: &'a mut WeaponData,
+    pub weapon_d: &'a mut WeaponConfig,
     pub commands: &'a mut Commands<'w, 's>,
     pub grav: &'a mut GravityAffected,
     pub vel: &'a mut Velocity,
     pub sprite: &'a mut Sprite,
     pub trans: &'a mut Transform,
     pub local: &'a mut LocalTransform,
-    pub anim_player: &'a mut AnimationPlayer
+    pub anim_player: &'a mut AnimationPlayer,
+    pub obb: &'a mut OBB
 }
 
 type WeaponFn = fn(&mut WeaponContext);
@@ -32,7 +33,7 @@ pub struct WeaponFns {
 }
 
 #[derive(Component, Clone)]
-pub struct WeaponData {
+pub struct WeaponConfig {
     // pub state: WeaponState,
     pub damage: i32,
     pub knock_force: f32,
@@ -40,17 +41,13 @@ pub struct WeaponData {
     pub can_attack: bool,
     pub attack_dir: Vector2, // for animation
     pub knock_dir: Vector2, // actual knock for hit targets
-    pub after_effect: bool,
+    // pub after_effect: bool,
     // pub after_effect_timer: f32,
-    pub after_effect_duration: f32,
+    // pub after_effect_duration: f32,
     pub attack_timer: Timer,
     pub after_effect_timer: Timer,
     pub attack_cd_timer: Timer,
-    // attack_cd: f32,
-    // cd_timer: f32,
-    // attack_timer: f32,
-    // attack_duration: f32,
-    owner_attack_cd: f32,
+    // owner_attack_cd: f32,
 }
 
 // impl Default for WeaponData {
@@ -75,28 +72,28 @@ pub struct WeaponData {
 //     }
 // }
 
-impl WeaponData {
-    pub fn new(damage: i32, knock_force: f32, attack_duration: f32, attack_cd: f32, after_effect_duration: f32,  state: WeaponState, w_type: WeaponType) -> Self {
-        Self {
-            damage,
-            knock_force,
-            // attack_duration,
-            after_effect: false,
-            // after_effect_timer: 0.0,
-            after_effect_duration,
-            attack_dir: Vector2::zero(),
-            knock_dir: Vector2::zero(),
-            // attack_timer: 0.0,
-            attacking: false,
-            can_attack: true,
-            attack_timer: Timer::new(attack_duration),
-            attack_cd_timer: Timer::new(attack_cd),
-            after_effect_timer: Timer::new(after_effect_duration),
-            // attack_cd,
-            // cd_timer: 0.0,
-            owner_attack_cd: 0.0,
-        }
-    }
+impl WeaponConfig {
+    // pub fn new(damage: i32, knock_force: f32, attack_duration: f32, attack_cd: f32, after_effect_duration: f32,  state: WeaponState, w_type: WeaponType) -> Self {
+    //     Self {
+    //         damage,
+    //         knock_force,
+    //         // attack_duration,
+    //         after_effect: false,
+    //         // after_effect_timer: 0.0,
+    //         after_effect_duration,
+    //         attack_dir: Vector2::zero(),
+    //         knock_dir: Vector2::zero(),
+    //         // attack_timer: 0.0,
+    //         attacking: false,
+    //         can_attack: true,
+    //         attack_timer: Timer::new(attack_duration),
+    //         attack_cd_timer: Timer::new(attack_cd),
+    //         after_effect_timer: Timer::new(after_effect_duration),
+    //         // attack_cd,
+    //         // cd_timer: 0.0,
+    //         owner_attack_cd: 0.0,
+    //     }
+    // }
 
     // pub fn attack_timer(&mut self, delta_time: f32, state: &mut StateMachine<WeaponState>) {
     //     assert!(self.attacking);

@@ -2,11 +2,13 @@ use super::Vector2;
 use bevy_ecs::prelude::*;
 
 #[derive(Component, Debug, Copy, Clone, Default, PartialEq)]
+#[require(LocalTransform)]
 #[component(storage = "Table")]
 pub struct Transform {
     pub pos: Vector2,
     // pub local: Vector2,
     pub rot: f32,
+    pub scale: Vector2,
 }
 
 #[derive(Component, Debug, Copy, Clone, Default, PartialEq)]
@@ -23,6 +25,7 @@ impl Transform {
             pos: Vector2::new( x, y ), 
             // local: Vector2::zero(),
             rot: 0.0,
+            scale: Vector2::new(1.0, 1.0)
         }
     }
     pub fn zero() -> Self {
@@ -30,6 +33,7 @@ impl Transform {
             pos: Vector2::new( 0.0, 0.0 ), 
             // local: Vector2::zero() ,
             rot: 0.0,
+            scale: Vector2::new(1.0, 1.0)
         }
     }
 }

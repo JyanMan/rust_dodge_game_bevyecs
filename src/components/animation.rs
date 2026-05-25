@@ -10,7 +10,6 @@ pub enum AnimData {
     TransformLocal { value: Vector2, target: Entity },
     // OBBOffset { offset: Vector2, target: Entity },
     Debug { msg: String },
-    OBBUpdate { target: Entity }
 }
 
 #[derive(Clone)]
