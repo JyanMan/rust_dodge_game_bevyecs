@@ -12,7 +12,7 @@ pub struct Sprite {
     // texture: Option<Rc<Texture<'static>>>,
     texture_id: TextureId,
     pub visible: bool,
-    pub scale: f32,
+    pub scale: Vector2,
     hor: i32,
     vert: i32,
     pub angle: f64,
@@ -34,7 +34,7 @@ impl Sprite {
             texture_id: t_id,
             visible: true,
            // texture: Some(texture),
-           scale: 1.0,
+           scale: Vector2::new(1.0, 1.0),
            hor: 1,
            vert: 1,
            angle: 0.0,
@@ -55,11 +55,17 @@ impl Sprite {
         self.height = (self.px_h / self.vert) as f32;
     }
 
-    pub fn draw(&self, renderer: &mut Renderer, pos: &Vector2, scale: f32) {
+    pub fn draw(&self, renderer: &mut Renderer, pos: &Vector2, scale: Vector2) {
         self.draw_frame_angle(renderer, pos, scale, self.frame, self.angle);
     }
 
-    pub fn draw_frame_angle(&self, renderer: &mut Renderer, pos: &Vector2, scale: f32, frame: i32, angle: f64) {
+    pub fn draw_frame_angle(&self, renderer: &mut Renderer, pos: &Vector2, scale: Vector2, frame: i32, angle: f64) {
+
+        let scale_x = scale.x.abs();
+        let scale_y = scale.y.abs();
+
+        let flip_x = if scale.x >= 0.0 {self.flip_x} else {!self.flip_x};
+        let flip_y = if scale.y >= 0.0 {self.flip_y} else {!self.flip_y};
 
         let frame_x: i32 = self.width as i32 * (frame % self.hor);
         let frame_y: i32 = self.height as i32 * (frame / self.hor);
@@ -70,8 +76,8 @@ impl Sprite {
         let dest_rect = Rect::new(
             pos.x.round() as i32,         
             pos.y.round() as i32,
-            (self.width * scale).round() as u32, // scale
-            (self.height * scale).round() as u32 // scale
+            (self.width * scale_x).round() as u32, // scale
+            (self.height * scale_y).round() as u32 // scale
         );
 
         let texture = renderer.asset_m.get_texture(self.texture_id);
@@ -83,8 +89,8 @@ impl Sprite {
             dest_rect,
             angle,
             None,
-            self.flip_x,
-            self.flip_y,
+            flip_x,
+            flip_y,
         );
     }
 }

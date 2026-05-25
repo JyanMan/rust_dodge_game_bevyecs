@@ -151,9 +151,9 @@ pub fn steel_sword_animation(sprite: &mut Sprite, trans: &mut Transform, local: 
 
     // convert normalized vec to ang in deg
     let angle_to_mouse = attack_dir.y.atan2(attack_dir.x);
-    let angle_deg = angle_to_mouse as f64 * (180.0 / PI) as f64;
-    // adjust sprite angle
-    sprite.angle = angle_deg; // to make it point forward
+    // let angle_deg = angle_to_mouse as f64 * (180.0 / PI);
+    // // adjust sprite angle
+    // sprite.angle = angle_deg; // to make it point forward
 
 
     let attack_range: f32 = 3.0;

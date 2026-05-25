@@ -14,6 +14,25 @@ pub fn sprites_draw(query: Query<(&Transform, &Sprite), (Without<HealthBarTag>, 
     }
 }
 
+pub fn sprite_update_trans(
+    mut query: Query<(&mut Sprite, &LocalTransform, &Transform)>
+) {
+    for (mut sprite, local, trans) in &mut query {
+        use std::f64::consts::PI;
+        let angle_deg = local.rot as f64 * (180.0 / PI);
+        if trans.scale.x < 0.0 {
+            sprite.flip_x = true;
+            sprite.flip_y = true;
+        }
+        else {
+            sprite.flip_x = false;
+            sprite.flip_y = false;
+        }
+        // adjust sprite angle
+        sprite.angle = angle_deg; // to make it point forward
+    }
+}
+
 pub fn texts_draw(
     mut query: Query<(&mut TextObject, &Transform)>,
     mut renderer: NonSendMut<Renderer>

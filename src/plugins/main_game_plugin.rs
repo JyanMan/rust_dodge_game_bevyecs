@@ -15,6 +15,9 @@ pub struct MainGame;
 impl Plugin for MainGame {
     fn build(&self, app: &mut App) {
 
+        app.add_plugins(EntityPlugin);
+        app.add_plugins(WorldPlugin);
+
         app.init_resource::<DeltaTime>();
         app.init_resource::<TimeStep>();
         app.init_resource::<KeyInput>();
@@ -26,36 +29,33 @@ impl Plugin for MainGame {
             )
         );
 
-        app.add_systems(Startup, (
-            sys::world::chunks::init,
-        ));
-
-        app.add_systems(PreUpdate, 
-            sys::entity::health::update,
-        );
         app.add_systems(Update, (
-            sys::entity::dying::update,
-            sys::entity::dodge_stamina::update_sprites,
-            sys::entity::health::player::health_bar_update,
+            // sys::entity::dying::update,
+            // sys::entity::dodge_stamina::update_sprites,
+            // sys::entity::health::player::health_bar_update,
+
+            sys::render::sprite_update_trans,
+
             // sys::entity::hit_reaction::set_knocked_as_stunned,
             sys::weapon::lost_owner,
-            sys::world::damage_counter::update,
-            sys::world::damage_counter::despawn_update,
+            // sys::world::damage_counter::update,
+            // sys::world::damage_counter::despawn_update,
             sys::anim::update_all,
             // sys::entity::health::update,
             sys::weapon::newly_owned,
             sys::entity::status::damage_over_time,
         ));
-        app.add_systems(FixedPostUpdate, (
-            sys::entity::hit_reaction::update,
-            sys::world::chunks::generate,
-            sys::entity::status::inflictor::<DamageOverTime>,
-            sys::world::entity_quad::generate,
-            sys::world::camera::update,
-        ));
+        // app.add_systems(FixedPostUpdate, (
+        //     // sys::entity::hit_reaction::update,
+        //     // sys::entity::status::inflictor::<DamageOverTime>,
+
+        //     sys::world::chunks::generate,
+        //     sys::world::entity_quad::generate,
+        //     sys::world::camera::update,
+        // ));
 
         app.add_systems(Render, (
-            sys::world::chunks::draw.before(sys::render::sprites_draw),
+            // sys::world::chunks::draw.before(sys::render::sprites_draw),
             sys::render::sprites_draw,
             sys::render::texts_draw.after(sys::render::sprites_draw),
         ));
@@ -66,8 +66,8 @@ impl Plugin for MainGame {
         ));
 
         app.add_systems(Input, (
+            // sys::entity::player::input_update,
             user_input,
-            sys::entity::player::input_update
         ));
     }
 }
@@ -84,7 +84,7 @@ pub fn init_spawn(world: &mut World) {
     let player_e = sys::entity::player::spawn(world);
     sys::weapon::steel_sword::spawn(world, player_e);
     sys::entity::health::player::health_bar_spawn(world);
-    sys::entity::zombie::mass_spawn(world);
+    // sys::entity::zombie::mass_spawn(world);
 }
 
 

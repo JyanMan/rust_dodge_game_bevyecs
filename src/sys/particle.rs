@@ -21,7 +21,7 @@ pub fn spawn(
         &renderer.asset_m,
         texture
     );
-    sprite.scale = scale;
+    sprite.scale = Vector2::new(scale, scale);
     if gravity {
         world.spawn((
             sprite,

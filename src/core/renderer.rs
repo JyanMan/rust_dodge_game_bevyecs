@@ -43,12 +43,12 @@ impl Renderer {
         (pos - self.camera.get_pos()) * cam_scale
     }
 
-    pub fn draw(&mut self, sprite: &Sprite, pos: Vector2, scale: f32) {
+    pub fn draw(&mut self, sprite: &Sprite, pos: Vector2, scale: Vector2) {
         let cam_scale = self.camera.scale;
         sprite.draw(self, &pos, scale * cam_scale);
     }
 
-    pub fn draw_frame_to_cam(&mut self, sprite: &Sprite, pos: Vector2, scale: f32, frame: i32, angle: f64) {
+    pub fn draw_frame_to_cam(&mut self, sprite: &Sprite, pos: Vector2, scale: Vector2, frame: i32, angle: f64) {
         let cam_scale = self.camera.scale;
 
         let half_width = Vector2::new(sprite.width / 2.0, sprite.height / 2.0);
@@ -59,7 +59,7 @@ impl Renderer {
         sprite.draw_frame_angle(self, &pos_cam_adjusted, scale * cam_scale, frame, angle);
     }
 
-    pub fn draw_to_cam(&mut self, sprite: &Sprite, pos: Vector2, scale: f32) {
+    pub fn draw_to_cam(&mut self, sprite: &Sprite, pos: Vector2, scale: Vector2) {
         self.draw_frame_to_cam(sprite, pos, scale, sprite.frame, sprite.angle);
         // let cam_scale = self.camera.scale;
         // let adjusted_pos = (pos - self.camera.get_pos()) * cam_scale;
