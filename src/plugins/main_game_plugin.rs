@@ -45,15 +45,15 @@ impl Plugin for MainGame {
             sys::weapon::newly_owned,
             sys::entity::status::damage_over_time,
         ));
-        // app.add_systems(FixedPostUpdate, (
+        app.add_systems(FixedUpdate, (
+            sys::weapon::steel_sword::idle_state,
         //     // sys::entity::hit_reaction::update,
         //     // sys::entity::status::inflictor::<DamageOverTime>,
 
         //     sys::world::chunks::generate,
         //     sys::world::entity_quad::generate,
         //     sys::world::camera::update,
-        // ));
-
+        ));
         app.add_systems(Render, (
             // sys::world::chunks::draw.before(sys::render::sprites_draw),
             sys::render::sprites_draw,

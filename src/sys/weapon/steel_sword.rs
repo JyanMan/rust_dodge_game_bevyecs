@@ -34,9 +34,7 @@ pub fn spawn(world: &mut World, entity_owner: Entity) -> Entity {
     let steel_sword_e = world.spawn(SteelSwordBundle {
         sprite,
         tag: SteelSwordTag,
-        prev_pos: PrevPos{
-            num_frames_delay: 0, pos: Vector2::zero()
-        },
+        prev_pos: PrevPos::default(),
         anim_player: AnimationPlayer::new(WeaponAnim::COUNT),
         held: HeldBy(entity_owner),
         parent: AttachedTo(entity_owner),
@@ -198,24 +196,38 @@ pub fn idle_state(
 
         let (user_vel, user_trans) = user_set.get(heldby.0).expect("somehow weapon has user without velocity component");
 
-        if prev_pos.num_frames_delay >= 4 {
-
-            let pos_delay = crate::math_helper::lerp_pos(&(prev_pos.pos - user_trans.pos), &local.origin, 0.2);
-
-            sprite.angle = 45.0;
-            local.pos = Vector2::new(8.0, 8.0) + pos_delay;
-            prev_pos.num_frames_delay = 0;
-        } 
-
-        prev_pos.pos = user_trans.pos; 
-        prev_pos.num_frames_delay += 1;
-
         if user_vel.vec.x < 0.0 {
             trans.scale.x = -trans.scale.x.abs();
         }
         else if user_vel.vec.x > 0.0 {
             trans.scale.x = trans.scale.x.abs();
         }
+
+        if !prev_pos.pos.is_empty()
+        && let Some(actual_prev_pos) = prev_pos.pos.pop_front(){
+
+            const MAX_BEND: f32 = 30.0;
+
+            let pos_delay = actual_prev_pos - user_trans.pos;
+
+            let mut angle_bend = pos_delay * 1.5;
+
+            angle_bend.y = if angle_bend.y.abs() >= MAX_BEND {
+                angle_bend.y.signum() * MAX_BEND
+            } else {angle_bend.y};
+
+            angle_bend.x = if angle_bend.x.abs() >= MAX_BEND {
+                angle_bend.x.signum() * MAX_BEND
+            } else {angle_bend.x};
+
+            sprite.angle = 50.0 + (-angle_bend.x + angle_bend.y) as f64;
+            local.pos = Vector2::new(8.0, 8.0) + pos_delay;
+            // prev_pos.num_frames_delay = 0;
+        } 
+
+        prev_pos.pos.push_back(user_trans.pos); 
+        // prev_pos.num_frames_delay += 1;
+
     }
 }
 

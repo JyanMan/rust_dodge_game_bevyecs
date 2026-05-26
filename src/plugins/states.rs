@@ -15,7 +15,6 @@ impl Plugin for States {
             sys::entity::player::state_handler,
             sys::entity::player::stat_update,
             sys::weapon::anim_state_update,
-            sys::weapon::steel_sword::idle_state,
             sys::anim::walker::anim_state_handler,
         ));
     }
