@@ -20,16 +20,16 @@ pub fn sprite_update_trans(
     for (mut sprite, local, trans) in &mut query {
         use std::f64::consts::PI;
         let angle_deg = local.rot as f64 * (180.0 / PI);
+
+        // adjust sprite angle
         if trans.scale.x < 0.0 {
+            sprite.angle = -angle_deg;
             sprite.flip_x = true;
-            sprite.flip_y = true;
         }
         else {
+            sprite.angle = angle_deg;
             sprite.flip_x = false;
-            sprite.flip_y = false;
         }
-        // adjust sprite angle
-        sprite.angle = angle_deg; // to make it point forward
     }
 }
 

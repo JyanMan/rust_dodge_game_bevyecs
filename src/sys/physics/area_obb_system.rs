@@ -12,7 +12,15 @@ pub fn obb_update(
 ) {
     query.par_iter_mut().for_each(|(trans, local, mut obb)| {
         obb.center = trans.pos + obb.offset;
-        obb.rotation = local.rot;
+
+        // TODO: this does not work as an actual flip, the object will just fix its rotation
+        // still only facing the 1st and 4th quadrant
+        if trans.scale.x < 0.0 {
+            obb.rotation = -local.rot;
+        }
+        else {
+            obb.rotation = local.rot;
+        }
         obb.compute_vertices();
     });
 }

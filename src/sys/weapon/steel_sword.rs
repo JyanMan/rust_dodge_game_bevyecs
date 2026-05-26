@@ -94,37 +94,37 @@ pub fn spawn(world: &mut World, entity_owner: Entity) -> Entity {
         AnimFrame::new(&[
             // AnimData::SpriteFrame { value: 0, target: steel_sword_e},
             // AnimData::TransformLocal { value: Vector2::new(8.0, -13.0), target: steel_sword_e},
-            AnimData::TransformLocal { value: Vector2::new(8.0, -13.0), target: steel_sword_e},
+            AnimData::TransformLocal { value: Vector2::new(10.0, -13.0), target: steel_sword_e},
         ]),
         
         AnimFrame::new(&[
             // AnimData::SpriteFrame { value: 1, target: steel_sword_e},
             // AnimData::TransformLocal { value: Vector2::new(14.0, -6.0), target: steel_sword_e},
-            AnimData::TransformLocal { value: Vector2::new(14.0, -6.0), target: steel_sword_e},
+            AnimData::TransformLocal { value: Vector2::new(20.0, -6.0), target: steel_sword_e},
         ]),
         
         AnimFrame::new(&[
             // AnimData::SpriteFrame { value: 1, target: steel_sword_e},
             // AnimData::TransformLocal { value: Vector2::new(18.0, 0.0), target: steel_sword_e},
-            AnimData::TransformLocal { value: Vector2::new(18.0, 0.0), target: steel_sword_e},
+            AnimData::TransformLocal { value: Vector2::new(25.0, 0.0), target: steel_sword_e},
         ]),
         
         AnimFrame::new(&[
             // AnimData::SpriteFrame { value: 2, target: steel_sword_e},
             // AnimData::TransformLocal { value: Vector2::new(18.0, 0.0), target: steel_sword_e},
-            AnimData::TransformLocal { value: Vector2::new(18.0, 0.0), target: steel_sword_e},
+            AnimData::TransformLocal { value: Vector2::new(25.0, 0.0), target: steel_sword_e},
         ]),
         
         AnimFrame::new(&[
             // AnimData::SpriteFrame { value: 2, target: steel_sword_e},
             // AnimData::TransformLocal { value: Vector2::new(14.0, 6.0), target: steel_sword_e},
-            AnimData::TransformLocal { value: Vector2::new(14.0, 6.0), target: steel_sword_e},
+            AnimData::TransformLocal { value: Vector2::new(20.0, 6.0), target: steel_sword_e},
         ]),
         
         AnimFrame::new(&[
             // AnimData::SpriteFrame { value: 3, target: steel_sword_e},
             // AnimData::TransformLocal { value: Vector2::new(8.0, 13.0), target: steel_sword_e},
-            AnimData::TransformLocal { value: Vector2::new(8.0, 13.0), target: steel_sword_e},
+            AnimData::TransformLocal { value: Vector2::new(10.0, 13.0), target: steel_sword_e},
         ]),
         
         AnimFrame::new(&[
@@ -142,12 +142,12 @@ pub fn spawn(world: &mut World, entity_owner: Entity) -> Entity {
 pub fn steel_sword_animation(sprite: &mut Sprite, trans: &mut Transform, local: &mut LocalTransform, attack_dir: Vector2) {
     // flip y if left side 
     // this allows animation to be consistent not flipped on another direction
-    if attack_dir.x < 0.0 {
-        sprite.flip_y = true;
-    }
-    else if attack_dir.x > 0.0 {
-        sprite.flip_y = false;
-    }
+    // if attack_dir.x < 0.0 {
+    //     sprite.flip_y = true;
+    // }
+    // else if attack_dir.x > 0.0 {
+    //     sprite.flip_y = false;
+    // }
 
     // convert normalized vec to ang in deg
     let angle_to_mouse = attack_dir.y.atan2(attack_dir.x);

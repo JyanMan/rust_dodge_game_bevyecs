@@ -150,7 +150,18 @@ impl OBB {
     pub fn draw(&self, renderer: &mut Renderer) {
         let cam_pos = renderer.camera.get_pos();
         let cam_scale = renderer.camera.get_scale();
-        for i in 0..4 {
+        for i in 0..1 {
+            let a = (self.vertices[(i+1) % 4] - cam_pos)
+                * cam_scale;
+            let b = (self.vertices[i] - cam_pos)
+                * cam_scale;
+            renderer.canvas.set_draw_color(Color::RGB(0, 255, 0));
+            let _ = renderer.canvas.draw_line(
+                Point::new(a.x.round() as i32, a.y.round() as i32), 
+                Point::new(b.x.round() as i32, b.y.round() as i32)
+            );
+        }
+        for i in 1..4 {
             let a = (self.vertices[(i+1) % 4] - cam_pos)
                 * cam_scale;
             let b = (self.vertices[i] - cam_pos)
