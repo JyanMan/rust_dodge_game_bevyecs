@@ -29,9 +29,15 @@ pub fn update_all(
 
         for anim_data in curr_anim.curr_frame().data.iter() {
             match anim_data {
+                // TODO: you can optimize querying for sprite just once for angle and frame change
                 AnimData::SpriteFrame { value, target } => {
                     if let Ok(mut sprite) = sprite_query.get_mut(*target) {
                         sprite.frame = *value;
+                    }
+                },
+                AnimData::SpriteAngle { value, target } => {
+                    if let Ok(mut sprite) = sprite_query.get_mut(*target) {
+                        sprite.angle = *value;
                     }
                 },
                 // AnimData::OBBOffset { offset, target } => {

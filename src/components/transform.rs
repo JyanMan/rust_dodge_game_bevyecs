@@ -7,7 +7,7 @@ use bevy_ecs::prelude::*;
 pub struct Transform {
     pub pos: Vector2,
     // pub local: Vector2,
-    pub rot: f32,
+    pub rot: f64,
     pub scale: Vector2,
 }
 

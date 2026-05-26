@@ -23,6 +23,7 @@ pub mod stamina;
 pub mod status;
 pub mod dying;
 pub mod parent;
+pub mod rotation_offset;
 
 pub mod states;
 
@@ -51,3 +52,4 @@ pub use stamina::*;
 pub use status::*;
 pub use dying::*;
 pub use parent::*;
+pub use rotation_offset::*;

@@ -59,8 +59,8 @@ impl Renderer {
         sprite.draw_frame_angle(self, &pos_cam_adjusted, scale * cam_scale, frame, angle);
     }
 
-    pub fn draw_to_cam(&mut self, sprite: &Sprite, pos: Vector2, scale: Vector2) {
-        self.draw_frame_to_cam(sprite, pos, scale, sprite.frame, sprite.angle);
+    pub fn draw_to_cam(&mut self, sprite: &Sprite, pos: Vector2, scale: Vector2, angle: f64) {
+        self.draw_frame_to_cam(sprite, pos, scale, sprite.frame, angle);
         // let cam_scale = self.camera.scale;
         // let adjusted_pos = (pos - self.camera.get_pos()) * cam_scale;
         // sprite.draw(self, &adjusted_pos, scale * cam_scale);

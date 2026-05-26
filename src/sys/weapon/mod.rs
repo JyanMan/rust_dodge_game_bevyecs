@@ -2,30 +2,12 @@ pub mod steel_sword;
 pub mod zombie_arm;
 
 use bevy_ecs::prelude::*;
+use bevy_ecs::storage::SparseSet;
 use std::any::TypeId;
 
 use crate::components::*;
 use crate::components::states::*;
 use crate::resources::*;
-
-pub fn adjust_sprite_flip(
-    mut query: Query<(&mut Sprite, &mut WeaponConfig, &LocalTransform)>
-) {
-    for (mut sprite, _data, local) in &mut query {
-         use std::f32::consts::PI;
-        let ninety_deg = PI / 2.0;
-        let mut rot = local.rot;
-        let mut temp_offset = local.pos;
-
-        // if rotated towards left, mirror the heck out of it
-        if local.rot > ninety_deg || local.rot < -ninety_deg {
-            rot -= PI;
-            temp_offset.x = -temp_offset.x;
-        }
-               
-    }
-}
-
 
 #[allow(clippy::type_complexity)]
 pub fn anim_state_update(
@@ -39,7 +21,7 @@ pub fn anim_state_update(
         &WeaponFns,
         &mut AnimationPlayer,
         &mut StateMachine<WeaponState>,
-        &mut OBB
+        &mut OBB,
     )>, 
     mut owner_query: Query<(
             &mut Combat,
@@ -61,25 +43,7 @@ pub fn anim_state_update(
 
         if let Ok((mut owner_combat, mut vel, mut grav_affected, mut combat_state, held_item)) = owner_query.get_mut(owner_entity) {
 
-            match held_item.action {
-                Action::Idle => {},
-                Action::Use => {
-                    if weapon_d.can_attack {
-                        combat_state.set_state(CombatState::StartAttack);
-                        weapon_state.set_state(WeaponState::StartAttack);
-                        weapon_d.attack(owner_combat.attack_cd);
-                    }
-                },
-                Action::ShiftUse => {
-                    if weapon_d.can_attack {
-                        combat_state.set_state(CombatState::StartAttack);
-                        weapon_state.set_state(WeaponState::StartDodgeAttack);
-                        weapon_d.attack(owner_combat.attack_cd);
-                    }
-                }
-            }
-
-            let mut weapon_ctx = WeaponContext {
+            let mut ctx = WeaponContext {
                 self_e: weapon_e,
                 commands: &mut commands,
                 grav: &mut grav_affected,
@@ -93,6 +57,26 @@ pub fn anim_state_update(
                 obb: &mut obb,
             };
 
+            match held_item.action {
+                Action::Idle => {
+                },
+                Action::Use => {
+                    if ctx.weapon_d.can_attack {
+                        combat_state.set_state(CombatState::StartAttack);
+                        weapon_state.set_state(WeaponState::StartAttack);
+                        ctx.weapon_d.attack(ctx.combat.attack_cd);
+                    }
+                },
+                Action::ShiftUse => {
+                    if ctx.weapon_d.can_attack {
+                        combat_state.set_state(CombatState::StartAttack);
+                        weapon_state.set_state(WeaponState::StartDodgeAttack);
+                        ctx.weapon_d.attack(ctx.combat.attack_cd);
+                    }
+                }
+            }
+
+
             let curr_state = weapon_state.curr_state();
 
             // println!("curr weaopn state: {:?}", curr_state);
@@ -103,14 +87,15 @@ pub fn anim_state_update(
                     weapon_state.set_state(WeaponState::Attacking);
 
                     let start_attack = weapon_fns.start_attack;
-                    start_attack(&mut weapon_ctx);
+                    start_attack(&mut ctx);
+                    println!("started attack");
 
                     use std::f32::consts::PI;
                     let ninety_deg = PI / 2.0;
                     let mut rot = local.rot;
 
                     // if rotated towards left, mirror the heck out of it
-                    if local.rot > ninety_deg || local.rot < -ninety_deg {
+                    if weapon_d.attack_dir.x < 0.0 {
                         rot = PI - rot;
                         trans.scale.x = -1.0;
                     }
@@ -125,39 +110,40 @@ pub fn anim_state_update(
                     weapon_state.set_state(WeaponState::DodgeAttacking);
 
                     let start_dodge_attack = weapon_fns.start_dodge_attack;
-                    start_dodge_attack(&mut weapon_ctx);
+                    start_dodge_attack(&mut ctx);
                 },
                 WeaponState::Attacking => {
                     let while_attacking = weapon_fns.while_attacking;
-                    while_attacking(&mut weapon_ctx);
+                    while_attacking(&mut ctx);
 
                 },
                 WeaponState::DodgeAttacking => {
                     let while_dodge_attacking = weapon_fns.while_dodge_attacking;
-                    while_dodge_attacking(&mut weapon_ctx);
+                    while_dodge_attacking(&mut ctx);
 
                 },
                 WeaponState::AfterEffectAttack => {
                     let after_effect = weapon_fns.after_effect;
-                    after_effect(&mut weapon_ctx);
+                    after_effect(&mut ctx);
                 },
                 WeaponState::AfterEffectDodgeAttack => {
                     let after_dodge_effect= weapon_fns.after_dodge_effect;
-                    after_dodge_effect(&mut weapon_ctx);
+                    after_dodge_effect(&mut ctx);
                 },
                 WeaponState::EndAttack => {
                     // weapon_d.state = WeaponState::Idle;
                     weapon_state.set_state(WeaponState::Idle);
+                    println!("end attack");
                     combat_state.set_state(CombatState::StopAttacking);
                     let end_attack = weapon_fns.end_attack;
-                    end_attack(&mut weapon_ctx);
+                    end_attack(&mut ctx);
                 },
                 WeaponState::EndDodgeAttack => {
                     // weapon_d.state = WeaponState::Idle;
                     weapon_state.set_state(WeaponState::Idle);
                     combat_state.set_state(CombatState::StopAttacking);
                     let end_dodge_attack = weapon_fns.end_dodge_attack;
-                    end_dodge_attack(&mut weapon_ctx);
+                    end_dodge_attack(&mut ctx);
                 },
                 _ => {}
             }

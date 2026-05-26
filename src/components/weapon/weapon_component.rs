@@ -32,6 +32,13 @@ pub struct WeaponFns {
     pub end_dodge_attack: WeaponFn,
 }
 
+pub struct WeaponIdleContext<'a> {
+    pub local: &'a mut LocalTransform,
+    pub trans: &'a mut Transform,
+    pub sprite: &'a mut Sprite,
+    pub user_vel: &'a Velocity,
+}
+
 #[derive(Component, Clone)]
 pub struct WeaponConfig {
     // pub state: WeaponState,

@@ -138,21 +138,21 @@ pub fn spawn(world: &mut World, entity_owner: Entity) -> Entity {
 pub fn zombie_arm_animation(sprite: &mut Sprite, local: &mut LocalTransform, attack_dir: Vector2) {
     // flip y if left side 
     // this allows animation to be consistent not flipped on another direction
-    if attack_dir.x < 0.0 {
-        sprite.flip_y = true;
-    }
-    else if attack_dir.x > 0.0 {
-        sprite.flip_y = false;
-    }
+    // if attack_dir.x < 0.0 {
+    //     sprite.flip_y = true;
+    // }
+    // else if attack_dir.x > 0.0 {
+    //     sprite.flip_y = false;
+    // }
 
     // convert normalized vec to ang in deg
     let angle_to_mouse = attack_dir.y.atan2(attack_dir.x);
-    let angle_deg = angle_to_mouse as f64 * (180.0 / PI);
-    // adjust sprite angle
-    sprite.angle = angle_deg;
+    // let angle_deg = angle_to_mouse as f64 * (180.0 / PI);
+    // // adjust sprite angle
+    // sprite.angle = angle_deg;
 
-    let attack_range: f32 = 3.0;
-    local.pos = attack_dir * attack_range;
+    // let attack_range: f32 = 3.0;
+    // local.pos = attack_dir * attack_range;
     local.rot = angle_to_mouse;
 }
 
@@ -247,3 +247,5 @@ fn state_machine() -> StateMachine<WeaponState> {
     state_m.add_state(WeaponState::end_push_attack());
     state_m
 }
+
+fn idle_fn(_ctx: &mut WeaponIdleContext) { }

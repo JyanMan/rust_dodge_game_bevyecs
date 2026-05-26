@@ -8,6 +8,7 @@ use crate::components::Vector2;
 pub enum AnimData {
     SpriteFrame { value: i32, target: Entity },
     TransformLocal { value: Vector2, target: Entity },
+    SpriteAngle { value: f64, target: Entity },
     // OBBOffset { offset: Vector2, target: Entity },
     Debug { msg: String },
 }
