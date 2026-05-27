@@ -14,8 +14,11 @@ impl Plugin for WeaponPlugin {
             sys::weapon::lost_owner,
             sys::weapon::newly_owned,
         ));
-        app.add_systems(PostUpdate, (
+        app.add_systems(FixedPreUpdate, (
             sys::weapon::anim_state_update,
+        ));
+        app.add_systems(FixedUpdate, (
+            sys::weapon::steel_sword::idle_state,
         ));
     }
 }

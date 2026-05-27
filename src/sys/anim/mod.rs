@@ -6,6 +6,8 @@ use crate::resources::DeltaTime;
 use crate::components::*;
 use crate::sys;
 
+// TODO: create the component based animation system
+// e.g. AnimData<Sprite>
 #[allow(unused_mut)]
 pub fn update_all(
     mut query: Query<&mut AnimationPlayer>, 

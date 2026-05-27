@@ -191,6 +191,7 @@ pub fn idle_state(
     for (mut local, mut trans, mut prev_pos, mut sprite, state, heldby) in &mut set.p0() {
 
         if state.curr_state() != WeaponState::Idle {
+            prev_pos.pos.clear();
             continue;
         }
 
@@ -220,8 +221,9 @@ pub fn idle_state(
                 angle_bend.x.signum() * MAX_BEND
             } else {angle_bend.x};
 
-            sprite.angle = 50.0 + (-angle_bend.x + angle_bend.y) as f64;
-            local.pos = Vector2::new(8.0, 8.0) + pos_delay;
+            // use x axis absolute value since weapon is flipped along x axis
+            sprite.angle = 50.0 + (angle_bend.x.abs() + angle_bend.y) as f64;
+            local.pos = Vector2::new(8.0 - pos_delay.x.abs(), 8.0 + pos_delay.y) ;
             // prev_pos.num_frames_delay = 0;
         } 
 

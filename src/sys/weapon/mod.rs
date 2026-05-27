@@ -9,6 +9,22 @@ use crate::components::*;
 use crate::components::states::*;
 use crate::resources::*;
 
+fn default_start_attack(ctx: &mut WeaponContext) {
+    use std::f32::consts::PI;
+    let mut rot = ctx.local.rot;
+
+    // if rotated towards left, mirror the heck out of it
+    if ctx.weapon_d.attack_dir.x < 0.0 {
+        rot = PI - rot;
+        ctx.trans.scale.x = -1.0;
+    }
+    else {
+        ctx.trans.scale.x = 1.0;
+    }
+
+    ctx.local.rot = rot;
+}
+
 #[allow(clippy::type_complexity)]
 pub fn anim_state_update(
     mut query: Query<(
@@ -90,20 +106,8 @@ pub fn anim_state_update(
                     start_attack(&mut ctx);
                     println!("started attack");
 
-                    use std::f32::consts::PI;
-                    let ninety_deg = PI / 2.0;
-                    let mut rot = local.rot;
+                    default_start_attack(&mut ctx);
 
-                    // if rotated towards left, mirror the heck out of it
-                    if weapon_d.attack_dir.x < 0.0 {
-                        rot = PI - rot;
-                        trans.scale.x = -1.0;
-                    }
-                    else {
-                        trans.scale.x = 1.0;
-                    }
-
-                    local.rot = rot;
                 },
                 WeaponState::StartDodgeAttack => {
                     combat_state.set_state(CombatState::Attacking);
@@ -111,6 +115,8 @@ pub fn anim_state_update(
 
                     let start_dodge_attack = weapon_fns.start_dodge_attack;
                     start_dodge_attack(&mut ctx);
+
+                    default_start_attack(&mut ctx);
                 },
                 WeaponState::Attacking => {
                     let while_attacking = weapon_fns.while_attacking;

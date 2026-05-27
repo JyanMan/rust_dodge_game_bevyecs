@@ -6,6 +6,7 @@ pub mod physics;
 pub mod tags_handle;
 pub mod entity;
 pub mod world;
+pub mod weapon;
 
 pub use sdl_plugin::*;
 pub use main_game_plugin::*;
@@ -15,3 +16,4 @@ pub use physics::*;
 pub use tags_handle::*;
 pub use entity::*;
 pub use world::*;
+pub use weapon::*;
