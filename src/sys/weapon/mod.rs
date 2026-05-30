@@ -104,7 +104,6 @@ pub fn anim_state_update(
 
                     let start_attack = weapon_fns.start_attack;
                     start_attack(&mut ctx);
-                    println!("started attack");
 
                     default_start_attack(&mut ctx);
 
@@ -139,7 +138,6 @@ pub fn anim_state_update(
                 WeaponState::EndAttack => {
                     // weapon_d.state = WeaponState::Idle;
                     weapon_state.set_state(WeaponState::Idle);
-                    println!("end attack");
                     combat_state.set_state(CombatState::StopAttacking);
                     let end_attack = weapon_fns.end_attack;
                     end_attack(&mut ctx);

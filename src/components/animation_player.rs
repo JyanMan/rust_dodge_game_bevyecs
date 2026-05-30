@@ -8,7 +8,8 @@ pub struct AnimationPlayer {
     playing: bool,
     curr_anim: usize,
     num_anims: usize,
-    anims: Vec<Animation>
+    anims: Vec<Animation>,
+    pub elapsed: f32
 }
 
 impl AnimationPlayer {
@@ -21,7 +22,8 @@ impl AnimationPlayer {
             playing: false,
             curr_anim: 0,
             num_anims,
-            anims
+            anims,
+            elapsed: 0.0
         }
     }
     pub fn play(&mut self, index: usize) {
@@ -45,7 +47,15 @@ impl AnimationPlayer {
         true: frame is incremented */
     pub fn update_timer(&mut self, delta_time: f32) -> bool {
         if self.playing {
-            return self.anims[self.curr_anim].play(delta_time);
+            let curr_anim = &mut self.anims[self.curr_anim];
+            let res = curr_anim.play(delta_time);
+            if res {
+                self.elapsed = 0.0;
+            }
+            else {
+                self.elapsed += delta_time;
+            }
+            return res;
         }
         false
     }

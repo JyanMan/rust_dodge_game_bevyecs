@@ -125,7 +125,6 @@ pub fn state_handler(
             MovementState::Dodging => {
                 let dodge_dir = player_movement::get_dodge_dir(mouse_pos, &p_data);
                 player_movement::dodging(dodge_dir, &mut p_data, &mut vel, &mut health);
-                println!("ayow?");
             },
             MovementState::DodgeLerping => {
                 // health.set_immune();

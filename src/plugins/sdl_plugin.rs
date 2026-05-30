@@ -57,12 +57,13 @@ impl Plugin for SDLInit {
 }
 
 pub fn custom_runner(mut app: App) -> AppExit {
+
+    sdl2::hint::set("SDL_RENDER_SCALE_QUALITY", "0");
     let sdl_context = sdl2::init().unwrap();
     let video_subsystem = sdl_context.video().unwrap();
     let timer_subsystem = sdl_context.timer().unwrap();
-
     let window = video_subsystem.window("dodge the man", SCREEN_WIDTH as u32, SCREEN_HEIGHT as u32)
-        .opengl()
+        // .opengl()
         .position_centered()
         .build()
         .unwrap();
@@ -73,7 +74,6 @@ pub fn custom_runner(mut app: App) -> AppExit {
         unwrap();
 
     let ttf_ctx = sdl2::ttf::init().unwrap();
-    sdl2::hint::set("SDL_RENDER_SCALE_QUALITY", "0");
     
     // let mut event_pump = sdl_context.event_pump().unwrap();
 
@@ -86,6 +86,7 @@ pub fn custom_runner(mut app: App) -> AppExit {
     let mut curr_time;
 
     let canvas_static: &'static mut WindowCanvas = CANVAS.init(canvas);
+    // canvas_static.set_logical_size(320, 180).unwrap();
     app.insert_non_send_resource( Renderer::new(
         canvas_static,
         TTF_CTX.init(ttf_ctx),

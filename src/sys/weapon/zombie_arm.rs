@@ -88,47 +88,47 @@ pub fn spawn(world: &mut World, entity_owner: Entity) -> Entity {
     let mut steelsword_ref = world.entity_mut(zombie_arm_e);
     let mut anim_player = steelsword_ref.get_mut::<AnimationPlayer>().unwrap();
 
-    let attack_anim = Animation::new(attack_dur / 8.0, &[
-        AnimFrame::new(&[
+    let attack_anim = Animation::new(attack_dur / 8.0, AnimFrames::new(&[
+        &[
             AnimData::SpriteFrame { value: 0, target: zombie_arm_e},
             AnimData::TransformLocal { value: Vector2::new(0.0, -8.0), target: zombie_arm_e},
-        ]),
+        ],
         
-        AnimFrame::new(&[
+        &[
             AnimData::SpriteFrame { value: 0, target: zombie_arm_e},
             AnimData::TransformLocal { value: Vector2::new(4.0, -4.0), target: zombie_arm_e},
-        ]),
+        ],
         
-        AnimFrame::new(&[
+        &[
             AnimData::SpriteFrame { value: 1, target: zombie_arm_e},
             AnimData::TransformLocal { value: Vector2::new(9.0, -2.0), target: zombie_arm_e},
-        ]),
+        ],
         
-        AnimFrame::new(&[
+        &[
             AnimData::SpriteFrame { value: 1, target: zombie_arm_e},
             AnimData::TransformLocal { value: Vector2::new(11.0, 0.0), target: zombie_arm_e},
-        ]),
+        ],
         
-        AnimFrame::new(&[
+        &[
             AnimData::SpriteFrame { value: 2, target: zombie_arm_e},
             AnimData::TransformLocal { value: Vector2::new(11.0, 0.0), target: zombie_arm_e},
-        ]),
+        ],
         
-        AnimFrame::new(&[
+        &[
             AnimData::SpriteFrame { value: 2, target: zombie_arm_e},
             AnimData::TransformLocal { value: Vector2::new(9.0, 2.0), target: zombie_arm_e},
-        ]),
+        ],
         
-        AnimFrame::new(&[
+        &[
             AnimData::SpriteFrame { value: 3, target: zombie_arm_e},
             AnimData::TransformLocal { value: Vector2::new(4.0, 4.0), target: zombie_arm_e},
-        ]),
+        ],
         
-        AnimFrame::new(&[
+        &[
             AnimData::SpriteFrame { value: 3, target: zombie_arm_e},
             AnimData::TransformLocal { value: Vector2::new(0.0, 8.0), target: zombie_arm_e},
-        ]),
-    ]);
+        ],
+    ]));
 
     anim_player.add_anim(WeaponAnim::Attack.usize(), attack_anim);
 

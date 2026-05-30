@@ -216,9 +216,9 @@ impl <S: StateId + 'static> StateMachine <S> {
 #[macro_export]
 macro_rules! create_state {
     (
-        $state:ident,
+        $state:ident
         // $next:ident,
-        $id:ident => $($other:ident),+
+        ::$id:ident => $($other:ident),+
     ) => { {
         use $state::*;
         use $crate::comp::state::*;
@@ -230,12 +230,13 @@ macro_rules! create_state {
         }
         
     } };
-    ($state:ident, $id:ident) => {{
+    ($state:ident::$id:ident) => {{
         use $state::*;
-        use $crate::comp::state::*;
+        use $crate::components::state_machine::*;
 
         State {
             exits: StateConditions::accept_all(),
+            entries: StateConditions::accept_all(),
             duration: None,
             next_state: None,
             id: $id

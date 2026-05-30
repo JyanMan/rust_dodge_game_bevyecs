@@ -4,7 +4,8 @@ use crate::config::KNOCK_TIME;
 
 pub fn movement_state() -> StateMachine<MovementState> {
     let mut state_m = StateMachine::new(MovementState::idle());
-    state_m.add_state(MovementState::running());
+    // state_m.add_state(MovementState::running());
+    state_m.add_state(create_state!(MovementState::Running));
     state_m.add_state(MovementState::start_dodge());
     state_m.add_state(MovementState::dodge_end());
     state_m.add_state(MovementState::dodging());

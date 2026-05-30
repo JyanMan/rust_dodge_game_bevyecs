@@ -246,27 +246,27 @@ pub fn state_handler(
 }
 
 pub fn anim_init(anim_player: &mut AnimationPlayer, zombie_e: Entity) {
-    let idle_anim = Animation::new(0.2, &[
-        AnimFrame::new(&[ AnimData::SpriteFrame { value: 0, target: zombie_e} ] ),
-        AnimFrame::new(&[ AnimData::SpriteFrame { value: 1, target: zombie_e} ] ),
-        AnimFrame::new(&[ AnimData::SpriteFrame { value: 2, target: zombie_e} ] ),
-    ]);
+    let idle_anim = Animation::new(0.2, AnimFrames::new(&[
+        &[ AnimData::SpriteFrame { value: 0, target: zombie_e} ],
+        &[ AnimData::SpriteFrame { value: 1, target: zombie_e} ],
+        &[ AnimData::SpriteFrame { value: 2, target: zombie_e} ],
+    ]));
 
-    let run_anim = Animation::new(0.1, &[
-        AnimFrame::new(&[ AnimData::SpriteFrame { value: 3, target: zombie_e} ] ),
-        AnimFrame::new(&[ AnimData::SpriteFrame { value: 4, target: zombie_e} ] ),
-        AnimFrame::new(&[ AnimData::SpriteFrame { value: 5, target: zombie_e} ] ),
-        AnimFrame::new(&[ AnimData::SpriteFrame { value: 6, target: zombie_e} ] ),
-        AnimFrame::new(&[ AnimData::SpriteFrame { value: 7, target: zombie_e} ] ),
-    ]);
+    let run_anim = Animation::new(0.1, AnimFrames::new(&[
+        &[ AnimData::SpriteFrame { value: 3, target: zombie_e} ],
+        &[ AnimData::SpriteFrame { value: 4, target: zombie_e} ],
+        &[ AnimData::SpriteFrame { value: 5, target: zombie_e} ],
+        &[ AnimData::SpriteFrame { value: 6, target: zombie_e} ],
+        &[ AnimData::SpriteFrame { value: 7, target: zombie_e} ],
+    ]));
 
-    let rise_anim = Animation::new(0.2, &[
-        AnimFrame::new(&[ AnimData::SpriteFrame { value: 8, target: zombie_e} ] ),
-    ]);
+    let rise_anim = Animation::new(0.2, AnimFrames::new(&[
+        &[ AnimData::SpriteFrame { value: 8, target: zombie_e} ],
+    ]));
 
-    let fall_anim = Animation::new(0.2, &[
-        AnimFrame::new(&[ AnimData::SpriteFrame { value: 9, target: zombie_e} ] ),
-    ]);
+    let fall_anim = Animation::new(0.2, AnimFrames::new(&[
+        &[ AnimData::SpriteFrame { value: 9, target: zombie_e} ],
+    ]));
 
     anim_player.add_anim(WalkerAnim::Idle.usize(), idle_anim);
     anim_player.add_anim(WalkerAnim::Run.usize(), run_anim);
