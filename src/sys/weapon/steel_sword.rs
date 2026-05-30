@@ -96,20 +96,8 @@ pub fn spawn(world: &mut World, entity_owner: Entity) -> Entity {
     let attack_anim = Animation::new(attack_dur / 3.0, AnimFrames::new(&[
         &[
             AnimData::TransformLocal { value: Vector2::new(0.0, -20.0), target: steel_sword_e },
-            AnimData::SpriteAngle { value: -40.0, target: steel_sword_e },
+            AnimData::SpriteAngle { value: -50.0, target: steel_sword_e },
         ],
-        
-        // &[
-        //     AnimData::TransformLocal { value: Vector2::new(10.0, -13.0), target: steel_sword_e},
-        //     AnimData::SpriteAngle { value: -10.0, target: steel_sword_e },
-        // ],
-        
-        // &[
-        //     // AnimData::SpriteFrame { value: 1, target: steel_sword_e},
-        //     // AnimData::TransformLocal { value: Vector2::new(14.0, -6.0), target: steel_sword_e},
-        //     AnimData::TransformLocal { value: Vector2::new(20.0, -6.0), target: steel_sword_e},
-        //     AnimData::SpriteAngle { value: 10.0, target: steel_sword_e },
-        // ],
         
         &[
             // AnimData::SpriteFrame { value: 1, target: steel_sword_e},
@@ -117,33 +105,12 @@ pub fn spawn(world: &mut World, entity_owner: Entity) -> Entity {
             AnimData::TransformLocal { value: Vector2::new(25.0, 0.0), target: steel_sword_e},
             AnimData::SpriteAngle { value: 25.0, target: steel_sword_e },
         ],
-        
-        // &[
-        //     // AnimData::SpriteFrame { value: 2, target: steel_sword_e},
-        //     // AnimData::TransformLocal { value: Vector2::new(18.0, 0.0), target: steel_sword_e},
-        //     AnimData::TransformLocal { value: Vector2::new(25.0, 0.0), target: steel_sword_e},
-        //     AnimData::SpriteAngle { value: 25.0, target: steel_sword_e },
-        // ],
-        
-        // &[
-        //     // AnimData::SpriteFrame { value: 2, target: steel_sword_e},
-        //     // AnimData::TransformLocal { value: Vector2::new(14.0, 6.0), target: steel_sword_e},
-        //     AnimData::TransformLocal { value: Vector2::new(20.0, 6.0), target: steel_sword_e},
-        //     AnimData::SpriteAngle { value: 30.0, target: steel_sword_e },
-        // ],
-        
-        // &[
-        //     // AnimData::SpriteFrame { value: 3, target: steel_sword_e},
-        //     // AnimData::TransformLocal { value: Vector2::new(8.0, 13.0), target: steel_sword_e},
-        //     AnimData::TransformLocal { value: Vector2::new(10.0, 13.0), target: steel_sword_e},
-        //     AnimData::SpriteAngle { value: 40.0, target: steel_sword_e },
-        // ],
-        
+       
         &[
             // AnimData::SpriteFrame { value: 3, target: steel_sword_e},
             // AnimData::TransformLocal { value: Vector2::new(0.0, 20.0), target: steel_sword_e},
             AnimData::TransformLocal { value: Vector2::new(0.0, 20.0), target: steel_sword_e},
-            AnimData::SpriteAngle { value: 90.0, target: steel_sword_e },
+            AnimData::SpriteAngle { value: 100.0, target: steel_sword_e },
         ],
     ]));
 

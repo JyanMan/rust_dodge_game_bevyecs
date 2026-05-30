@@ -75,7 +75,7 @@ impl AnimFrames {
         &self.data[frame_idx * self.width + x]
     }
 
-    pub fn get_frame(&self, frame_idx: usize) -> &[Option<AnimData>] {
+    pub fn get_frames(&self, frame_idx: usize) -> &[Option<AnimData>] {
         let y = frame_idx * self.width;
         &self.data[y..(y + self.width)]
     }
