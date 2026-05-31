@@ -77,15 +77,27 @@ pub fn spawn(world: &mut World) -> Entity {
 
     let e1 = world.spawn((
         DistanceConstraint { target: Some(player_e), distance: 3.5, stiffness: 0.1 },
-        Transform::zero()
+        Transform::zero(),
+        GravityAffected(true),
+        Velocity::new(0.0, 0.0)
     )).id();
     let e2 = world.spawn((
         DistanceConstraint { target: Some(e1), distance: 3.5, stiffness: 0.1 },
-        Transform::new(5.0, 20.0)
+        Transform::new(5.0, 20.0),
+        GravityAffected(true),
+        Velocity::new(0.0, 0.0)
+    )).id();
+    let e3 = world.spawn((
+        DistanceConstraint { target: Some(e2), distance: 3.5, stiffness: 0.1 },
+        Transform::new(20.0, -5.0),
+        GravityAffected(true),
+        Velocity::new(0.0, 0.0)
     )).id();
     world.spawn((
-        DistanceConstraint { target: Some(e2), distance: 3.5, stiffness: 0.1 },
-        Transform::new(20.0, -5.0)
+        DistanceConstraint { target: Some(e3), distance: 3.5, stiffness: 0.1 },
+        Transform::new(20.0, -5.0),
+        GravityAffected(true),
+        Velocity::new(0.0, 0.0)
     ));
 
 
