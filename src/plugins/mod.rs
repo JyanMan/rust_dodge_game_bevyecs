@@ -7,6 +7,7 @@ pub mod tags_handle;
 pub mod entity;
 pub mod world;
 pub mod weapon;
+pub mod proc_anim;
 
 pub use sdl_plugin::*;
 pub use main_game_plugin::*;
@@ -17,3 +18,4 @@ pub use tags_handle::*;
 pub use entity::*;
 pub use world::*;
 pub use weapon::*;
+pub use proc_anim::*;

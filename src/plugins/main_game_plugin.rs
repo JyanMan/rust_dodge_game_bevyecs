@@ -18,6 +18,7 @@ impl Plugin for MainGame {
         app.add_plugins(EntityPlugin);
         app.add_plugins(WorldPlugin);
         app.add_plugins(WeaponPlugin);
+        app.add_plugins(ProcAnimPlugin);
 
         app.init_resource::<DeltaTime>();
         app.init_resource::<TimeStep>();
@@ -63,7 +64,7 @@ pub fn init_spawn(world: &mut World) {
     let player_e = sys::entity::player::spawn(world);
     sys::weapon::steel_sword::spawn(world, player_e);
     sys::entity::health::player::health_bar_spawn(world);
-    sys::entity::zombie::mass_spawn(world);
+    // sys::entity::zombie::mass_spawn(world);
 }
 
 

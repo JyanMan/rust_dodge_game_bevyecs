@@ -24,6 +24,7 @@ pub mod status;
 pub mod dying;
 pub mod parent;
 pub mod rotation_offset;
+pub mod distance_constraint;
 
 pub mod states;
 
@@ -53,3 +54,4 @@ pub use status::*;
 pub use dying::*;
 pub use parent::*;
 pub use rotation_offset::*;
+pub use distance_constraint::*;

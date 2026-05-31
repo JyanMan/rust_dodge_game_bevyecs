@@ -75,6 +75,20 @@ pub fn spawn(world: &mut World) -> Entity {
          // walker_anim: super::states::walker_state(),
     }).id();
 
+    let e1 = world.spawn((
+        DistanceConstraint { target: Some(player_e), distance: 3.5, stiffness: 0.1 },
+        Transform::zero()
+    )).id();
+    let e2 = world.spawn((
+        DistanceConstraint { target: Some(e1), distance: 3.5, stiffness: 0.1 },
+        Transform::new(5.0, 20.0)
+    )).id();
+    world.spawn((
+        DistanceConstraint { target: Some(e2), distance: 3.5, stiffness: 0.1 },
+        Transform::new(20.0, -5.0)
+    ));
+
+
     let mut player_ref_mut = world.entity_mut(player_e);
     let mut anim_player = player_ref_mut.get_mut::<AnimationPlayer>().unwrap();
     // player_animation_init(&mut anim_player, player_e);
