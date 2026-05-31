@@ -77,7 +77,7 @@ impl <'a> Add<&'a Vector2> for Vector2 {
     }
 }
 
-impl <'a> Add<Vector2> for &'a Vector2 {
+impl Add<Vector2> for &Vector2 {
     type Output = Vector2;
     fn add(self, other: Vector2) -> Vector2 {
         Vector2 { x: self.x + other.x, y: self.y + other.y }

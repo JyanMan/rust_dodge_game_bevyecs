@@ -7,8 +7,7 @@ pub fn dist_constraints(
     // mut proc_node: ResMut<ProcAnim>,
     mut query: Query<(
         Entity,
-        &Transform,
-        &mut LocalTransform,
+        &mut Transform,
         Option<&DistanceConstraint>,
         // &AttachedTo,
     )>,
@@ -16,25 +15,27 @@ pub fn dist_constraints(
 ) {
 
     trans_list.clear();
-    for (e, trans, _, _) in &query {
+    for (e, trans, _) in &query {
         trans_list.insert(e, *trans);
     }
 
-    // for (e, trans, mut local, constraints) in &mut query {
+    for (e, mut trans, constraints) in &mut query {
 
-    //     if let Some(constraints) = constraints
-    //     && let Some(target) = constraints.target
-    //     && let Some(other_trans) = trans_list.get(target)
-    //     {
-    //         let delta = other_trans.pos() - *trans.pos();
-    //         let dist = (delta.x*delta.x + delta.y*delta.y).sqrt();
+        // println!("trans.pos: {:?}, othertrans: {:?}", other_trans.pos, trans.pos);
+        if let Some(constraints) = constraints
+        && let Some(target) = constraints.target
+        && let Some(other_trans) = trans_list.get(target)
+        {
+            let delta = other_trans.pos - trans.pos;
+            let dist = (delta.x*delta.x + delta.y*delta.y).sqrt();
 
-    //         if dist > constraints.distance {
-    //             local.pos
-    //         }
-    //     }  
+            if dist > constraints.distance {
+                // limit to constraints.distance units away from other_trans
+                trans.pos = other_trans.pos - delta.normalize() * constraints.distance;
+            }
+        }  
         
-    // }
+    }
     // for (e, trans, attached_to, constraint) in &query {
     //     let mut e_list = vec![];
     //     let mut prev_e = e;
