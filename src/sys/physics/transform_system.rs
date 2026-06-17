@@ -6,7 +6,7 @@ use crate::math_helper;
 
 pub fn transform_update(
     mut set: ParamSet<(
-        Query<(&mut Transform, &LocalTransform, &AttachedTo)>, 
+        Query<(&mut Transform, &LocalTransform, &AttachedTo, Option<&Anchor>)>, 
         Query<(Entity, &Transform), With<Parent>>
     )>,
     mut parent_trans: Local<SparseSet<Entity, Transform>>
@@ -14,7 +14,7 @@ pub fn transform_update(
     for (e, trans) in &set.p1() {
         parent_trans.insert(e, *trans);
     }
-    for (mut trans, local, attached_to) in &mut set.p0() {
+    for (mut trans, local, attached_to, anchor) in &mut set.p0() {
         // if (owner)
 
         // use std::f32::consts::PI;
@@ -36,6 +36,10 @@ pub fn transform_update(
         let parent_pos = parent_trans.get(attached_to.0).expect("entity somehow has no parent...");
 
         trans.pos = parent_pos.pos + new_offset;
+
+        if anchor.is_some() {
+            println!("hasdfasdfasdfadsf");
+        }
 
     }
 }

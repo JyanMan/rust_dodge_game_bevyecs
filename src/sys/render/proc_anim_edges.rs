@@ -10,22 +10,23 @@ use crate::core::*;
 pub fn proc_anim_edges(
     mut renderer: NonSendMut<Renderer>,
     // proc_anim: ResMut<ProcAnim>,
-    query: Query<(Entity, &Transform, Option<&DistanceConstraint>)>,
+    query: Query<(Entity, &Transform, Option<&DistanceConstraint>, Option<&Anchor>)>,
     mut trans_list: Local<SparseSet<Entity, Transform>>
 ) {
 
     trans_list.clear();
-    for (e, trans, _) in &query {
+    for (e, trans, _, _) in &query {
         trans_list.insert(e, *trans);
     }
 
-    for (_e, trans, constraint) in &query {
-        let constraint = if let Some(constraint) = constraint {
-            constraint
-        } else {
-            continue;
-        };
-        if let Some(other_e) = constraint.target
+    for (_e, trans, constraint, _) in &query {
+        // let constraint = if let Some(constraint) = constraint {
+        //     constraint
+        // } else {
+        //     continue;
+        // };
+        if let Some(constraint) = constraint
+        && let Some(other_e) = constraint.target
         && let Some(second) = trans_list.get(other_e) {
             let cam_pos = renderer.camera.get_pos();
             let cam_scale = renderer.camera.get_scale();
@@ -33,7 +34,7 @@ pub fn proc_anim_edges(
                     * cam_scale;
                 let b = (second.pos - cam_pos)
                     * cam_scale;
-            renderer.canvas.set_draw_color(Color::RGB(255, 0, 0));
+            renderer.canvas.set_draw_color(Color::RGB(255, 255, 0));
             renderer.canvas.draw_line(
                 Point::new(
                     a.x.round() as i32, a.y.round() as i32

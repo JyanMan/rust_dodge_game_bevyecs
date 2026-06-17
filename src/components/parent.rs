@@ -8,4 +8,4 @@ pub struct AttachedTo(pub Entity);
 
 #[derive(Component)]
 #[relationship_target(relationship = AttachedTo)]
-pub struct Parent(Entity);
+pub struct Parent(Vec<Entity>);

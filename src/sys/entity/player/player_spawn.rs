@@ -75,29 +75,40 @@ pub fn spawn(world: &mut World) -> Entity {
          // walker_anim: super::states::walker_state(),
     }).id();
 
+    let e0 = world.spawn((
+        // DistanceConstraint { target: Some(player_e), distance: 0.0, stiffness: 0.1 },
+        AttachedTo(player_e),
+        Anchor(player_e),
+        Transform::zero(),
+        LocalTransform::new(0.0, 0.0),
+    )).id();
     let e1 = world.spawn((
-        DistanceConstraint { target: Some(player_e), distance: 3.5, stiffness: 0.1 },
+        DistanceConstraint { target: Some(e0), distance: 3.5, stiffness: 0.1 },
         Transform::zero(),
         GravityAffected(true),
-        Velocity::new(0.0, 0.0)
+        Velocity::new(0.0, 0.0),
+        InducedVelocity::default()
     )).id();
     let e2 = world.spawn((
         DistanceConstraint { target: Some(e1), distance: 3.5, stiffness: 0.1 },
         Transform::new(5.0, 20.0),
         GravityAffected(true),
-        Velocity::new(0.0, 0.0)
+        Velocity::new(0.0, 0.0),
+        InducedVelocity::default()
     )).id();
     let e3 = world.spawn((
         DistanceConstraint { target: Some(e2), distance: 3.5, stiffness: 0.1 },
         Transform::new(20.0, -5.0),
         GravityAffected(true),
-        Velocity::new(0.0, 0.0)
+        Velocity::new(0.0, 0.0),
+        InducedVelocity::default()
     )).id();
     world.spawn((
         DistanceConstraint { target: Some(e3), distance: 3.5, stiffness: 0.1 },
         Transform::new(20.0, -5.0),
         GravityAffected(true),
-        Velocity::new(0.0, 0.0)
+        Velocity::new(0.0, 0.0),
+        InducedVelocity::default()
     ));
 
 

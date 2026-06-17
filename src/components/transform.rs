@@ -37,6 +37,25 @@ impl Transform {
         }
     }
 }
+
+impl LocalTransform {
+    pub fn new(x: f32, y: f32) -> Self {
+        Self {
+            pos: Vector2::new( x, y ), 
+            // local: Vector2::zero(),
+            rot: 0.0,
+            origin: Vector2::zero()
+        }
+    }
+    // pub fn zero() -> Self {
+    //     Self { 
+    //         pos: Vector2::new( 0.0, 0.0 ), 
+    //         // local: Vector2::zero() ,
+    //         rot: 0.0,
+    //         scale: Vector2::new(1.0, 1.0)
+    //     }
+    // }
+}
 // 
 // // Arithmetic
 // impl Add for Transform {

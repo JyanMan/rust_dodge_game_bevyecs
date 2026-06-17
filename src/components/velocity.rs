@@ -16,6 +16,21 @@ impl Velocity {
     }
 }
 
+#[derive(Component, Debug, Copy, Clone, Default, PartialEq)]
+#[require(Velocity)]
+pub struct InducedVelocity {
+    pub prev_pos: Vector2
+}
+
+// impl InducedVelocity {
+//     pub fn new(x: f32, y: f32) -> Self {
+//         Self { vec: Vector2::new( x, y ) }
+//     }
+//     pub fn zero() -> Self {
+//         Self { vec: Vector2::new( 0.0, 0.0 ) }
+//     }
+// }
+
 //impl Velocity {
 //    pub fn new(x: f32, y: f32) -> Self {
 //        Self { x, y }

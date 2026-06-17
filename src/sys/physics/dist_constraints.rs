@@ -10,35 +10,47 @@ pub fn dist_constraints(
         &mut Transform,
         Option<&DistanceConstraint>,
         Option<&mut Velocity>,
+        Option<&mut InducedVelocity>
         // &AttachedTo,
     )>,
-    mut trans_list: Local<SparseSet<Entity, Transform>>
+    mut trans_list: Local<SparseSet<Entity, Transform>>,
+    time_step: Res<TimeStep>
 ) {
 
     trans_list.clear();
-    for (e, trans, _, _) in &query {
+    for (e, trans, _, _, _) in &query {
         trans_list.insert(e, *trans);
     }
 
-    for (e, mut trans, constraints, vel) in &mut query {
+    for (e, mut trans, constraints, vel, induced) in &mut query {
 
-        // println!("trans.pos: {:?}, othertrans: {:?}", other_trans.pos, trans.pos);
+        // normal clamping
         if let Some(constraints) = constraints
         && let Some(target) = constraints.target
         && let Some(other_trans) = trans_list.get(target)
         {
             let delta = other_trans.pos - trans.pos;
             let dist = (delta.x*delta.x + delta.y*delta.y).sqrt();
+            let target_pos = other_trans.pos - delta.normalize() * constraints.distance;
 
-            if dist > constraints.distance {
-                // limit to constraints.distance units away from other_trans
-                trans.pos = other_trans.pos - delta.normalize() * constraints.distance;
-                if let Some(mut vel) = vel {
-                    vel.vec = Vector2::zero();
-                }
+            // out of bounds, so just fix immediately
+            if dist > constraints.distance * 5.0 {
+                trans.pos = target_pos;
+                continue;
             }
-        }  
-        
+
+            if let Some(mut vel) = vel 
+            && let Some(mut induced) = induced {
+                let induced_vel = (trans.pos - induced.prev_pos) * 2.0;
+                let snap_vel = (target_pos - trans.pos) * 80.0;
+                vel.vec = snap_vel;
+                induced.prev_pos = trans.pos;
+            }
+            else if dist > constraints.distance {
+                // limit to constraints.distance units away from other_trans
+                trans.pos = target_pos;
+            }
+        }
     }
     // for (e, trans, attached_to, constraint) in &query {
     //     let mut e_list = vec![];
