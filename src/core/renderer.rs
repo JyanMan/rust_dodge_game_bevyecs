@@ -117,6 +117,16 @@ impl Renderer {
         }
     }
 
+    pub fn render_geometry<'a>(
+        &mut self,
+        vertices: &[Vertex],
+        texture_id: TextureId,
+        indices: impl Into<VertexIndices<'a>>,
+    ) -> Result<(), String> {
+        let texture = self.asset_m.get_texture(texture_id);
+        self.canvas.render_geometry(vertices, None, indices)
+    }
+
     pub fn delete_text(&mut self, text: &TextObject) {
         self.asset_m.text_texture_set.swap_remove_by_id(text.id());
     }
