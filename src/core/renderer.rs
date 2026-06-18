@@ -6,34 +6,41 @@ use sdl2::video::WindowContext;
 use sdl2::rect::*;
 use std::rc::Rc;
 use std::cell::RefCell;
+use std::collections::VecDeque;
 use static_cell::StaticCell;
 
 use crate::resources::*;
 use crate::components::{ Vector2, Sprite, TextObject };
 
+pub enum DrawCommand {
+    Line(Point, Point),
+    SpriteToCam( )
+}
+
 pub struct Renderer {
     pub asset_m: AssetManager,
     pub t_creator: &'static TextureCreator<WindowContext>,
-    pub canvas: &'static mut WindowCanvas,
+    // pub canvas: &'static mut WindowCanvas,
     pub camera: Camera,
-    // pub alpha: f32,
+    draw_buffer: VecDeque<DrawCommand>
 }
 
 impl Renderer {
     
     pub fn new(
-        canvas: &'static mut WindowCanvas,
-        ttf_ctx: &'static Sdl2TtfContext,
+        // canvas: &'static mut WindowCanvas,
         t_creator: &'static TextureCreator<WindowContext>,
+        ttf_ctx: &'static Sdl2TtfContext,
         camera: Camera
     ) -> Self {
         Self {
-            canvas, 
+            // canvas, 
             t_creator,
             asset_m: AssetManager::new(
                 t_creator, ttf_ctx
             ),
             camera,
+            draw_buffer: VecDeque::new()
             // alpha: 0.0,
         }
     }
@@ -43,12 +50,12 @@ impl Renderer {
         (pos - self.camera.get_pos()) * cam_scale
     }
 
-    pub fn draw(&mut self, sprite: &Sprite, pos: Vector2, scale: Vector2) {
+    pub fn draw(&mut self, canvas: &mut WindowCanvas, sprite: &Sprite, pos: Vector2, scale: Vector2) {
         let cam_scale = self.camera.scale;
-        sprite.draw(self, &pos, scale * cam_scale);
+        sprite.draw(canvas, &self.asset_m, &pos, scale * cam_scale);
     }
 
-    pub fn draw_frame_to_cam(&mut self, sprite: &Sprite, pos: Vector2, scale: Vector2, frame: i32, angle: f64) {
+    pub fn draw_frame_to_cam(&mut self,  canvas: &mut WindowCanvas, sprite: &Sprite, pos: Vector2, scale: Vector2, frame: i32, angle: f64) {
         let cam_scale = self.camera.scale;
 
         let half_width = Vector2::new(sprite.width / 2.0, sprite.height / 2.0);
@@ -56,17 +63,17 @@ impl Renderer {
 
         let pos_cam_adjusted = (pos_centered - self.camera.get_pos()) * cam_scale;
 
-        sprite.draw_frame_angle(self, &pos_cam_adjusted, scale * cam_scale, frame, angle);
+        sprite.draw_frame_angle(canvas, &self.asset_m, &pos_cam_adjusted, scale * cam_scale, frame, angle);
     }
 
-    pub fn draw_to_cam(&mut self, sprite: &Sprite, pos: Vector2, scale: Vector2, angle: f64) {
-        self.draw_frame_to_cam(sprite, pos, scale, sprite.frame, angle);
+    pub fn draw_to_cam(&mut self, canvas: &mut WindowCanvas, sprite: &Sprite, pos: Vector2, scale: Vector2, angle: f64) {
+        self.draw_frame_to_cam(canvas, sprite, pos, scale, sprite.frame, angle);
         // let cam_scale = self.camera.scale;
         // let adjusted_pos = (pos - self.camera.get_pos()) * cam_scale;
         // sprite.draw(self, &adjusted_pos, scale * cam_scale);
     }
     
-    pub fn render_text(&mut self, text: &mut TextObject) {
+    pub fn render_text(&mut self, canvas: &mut WindowCanvas, text: &mut TextObject) {
 
         if text.new {
             text.set_id(self.asset_m.text_texture_set.len()); 
@@ -92,7 +99,7 @@ impl Renderer {
             let y_len = (text.size as f32 * 2.0 * cam_scale).round() as u32;
 
             if text.is_relative_to_camera() {
-                self.canvas.set_draw_color(Color::WHITE);
+                canvas.set_draw_color(Color::WHITE);
                 let pos_cam_adjusted = (text.pos() - self.camera.get_pos()) * self.camera.scale;
                 let dest_rect = Rect::new(
                      pos_cam_adjusted.x.round() as i32,
@@ -100,31 +107,32 @@ impl Renderer {
                      x_len,
                      y_len
                  );
-                let _ = self.canvas.copy_ex( texture, None, dest_rect, 0.0, None, false, false, );
+                let _ = canvas.copy_ex( texture, None, dest_rect, 0.0, None, false, false, );
                 return;
             }
 
             let pos_cam_adjusted = text.pos() * self.camera.scale;
 
-            self.canvas.set_draw_color(Color::WHITE);
+            canvas.set_draw_color(Color::WHITE);
             let dest_rect = Rect::new(
                  pos_cam_adjusted.x.round() as i32,
                  pos_cam_adjusted.y.round() as i32,
                  x_len,
                  y_len
             );
-            let _ = self.canvas.copy_ex( texture, None, dest_rect, 0.0, None, false, false, );
+            let _ = canvas.copy_ex( texture, None, dest_rect, 0.0, None, false, false, );
         }
     }
 
     pub fn render_geometry<'a>(
         &mut self,
+        canvas: &mut WindowCanvas,
         vertices: &[Vertex],
         texture_id: TextureId,
         indices: impl Into<VertexIndices<'a>>,
     ) -> Result<(), String> {
         let texture = self.asset_m.get_texture(texture_id);
-        self.canvas.render_geometry(vertices, None, indices)
+        canvas.render_geometry(vertices, None, indices)
     }
 
     pub fn delete_text(&mut self, text: &TextObject) {
@@ -136,7 +144,7 @@ impl Renderer {
     //     let string = String::from(str);
     //     match id {
     //         FontId::OpenSansBold => {
-    //             if let Some(text) = self.asset_m.fonts_map.get(&string) {
+    //             if let Some(text) = asset_m.fonts_map.get(&string) {
     //                 self.canvas.set_draw_color(Color::WHITE);
 
     //                 let x_len = str.len() as i32 * size;
@@ -146,10 +154,10 @@ impl Renderer {
     //                 let _ = self.canvas.copy_ex( text, None, dest_rect, 0.0, None, false, false, );
     //             }
     //             else {
-    //                 let part_render = self.asset_m.open_sans_bold.render(str); 
+    //                 let part_render = asset_m.open_sans_bold.render(str); 
     //                 let surface = part_render.solid(Color::RGB(255, 255, 255)).unwrap();
-    //                 let text = self.asset_m.t_creator.create_texture_from_surface(surface).unwrap(); 
-    //                 self.asset_m.fonts_map.insert(string, text);
+    //                 let text = asset_m.t_creator.create_texture_from_surface(surface).unwrap(); 
+    //                 asset_m.fonts_map.insert(string, text);
     //             }
     //         }
     //     }

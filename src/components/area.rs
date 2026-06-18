@@ -1,5 +1,6 @@
 use sdl2::rect::*;
 use sdl2::pixels::Color;
+use sdl2::render::*;
 use bevy_ecs::prelude::*;
 
 use crate::core::renderer::*;
@@ -27,11 +28,11 @@ impl Area {
         }
     }
 
-    pub fn draw(&self, renderer: &mut Renderer) {
+    pub fn draw(&self, canvas: &mut WindowCanvas, renderer: &mut Renderer) {
         let cam_pos = renderer.camera.get_pos();
         let cam_scale = renderer.camera.scale;
-        renderer.canvas.set_draw_color(Color::RED);
-        let _ = renderer.canvas.draw_rect(Rect::new(
+        canvas.set_draw_color(Color::RED);
+        let _ = canvas.draw_rect(Rect::new(
             (self.x - cam_pos.x) as i32 * cam_scale as i32, 
             (self.y - cam_pos.y) as i32 * cam_scale as i32, 
             self.w as u32 * cam_scale as u32, 

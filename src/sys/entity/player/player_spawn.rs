@@ -88,31 +88,60 @@ pub fn spawn(world: &mut World) -> Entity {
 
 fn spawn_cape(world: &mut World, player_e: Entity) {
 
+
     let e0 = world.spawn((
         AttachedTo(player_e),
         Anchor(player_e),
         Transform::zero(),
         LocalTransform::new(-2.0, 2.0),
     )).id();
+
+    let e1_restrict = world.spawn((
+        AttachedTo(player_e),
+        Transform::zero(),
+        LocalTransform::new(-7.5, 7.0)
+    )).id();
     let e1 = world.spawn((
-        ForwardConstraint {
-            target: Some(e0),
-            distance: 3.5,
-            stiffness: 80.0,
-            target_offset: Vector2::new(0.0, -1.5)
-        },
+        Constraints(vec![
+            DistanceConstraint {
+                target: e0,
+                distance: 3.5,
+                stiffness: 80.0,
+                target_offset: Vector2::new(0.0, -1.5)
+            },
+            DistanceConstraint {
+                target: e1_restrict, 
+                distance: 5.5,
+                stiffness: 80.0,
+                target_offset: Vector2::new(-2.0, 0.0)
+            }
+        ]),
         Transform::zero(),
         GravityAffected(true),
         Velocity::new(0.0, 0.0),
         InducedVelocity::default()
     )).id();
+
+    let e2_restrict = world.spawn((
+        AttachedTo(player_e),
+        Transform::zero(),
+        LocalTransform::new(-7.0, 10.0)
+    )).id();
     let e2 = world.spawn((
-        ForwardConstraint {
-            target: Some(e1),
-            distance: 3.5,
-            stiffness: 80.0,
-            target_offset: Vector2::new(0.0, -1.5)
-        },
+        Constraints(vec![
+            DistanceConstraint {
+                target: e1,
+                distance: 3.5,
+                stiffness: 80.0,
+                target_offset: Vector2::new(0.0, -1.5)
+            },
+            DistanceConstraint {
+                target: e2_restrict,
+                distance: 5.5,
+                stiffness: 80.0,
+                target_offset: Vector2::new(0.0, -1.5)
+            },
+        ]),
         Transform::new(5.0, 20.0),
         GravityAffected(true),
         Velocity::new(0.0, 0.0),
@@ -125,44 +154,85 @@ fn spawn_cape(world: &mut World, player_e: Entity) {
         Transform::zero(),
         LocalTransform::new(2.0, 2.0),
     )).id();
+
+    let b1_restrict = world.spawn((
+        AttachedTo(player_e),
+        Transform::zero(),
+        LocalTransform::new(7.5, 7.0)
+    )).id();
     let b1 = world.spawn((
-        ForwardConstraint {
-            target: Some(b0),
-            distance: 3.5,
-            stiffness: 80.0,
-            target_offset: Vector2::new(0.0, -1.5)
-        },
+        Constraints(vec![
+            DistanceConstraint {
+                target: b0,
+                distance: 3.5,
+                stiffness: 80.0,
+                target_offset: Vector2::new(0.0, -1.5)
+            },
+            DistanceConstraint {
+                target: b1_restrict,
+                distance: 5.5,
+                stiffness: 80.0,
+                target_offset: Vector2::new(2.0, 0.0)
+            }
+        ]),
         Transform::zero(),
         GravityAffected(true),
         Velocity::new(0.0, 0.0),
         InducedVelocity::default()
     )).id();
+
+    let b2_restrict = world.spawn((
+        AttachedTo(player_e),
+        Transform::zero(),
+        LocalTransform::new(7.0, 10.0)
+    )).id();
     let b2 = world.spawn((
-        ForwardConstraint {
-            target: Some(b1),
-            distance: 3.5,
-            stiffness: 80.0,
-            target_offset: Vector2::new(0.0, -1.5)
-        },
+        Constraints(vec![
+            DistanceConstraint {
+                target: b1,
+                distance: 3.5,
+                stiffness: 80.0,
+                target_offset: Vector2::new(0.0, -1.5)
+            },
+            DistanceConstraint {
+                target: b2_restrict,
+                distance: 5.5,
+                stiffness: 80.0,
+                target_offset: Vector2::new(0.0, -1.5)
+            },
+        ]),
         Transform::new(5.0, 20.0),
         GravityAffected(true),
         Velocity::new(0.0, 0.0),
         InducedVelocity::default()
     )).id();
 
+    let end_restrict = world.spawn((
+        AttachedTo(player_e),
+        Transform::zero(),
+        LocalTransform::new(0.0, 10.0)
+    )).id();
     let end_connector = world.spawn((
-        ForwardConstraint {
-            target: Some(b2),
-            distance: 2.0,
-            stiffness: 80.0,
-            target_offset: Vector2::new(2.0, -1.5)
-        },
-        BackwardConstraint {
-            target: Some(e2),
-            distance: 2.0,
-            stiffness: 80.0,
-            target_offset: Vector2::new(-2.0, -1.5)
-        },
+        Constraints(vec![
+            DistanceConstraint {
+                target: b2,
+                distance: 2.0,
+                stiffness: 80.0,
+                target_offset: Vector2::new(2.0, -1.5)
+            },
+            DistanceConstraint {
+                target: e2,
+                distance: 2.0,
+                stiffness: 80.0,
+                target_offset: Vector2::new(-2.0, -1.5)
+            },
+            DistanceConstraint {
+                target: end_restrict,
+                distance: 5.0,
+                stiffness: 80.0,
+                target_offset: Vector2::new(0.0, 2.5)
+            },
+        ]),
         Transform::new(20.0, -5.0),
         GravityAffected(true),
         Velocity::new(0.0, 0.0),
@@ -170,18 +240,20 @@ fn spawn_cape(world: &mut World, player_e: Entity) {
     )).id();
 
     let anchor_connector = world.spawn((
-        ForwardConstraint {
-            target: Some(b0),
-            distance: 2.0,
-            stiffness: 80.0,
-            target_offset: Vector2::new(2.0, 0.0)
-        },
-        BackwardConstraint {
-            target: Some(e0),
-            distance: 2.0,
-            stiffness: 80.0,
-            target_offset: Vector2::new(-2.0, 0.0)
-        },
+        Constraints(vec![
+            DistanceConstraint {
+                target: b0,
+                distance: 2.0,
+                stiffness: 80.0,
+                target_offset: Vector2::new(2.0, 0.0)
+            },
+            DistanceConstraint {
+                target: e0,
+                distance: 2.0,
+                stiffness: 80.0,
+                target_offset: Vector2::new(-2.0, 0.0)
+            },
+        ]),
         Transform::new(20.0, -5.0),
         GravityAffected(true),
         Velocity::new(0.0, 0.0),

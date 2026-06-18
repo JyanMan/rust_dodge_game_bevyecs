@@ -1,3 +1,4 @@
+use sdl2::render::*;
 use bevy_ecs::prelude::*;
 use std::collections::HashMap;
 use std::iter::*;
@@ -195,7 +196,7 @@ impl EntityQuadMap {
     }
 
     /* debug purposes */
-    pub fn draw_occupied_cells(&self, renderer: &mut Renderer) {
+    pub fn draw_occupied_cells(&self, canvas: &mut WindowCanvas, renderer: &mut Renderer) {
         use sdl2::pixels::Color;
         use sdl2::rect::*;
 
@@ -213,8 +214,8 @@ impl EntityQuadMap {
                 (CELL_SIZE * cam_scale) as u32,
                 (CELL_SIZE * cam_scale) as u32,
             );
-            renderer.canvas.set_draw_color(Color::RGB(255, 0, 0));
-            let _ = renderer.canvas.draw_rect(cell_rect);
+            canvas.set_draw_color(Color::RGB(255, 0, 0));
+            let _ = canvas.draw_rect(cell_rect);
             // println!("entity_quad_map.rs: drawn at point: {} {}", point.x, point.y);
         }
     }

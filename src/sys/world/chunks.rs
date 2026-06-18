@@ -1,8 +1,10 @@
+use sdl2::render::*;
 use bevy_ecs::prelude::*;
 
 use crate::core::renderer::*;
 use crate::resources::chunk_manager::*;
 use crate::resources::area_manager::*;
+use crate::resources::*;
 use crate::config::*;
 use crate::components::*;
 
@@ -27,6 +29,9 @@ pub fn init(renderer: NonSend<Renderer>, mut commands: Commands) {
    
 }
 
-pub fn draw(mut chunk_m: ResMut<ChunkManager>, mut renderer: NonSendMut<Renderer>) {
-    chunk_m.draw(&mut renderer);
+pub fn draw(world: &mut World, canvas: &mut WindowCanvas) {
+    use bevy_ecs::system::*;
+    let mut system_state: SystemState<(NonSendMut<Renderer>, ResMut<ChunkManager>)> = SystemState::new(world);
+    let (mut renderer, mut chunk_m) = system_state.get_mut(world);
+    chunk_m.draw(canvas, &mut renderer);
 }

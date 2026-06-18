@@ -1,3 +1,4 @@
+use sdl2::render::*;
 use std::collections::HashMap;
 use bevy_ecs::prelude::*;
 use crate::core::renderer::*;
@@ -42,9 +43,9 @@ impl AreaManager {
         self.tile_areas.get(point) 
     }
 
-    pub fn draw_tile_areas(&mut self, renderer: &mut Renderer) {
+    pub fn draw_tile_areas(&mut self, canvas: &mut WindowCanvas, renderer: &mut Renderer) {
         for (_pos, area) in self.tile_areas.iter_mut() {
-            area.draw(renderer);
+            area.draw(canvas, renderer);
         }
     }
 }

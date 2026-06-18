@@ -2,6 +2,7 @@ use bevy_ecs::prelude::*;
 use std::vec::*;
 use sdl2::rect::*;
 use sdl2::pixels::Color;
+use sdl2::render::*;
 use bevy_ecs::storage::SparseSet;
 use std::any::TypeId;
 
@@ -147,7 +148,7 @@ impl OBB {
     }
 
     #[allow(unused)]
-    pub fn draw(&self, renderer: &mut Renderer) {
+    pub fn draw(&self, canvas: &mut WindowCanvas, renderer: &mut Renderer) {
         let cam_pos = renderer.camera.get_pos();
         let cam_scale = renderer.camera.get_scale();
         for i in 0..1 {
@@ -155,8 +156,8 @@ impl OBB {
                 * cam_scale;
             let b = (self.vertices[i] - cam_pos)
                 * cam_scale;
-            renderer.canvas.set_draw_color(Color::RGB(0, 255, 0));
-            let _ = renderer.canvas.draw_line(
+            canvas.set_draw_color(Color::RGB(0, 255, 0));
+            let _ = canvas.draw_line(
                 Point::new(a.x.round() as i32, a.y.round() as i32), 
                 Point::new(b.x.round() as i32, b.y.round() as i32)
             );
@@ -166,8 +167,8 @@ impl OBB {
                 * cam_scale;
             let b = (self.vertices[i] - cam_pos)
                 * cam_scale;
-            renderer.canvas.set_draw_color(Color::RGB(255, 0, 0));
-            let _ = renderer.canvas.draw_line(
+            canvas.set_draw_color(Color::RGB(255, 0, 0));
+            let _ = canvas.draw_line(
                 Point::new(a.x.round() as i32, a.y.round() as i32), 
                 Point::new(b.x.round() as i32, b.y.round() as i32)
             );

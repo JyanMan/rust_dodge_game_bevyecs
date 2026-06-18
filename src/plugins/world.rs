@@ -34,8 +34,8 @@ impl Plugin for WorldPlugin {
             sys::world::damage_counter::despawn_update,
         ));
 
-        app.add_systems(Render, (
-            sys::world::chunks::draw.before(sys::render::sprites_draw),
-        ));
+        // app.add_systems(Render, (
+        //     sys::world::chunks::draw.before(sys::render::sprites_draw),
+        // ));
     }
 }

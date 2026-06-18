@@ -1,3 +1,5 @@
+use sdl2::render::*;
+
 use crate::config::*;
 use crate::components::Vector2;
 use crate::components::sprite::*;
@@ -5,6 +7,8 @@ use crate::core::renderer::*;
 use crate::math_helper::*;
 use crate::resources::tile::*;
 use crate::resources::area_manager::*;
+use crate::resources::*;
+
 use fastnoise_lite::*;
 
 // #[derive(Default)]
@@ -108,12 +112,12 @@ impl Chunk {
         }
     }
 
-    pub fn draw(&mut self, renderer: &mut Renderer, sprite: &Sprite) {
+    pub fn draw(&mut self, canvas: &mut WindowCanvas, renderer: &mut Renderer, sprite: &Sprite) {
         for y in 0..(CHUNK_SIZE) {
             for x in 0..(CHUNK_SIZE) {
                 let index = (y * CHUNK_SIZE + x) as usize;
                 if let Some(tile) = self.tiles_arr.get_mut(index) {
-                    tile.draw(renderer, sprite);
+                    tile.draw(canvas, renderer, sprite);
                 }
             }
         }

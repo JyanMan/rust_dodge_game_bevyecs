@@ -32,19 +32,20 @@ impl Plugin for MainGame {
         );
 
         app.add_systems(Update, (
-            sys::render::sprite_update_trans,
+            // sys::render::sprite_update_trans,
             sys::anim::update_all,
             sys::entity::status::damage_over_time,
         ));
-        app.add_systems(Render, (
-            sys::render::sprites_draw,
-            sys::render::texts_draw.after(sys::render::sprites_draw),
-        ));
-        app.add_systems(PostRender, (
-            sys::render::health_bar_draw,
-            sys::render::dodge_stamina_draw,
-            sys::debug::render_all_obb,
-        ));
+        // app.add_systems(Render, (
+        //     sys::render::sprites_draw,
+        //     sys::render::texts_draw.after(sys::render::sprites_draw),
+        // ));
+        // app.add_systems(PostRender, (
+        //     sys::render::health_bar_draw,
+        //     sys::render::dodge_stamina_draw,
+        //     sys::debug::render_all_obb,
+        //     // sys::debug::constraints,
+        // ));
 
         app.add_systems(Input, (
             user_input,
@@ -62,7 +63,7 @@ impl Plugin for Test {
 
 pub fn init_spawn(world: &mut World) {
     let player_e = sys::entity::player::spawn(world);
-    sys::weapon::steel_sword::spawn(world, player_e);
+    // sys::weapon::steel_sword::spawn(world, player_e);
     sys::entity::health::player::health_bar_spawn(world);
     // sys::entity::zombie::mass_spawn(world);
 }

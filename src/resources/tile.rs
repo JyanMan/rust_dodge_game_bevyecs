@@ -1,3 +1,5 @@
+use sdl2::render::*;
+
 use crate::core::renderer::*;
 use crate::math_helper::*;
 use crate::components::Vector2;
@@ -54,8 +56,8 @@ impl Tile {
         // self.area.y = self.world_pos.y;
     }
 
-    pub fn draw(&self, renderer: &mut Renderer, sprite: &Sprite) {
-        renderer.draw_frame_to_cam(sprite, self.world_pos, Vector2::new(1.0, 1.0), self.tile_type as i32, 0.0);
+    pub fn draw(&self, canvas: &mut WindowCanvas, renderer: &mut Renderer, sprite: &Sprite) {
+        renderer.draw_frame_to_cam(canvas, sprite, self.world_pos, Vector2::new(1.0, 1.0), self.tile_type as i32, 0.0);
         // self.sprite.draw(canvas, &self.world_pos, self.tile_type as i32);
     }
 }

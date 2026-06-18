@@ -1,6 +1,7 @@
 use sdl2::rect::*;
 use sdl2::pixels::Color;
 use bevy_ecs::prelude::*;
+use sdl2::render::*;
 
 use crate::core::renderer::*;
 use crate::components::Vector2;
@@ -55,11 +56,11 @@ impl Sprite {
         self.height = (self.px_h / self.vert) as f32;
     }
 
-    pub fn draw(&self, renderer: &mut Renderer, pos: &Vector2, scale: Vector2) {
-        self.draw_frame_angle(renderer, pos, scale, self.frame, self.angle);
+    pub fn draw(&self, canvas: &mut WindowCanvas, asset_m: &AssetManager, pos: &Vector2, scale: Vector2) {
+        self.draw_frame_angle(canvas, asset_m, pos, scale, self.frame, self.angle);
     }
 
-    pub fn draw_frame_angle(&self, renderer: &mut Renderer, pos: &Vector2, scale: Vector2, frame: i32, angle: f64) {
+    pub fn draw_frame_angle(&self, canvas: &mut WindowCanvas, asset_m: &AssetManager, pos: &Vector2, scale: Vector2, frame: i32, angle: f64) {
 
         let scale_x = scale.x.abs();
         let scale_y = scale.y.abs();
@@ -80,10 +81,10 @@ impl Sprite {
             (self.height * scale_y).round() as u32 // scale
         );
 
-        let texture = renderer.asset_m.get_texture(self.texture_id);
+        let texture = asset_m.get_texture(self.texture_id);
 
-        renderer.canvas.set_draw_color(Color::WHITE);
-        let _ = renderer.canvas.copy_ex(
+        canvas.set_draw_color(Color::WHITE);
+        let _ = canvas.copy_ex(
             texture,
             src_rect,
             dest_rect,

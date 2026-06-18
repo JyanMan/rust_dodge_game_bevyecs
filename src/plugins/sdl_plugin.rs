@@ -1,4 +1,4 @@
-use sdl2::pixels::Color;
+use sdl2::pixels::*;
 use sdl2::ttf::Sdl2TtfContext;
 use bevy_ecs::prelude::*;
 use bevy_ecs::schedule::*;
@@ -11,6 +11,7 @@ use sdl2::video::WindowContext;
 use crate::core::renderer::*;
 use crate::config::*;
 use crate::resources::*;
+use crate::sys;
 
 static CANVAS: StaticCell<Canvas<sdl2::video::Window>> = StaticCell::new();
 static TTF_CTX: StaticCell<Sdl2TtfContext> = StaticCell::new();
@@ -50,8 +51,8 @@ impl Plugin for SDLInit {
 
         // override main schedules
         
-        app.add_systems(PreRender, set_background);
-        app.add_systems(PostRender, canvas_present);
+        // app.add_systems(PreRender, set_background);
+        // app.add_systems(PostRender, canvas_present);
         // app.add_systems(Input, exit_input_system);
     }
 }
@@ -62,13 +63,13 @@ pub fn custom_runner(mut app: App) -> AppExit {
     let sdl_context = sdl2::init().unwrap();
     let video_subsystem = sdl_context.video().unwrap();
     let timer_subsystem = sdl_context.timer().unwrap();
-    let window = video_subsystem.window("dodge the man", SCREEN_WIDTH as u32, SCREEN_HEIGHT as u32)
+    let window = video_subsystem.window("dodge the man", 1280, 720)
         // .opengl()
         .position_centered()
         .build()
         .unwrap();
 
-    let canvas = window.into_canvas().
+    let mut canvas = window.into_canvas().
         present_vsync().
         build().
         unwrap();
@@ -85,21 +86,41 @@ pub fn custom_runner(mut app: App) -> AppExit {
     let mut last_time = timer_subsystem.performance_counter() as f32;
     let mut curr_time;
 
-    let canvas_static: &'static mut WindowCanvas = CANVAS.init(canvas);
+    // let canvas_static: &'static mut WindowCanvas = CANVAS.init(canvas);
+
+    let t_creator = T_CREATOR.init(canvas.texture_creator());
+    let mut render_target = t_creator
+        .create_texture_target(PixelFormatEnum::RGBA8888, 320, 180)
+        .unwrap();
+    render_target.set_scale_mode(sdl2::render::ScaleMode::Nearest);
+
+    
     // canvas_static.set_logical_size(320, 180).unwrap();
     app.insert_non_send_resource( Renderer::new(
-        canvas_static,
+        t_creator,
         TTF_CTX.init(ttf_ctx),
-        T_CREATOR.init(canvas_static.texture_creator()),
         Camera::new(),
     ));
+    // let mut renderer = Renderer::new(
+    //     t_creator,
+    //     TTF_CTX.init(ttf_ctx),
+    //     Camera::new(),
+    // );
     app.insert_non_send_resource(sdl_context.event_pump().unwrap());
+    // app.insert_non_send_resource(AssetManager::new(t_creator, TTF_CTX.init(ttf_ctx)));
 
     app.world_mut().run_schedule(Startup);
 
     // TIME STEP IS FIXED
     let mut ts_res = app.world_mut().get_resource_mut::<TimeStep>().unwrap();
     ts_res.0 = time_step;
+
+    
+    let mut trans_list = bevy_ecs::storage::SparseSet::new();
+
+    // let player_e = sys::entity::player::spawn(app.world_mut(), &mut renderer);
+    // // sys::weapon::steel_sword::spawn(world, player_e);
+    // sys::entity::health::player::health_bar_spawn(app.world_mut(), &mut renderer);
 
     loop {
         curr_time = timer_subsystem.performance_counter() as f32;
@@ -122,6 +143,38 @@ pub fn custom_runner(mut app: App) -> AppExit {
         app.world_mut().run_schedule(Update);
         app.world_mut().run_schedule(PostUpdate);
 
+        canvas.set_draw_color(Color::RGB(100, 100, 100));
+        canvas.clear();
+
+        canvas.with_texture_canvas(&mut render_target, |texture_canvas| {
+            texture_canvas.set_draw_color(Color::RGB(50, 50, 50));
+            texture_canvas.clear();
+
+            // let renderer = world.get_non_send_resource_mut::<Renderer>().unwrap();
+            // let mut renderer = renderer.into_inner();
+            use bevy_ecs::system::*;
+            let world = app.world_mut();
+            // let mut system_state: SystemState<NonSendMut<Renderer>> = SystemState::new(world);
+            // let mut renderer= system_state.get_mut(world);
+            
+            sys::world::chunks::draw(world, texture_canvas);
+            sys::render::sprites_draw(world, texture_canvas);
+            sys::render::texts_draw(world, texture_canvas);
+            sys::render::health_bar_draw(world, texture_canvas);
+            sys::render::dodge_stamina_draw(world, texture_canvas);
+            sys::debug::render_all_obb(world, texture_canvas);
+            sys::render::proc_anim_edges(world, texture_canvas, &mut trans_list);
+
+            // texture_canvas.set_draw_color(Color::RGB(255, 255, 0));
+            // texture_canvas.draw_line(Point::new(25, 25), Point::new(50, 50)).unwrap();
+            texture_canvas.present();
+        }).unwrap();
+
+        canvas.copy(&render_target, None, None).unwrap();
+        canvas.present();
+
+
+
         app.world_mut().run_schedule(PreRender);
         app.world_mut().run_schedule(Render);
         app.world_mut().run_schedule(PostRender);
@@ -132,11 +185,11 @@ pub fn custom_runner(mut app: App) -> AppExit {
     }
 }
 
-pub fn set_background(mut renderer: NonSendMut<Renderer>) {
-    renderer.canvas.set_draw_color(Color::RGB(100, 100, 100));
-    renderer.canvas.clear();
-}
+// pub fn set_background(mut renderer: NonSendMut<Renderer>) {
+//     renderer.canvas.set_draw_color(Color::RGB(100, 100, 100));
+//     renderer.canvas.clear();
+// }
 
-pub fn canvas_present(mut renderer: NonSendMut<Renderer>) {
-    renderer.canvas.present();
-}
+// pub fn canvas_present(mut renderer: NonSendMut<Renderer>) {
+//     renderer.canvas.present();
+// }
