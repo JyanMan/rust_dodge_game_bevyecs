@@ -10,6 +10,7 @@ use i_triangle::float::triangulatable::Triangulatable;
 use crate::components::*;
 use crate::resources::*;
 use crate::core::*;
+use crate::config::*;
 
 pub fn proc_anim_edges(
     world: &mut World,
@@ -40,16 +41,12 @@ pub fn proc_anim_edges(
 
     let mut vertices = Vec::new();
 
-    let cam_pos = renderer.camera.get_pos();
-    let cam_scale = renderer.camera.get_scale();
-
     for polygon in &polygons {
         if polygon.list.len() < 2 {
             continue;
         }
         if let Some(first) = trans_list.get(polygon.list[0]) {
-            let a = (first.pos - cam_pos)
-                * cam_scale;
+            let a = first.pos;
             vertices.push( [a.x, a.y], );
         }
 
@@ -58,28 +55,10 @@ pub fn proc_anim_edges(
             let next = polygon.list[i]; 
             if let Some(prev) = trans_list.get(prev)
             && let Some(next) = trans_list.get(next) {
-                let a = (prev.pos - cam_pos)
-                    * cam_scale;
-                let b = (next.pos - cam_pos)
-                    * cam_scale;
+                let b = next.pos;
 
                 vertices.push( [b.x, b.y], );
 
-                // renderer.canvas.set_draw_color(Color::RGB(255, 255, 0));
-                // renderer.canvas.draw_line(
-                //     Point::new(
-                //         a.x.round() as i32, a.y.round() as i32
-                //     ),
-                //     Point::new(b.x.round() as i32, b.y.round() as i32),
-                // ).unwrap();
-
-                // renderer.canvas.set_draw_color(Color::RGB(255, 0, 0));
-                // renderer.canvas.draw_rect(
-                //     Rect::new(
-                //         a.x.round() as i32, a.y.round() as i32,
-                //         5, 5
-                //     )
-                // ).unwrap();
             }
         }
     }
@@ -96,7 +75,15 @@ pub fn proc_anim_edges(
         }
         // println!("points_len {}, indices len {}, vertices len: {}", trian.points.len(), trian.indices.len(), vertices.len());
         if points.len() % 3 == 0 && !points.is_empty() {
-            renderer.render_geometry(canvas, &points, TextureId::BloodParticle, VertexIndices::Sequential).unwrap();
+            renderer.render_geometry(
+                GeometryParams {
+                    canvas,
+                    relative_to_cam: true,
+                    pixel_perfect: true
+                },
+                &mut points,
+                TextureId::BloodParticle, VertexIndices::Sequential
+            ).unwrap();
         }
     }
 }

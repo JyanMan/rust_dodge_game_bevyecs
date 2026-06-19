@@ -47,7 +47,11 @@ pub fn sprites_draw(
             sprite.scale.x * trans.scale.x,  
             sprite.scale.y * trans.scale.y,  
         );
-        renderer.draw_to_cam(canvas, sprite, trans.pos, new_scale, angle_deg);
+        // renderer.draw_to_cam(canvas, sprite, trans.pos, new_scale, angle_deg);
+        renderer.draw_sprite(DrawParams {
+            canvas, pos: trans.pos, scale: new_scale, angle: angle_deg, frame: None,
+            relative_to_cam: true, pixel_perfect: false
+        }, sprite);
     }
 }
 
@@ -106,9 +110,14 @@ pub fn dodge_stamina_draw(
 
     for (dodge, mut trans, mut sprite) in &mut query {
         // println!("wtf??");
-        renderer.draw(canvas, &sprite, trans.pos, sprite.scale);
+        renderer.draw_sprite(
+            DrawParams {
+                canvas, pos: trans.pos, scale: sprite.scale, angle: sprite.angle,
+                relative_to_cam: false, pixel_perfect: false, frame: None
+            }, &sprite
+            // canvas, &sprite, trans.pos, sprite.scale
+        );
     }
-   
 }
 
 #[allow(clippy::type_complexity)]
@@ -135,7 +144,11 @@ pub fn health_bar_draw(
             continue;
         }
 
-        renderer.draw(canvas, sprite, trans.pos, sprite.scale);
+        // renderer.draw(canvas, sprite, trans.pos, sprite.scale);
+        renderer.draw_sprite(DrawParams {
+            canvas, pos: trans.pos, scale: sprite.scale, angle: sprite.angle, frame: None,
+            relative_to_cam: false, pixel_perfect: false
+        }, sprite);
     }
     // let mut query_without = world.query_filtered::<(&Transform, &Sprite), (With<HealthBarFillTag>, With<HealthBarTag>)>();
     for (trans, sprite) in &query_without {
@@ -143,7 +156,11 @@ pub fn health_bar_draw(
             continue;
         }
 
-        renderer.draw(canvas, sprite, trans.pos, sprite.scale);
+        // renderer.draw_sprite(canvas, sprite, trans.pos, sprite.scale);
+        renderer.draw_sprite(DrawParams {
+            canvas, pos: trans.pos, scale: sprite.scale, angle: sprite.angle, frame: None,
+            relative_to_cam: false, pixel_perfect: false
+        }, sprite);
     }
 }
 

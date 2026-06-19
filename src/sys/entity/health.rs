@@ -18,10 +18,12 @@ pub mod player {
         let mut sprite_health= Sprite::new(&renderer.asset_m, TextureId::HealthBar);
         sprite_health.set_sprite_sheet(1, 2);
         sprite_health.frame = 0;
+        sprite_health.scale *= 3.0;
 
         let mut sprite_health_clear = Sprite::new(&renderer.asset_m, TextureId::HealthBar);
         sprite_health_clear.set_sprite_sheet(1, 2);
         sprite_health_clear.frame = 1;
+        sprite_health_clear.scale *= 3.0;
 
         world.spawn((
             sprite_health,
@@ -37,7 +39,7 @@ pub mod player {
         ));
 
         let text_str = format!("Hp: {} / {}", 0, 0);
-        let text_e = sys::render::text_spawn(world, text_str.as_str(), 3, Vector2::new(0.0, 12.0));
+        let text_e = sys::render::text_spawn(world, text_str.as_str(), 8, Vector2::new(0.0, 35.0));
         let mut text_ref = world.entity_mut(text_e);
         text_ref.insert(HealthBarTextTag::default());
 

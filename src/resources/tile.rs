@@ -57,7 +57,13 @@ impl Tile {
     }
 
     pub fn draw(&self, canvas: &mut WindowCanvas, renderer: &mut Renderer, sprite: &Sprite) {
-        renderer.draw_frame_to_cam(canvas, sprite, self.world_pos, Vector2::new(1.0, 1.0), self.tile_type as i32, 0.0);
+        renderer.draw_sprite(
+            DrawParams {
+                canvas, pos: self.world_pos, scale: Vector2::new(1.0, 1.0),
+                angle: 0.0, relative_to_cam: true, pixel_perfect: false, frame: Some(self.tile_type as u32)
+            }, sprite
+            // canvas, sprite, self.world_pos, Vector2::new(1.0, 1.0), self.tile_type as i32, 0.0
+        );
         // self.sprite.draw(canvas, &self.world_pos, self.tile_type as i32);
     }
 }

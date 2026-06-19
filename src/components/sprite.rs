@@ -21,7 +21,7 @@ pub struct Sprite {
     pub px_w: i32,
     pub width: f32,
     pub height: f32,
-    pub frame: i32,
+    pub frame: u32,
     pub flip_x: bool,
     pub flip_y: bool,
 }
@@ -56,11 +56,20 @@ impl Sprite {
         self.height = (self.px_h / self.vert) as f32;
     }
 
-    pub fn draw(&self, canvas: &mut WindowCanvas, asset_m: &AssetManager, pos: &Vector2, scale: Vector2) {
-        self.draw_frame_angle(canvas, asset_m, pos, scale, self.frame, self.angle);
-    }
+    // pub fn draw(&self, params: DrawParams) {
+    //     self.draw_frame_angle(params);
+    // }
 
-    pub fn draw_frame_angle(&self, canvas: &mut WindowCanvas, asset_m: &AssetManager, pos: &Vector2, scale: Vector2, frame: i32, angle: f64) {
+    pub fn draw(&self, params: DrawParams, asset_m: &AssetManager) {
+
+        let scale = params.scale;
+        let pos = params.pos;
+        // let asset_m = params.asset_m;
+        let canvas = params.canvas;
+        let angle = params.angle;
+        let frame = if let Some(frame) = params.frame {
+            frame
+        } else { self.frame };
 
         let scale_x = scale.x.abs();
         let scale_y = scale.y.abs();
@@ -68,8 +77,8 @@ impl Sprite {
         let flip_x = if scale.x >= 0.0 {self.flip_x} else {!self.flip_x};
         let flip_y = if scale.y >= 0.0 {self.flip_y} else {!self.flip_y};
 
-        let frame_x: i32 = self.width as i32 * (frame % self.hor);
-        let frame_y: i32 = self.height as i32 * (frame / self.hor);
+        let frame_x: i32 = self.width as i32 * (frame as i32 % self.hor);
+        let frame_y: i32 = self.height as i32 * (frame as i32 / self.hor);
         let src_rect = Rect::new(
              frame_x, frame_y, self.width as u32, self.height as u32 
         );

@@ -62,7 +62,7 @@ pub fn update_all(
                 // TODO: you can optimize querying for sprite just once for angle and frame change
                 AnimData::SpriteFrame { value, target } => {
                     if let Ok(mut sprite) = sprite_query.get_mut(*target) {
-                        sprite.frame = *value;
+                        sprite.frame = *value as u32;
                     }
                 },
                 AnimData::SpriteAngle { value, target } => {

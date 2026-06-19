@@ -125,4 +125,11 @@ impl Div<f32> for Vector2 {
         Vector2 { x: self.x / scalar, y: self.y / scalar }
     }
 }
+impl MulAssign<f32> for Vector2 {
+    fn mul_assign(&mut self, scalar: f32) {
+        self.x *= scalar;
+        self.y *= scalar;
+        // self Vector2 { x: self.x / scalar, y: self.y / scalar }
+    }
+}
 

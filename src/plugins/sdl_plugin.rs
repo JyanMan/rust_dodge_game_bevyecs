@@ -1,4 +1,5 @@
 use sdl2::pixels::*;
+use sdl2::rect::*;
 use sdl2::ttf::Sdl2TtfContext;
 use bevy_ecs::prelude::*;
 use bevy_ecs::schedule::*;
@@ -12,6 +13,7 @@ use crate::core::renderer::*;
 use crate::config::*;
 use crate::resources::*;
 use crate::sys;
+use crate::components::Vector2;
 
 static CANVAS: StaticCell<Canvas<sdl2::video::Window>> = StaticCell::new();
 static TTF_CTX: StaticCell<Sdl2TtfContext> = StaticCell::new();
@@ -63,7 +65,7 @@ pub fn custom_runner(mut app: App) -> AppExit {
     let sdl_context = sdl2::init().unwrap();
     let video_subsystem = sdl_context.video().unwrap();
     let timer_subsystem = sdl_context.timer().unwrap();
-    let window = video_subsystem.window("dodge the man", 1280, 720)
+    let window = video_subsystem.window("dodge the man", SCREEN_WIDTH as u32, SCREEN_HEIGHT as u32)
         // .opengl()
         .position_centered()
         .build()
@@ -90,9 +92,10 @@ pub fn custom_runner(mut app: App) -> AppExit {
 
     let t_creator = T_CREATOR.init(canvas.texture_creator());
     let mut render_target = t_creator
-        .create_texture_target(PixelFormatEnum::RGBA8888, 320, 180)
+        .create_texture_target(PixelFormatEnum::RGBA8888, RES_WIDTH, RES_HEIGHT)
         .unwrap();
     render_target.set_scale_mode(sdl2::render::ScaleMode::Nearest);
+    render_target.set_blend_mode(BlendMode::Blend);
 
     
     // canvas_static.set_logical_size(320, 180).unwrap();
@@ -117,6 +120,8 @@ pub fn custom_runner(mut app: App) -> AppExit {
 
     
     let mut trans_list = bevy_ecs::storage::SparseSet::new();
+
+    let window_pixel_ratio = RES_WIDTH as f32 / SCREEN_WIDTH as f32;
 
     // let player_e = sys::entity::player::spawn(app.world_mut(), &mut renderer);
     // // sys::weapon::steel_sword::spawn(world, player_e);
@@ -146,31 +151,44 @@ pub fn custom_runner(mut app: App) -> AppExit {
         canvas.set_draw_color(Color::RGB(100, 100, 100));
         canvas.clear();
 
+        let world = app.world_mut();
         canvas.with_texture_canvas(&mut render_target, |texture_canvas| {
-            texture_canvas.set_draw_color(Color::RGB(50, 50, 50));
+            texture_canvas.set_draw_color(Color::RGBA(0, 0, 0, 0));
             texture_canvas.clear();
-
-            // let renderer = world.get_non_send_resource_mut::<Renderer>().unwrap();
-            // let mut renderer = renderer.into_inner();
-            use bevy_ecs::system::*;
-            let world = app.world_mut();
-            // let mut system_state: SystemState<NonSendMut<Renderer>> = SystemState::new(world);
-            // let mut renderer= system_state.get_mut(world);
             
-            sys::world::chunks::draw(world, texture_canvas);
-            sys::render::sprites_draw(world, texture_canvas);
-            sys::render::texts_draw(world, texture_canvas);
-            sys::render::health_bar_draw(world, texture_canvas);
-            sys::render::dodge_stamina_draw(world, texture_canvas);
-            sys::debug::render_all_obb(world, texture_canvas);
             sys::render::proc_anim_edges(world, texture_canvas, &mut trans_list);
-
-            // texture_canvas.set_draw_color(Color::RGB(255, 255, 0));
-            // texture_canvas.draw_line(Point::new(25, 25), Point::new(50, 50)).unwrap();
-            texture_canvas.present();
         }).unwrap();
+        sys::world::chunks::draw(world, &mut canvas);
+        sys::render::sprites_draw(world, &mut canvas);
+        sys::render::texts_draw(world, &mut canvas);
+        sys::render::health_bar_draw(world, &mut canvas);
+        sys::render::dodge_stamina_draw(world, &mut canvas);
+        sys::debug::render_all_obb(world, &mut canvas);
 
-        canvas.copy(&render_target, None, None).unwrap();
+        // canvas.copy(&render_target, None, Some(Rect::new(
+        //     (SCREEN_WIDTH as f32 / 2.5) as i32, (SCREEN_HEIGHT as f32 / 2.5) as i32,
+        //     SCREEN_WIDTH as u32 / 4, SCREEN_HEIGHT as u32 / 4
+        // ))).unwrap();
+        let renderer = world.get_non_send_resource::<Renderer>().unwrap();
+        let cam_scale = renderer.camera.scale;
+        let screen_center = Vector2::new(HALF_WIDTH_F, HALF_HEIGHT_F);
+        let res_center = Vector2::new(RES_WIDTH as f32 / 2.0, RES_HEIGHT as f32 / 2.0) * cam_scale;
+        canvas.copy(&render_target, None, Some(Rect::new(
+            // (SCREEN_WIDTH as f32 / (cam_scale*0.5)) as i32, (SCREEN_HEIGHT as f32 / (cam_scale * 0.5)) as i32,
+            // -screen_center.x as i32, -screen_center.y as i32,
+            (screen_center.x - res_center.x) as i32,
+            (screen_center.y - res_center.y) as i32,
+            (SCREEN_WIDTH as f32 * cam_scale * window_pixel_ratio as f32) as u32,
+            (SCREEN_HEIGHT as f32 * cam_scale * window_pixel_ratio as f32) as u32
+        ))).unwrap();
+        // let world = app.world_mut();
+        // sys::world::chunks::draw(world, &mut canvas);
+        // sys::render::sprites_draw(world, &mut canvas);
+        // sys::render::texts_draw(world, &mut canvas);
+        // sys::render::health_bar_draw(world, &mut canvas);
+        // sys::render::dodge_stamina_draw(world, &mut canvas);
+        // sys::debug::render_all_obb(world, &mut canvas);
+        // sys::render::proc_anim_edges(world, &mut canvas, &mut trans_list);
         canvas.present();
 
 

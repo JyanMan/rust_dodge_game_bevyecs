@@ -14,6 +14,7 @@ pub fn update_sprites(
         if dodge_stam.dodge_entities.is_empty() {
             for i in 0..dodge_stam.max_stack {
                 let mut sprite = Sprite::new( &renderer.asset_m, TextureId::DodgeStamina);
+                sprite.scale *= 3.0;
                 let trans =  Transform::new(
                     (i as f32) * (sprite.width * 0.35),
                     35.0

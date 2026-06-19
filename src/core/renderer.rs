@@ -11,10 +11,23 @@ use static_cell::StaticCell;
 
 use crate::resources::*;
 use crate::components::{ Vector2, Sprite, TextObject };
+use crate::config::*;
 
-pub enum DrawCommand {
-    Line(Point, Point),
-    SpriteToCam( )
+pub struct DrawParams<'a> {
+    pub canvas: &'a mut WindowCanvas,
+    // pub asset_m: &'a AssetManager,
+    pub pos: Vector2,
+    pub scale: Vector2,
+    pub angle: f64,
+    pub frame: Option<u32>,
+    pub relative_to_cam: bool,
+    pub pixel_perfect: bool, 
+}
+
+pub struct GeometryParams<'a> {
+    pub canvas: &'a mut WindowCanvas,
+    pub relative_to_cam: bool,
+    pub pixel_perfect: bool, 
 }
 
 pub struct Renderer {
@@ -22,7 +35,6 @@ pub struct Renderer {
     pub t_creator: &'static TextureCreator<WindowContext>,
     // pub canvas: &'static mut WindowCanvas,
     pub camera: Camera,
-    draw_buffer: VecDeque<DrawCommand>
 }
 
 impl Renderer {
@@ -40,7 +52,6 @@ impl Renderer {
                 t_creator, ttf_ctx
             ),
             camera,
-            draw_buffer: VecDeque::new()
             // alpha: 0.0,
         }
     }
@@ -50,28 +61,48 @@ impl Renderer {
         (pos - self.camera.get_pos()) * cam_scale
     }
 
-    pub fn draw(&mut self, canvas: &mut WindowCanvas, sprite: &Sprite, pos: Vector2, scale: Vector2) {
+    pub fn draw_sprite(&mut self, mut params: DrawParams, sprite: &Sprite) {
         let cam_scale = self.camera.scale;
-        sprite.draw(canvas, &self.asset_m, &pos, scale * cam_scale);
+        let cam_pos = self.camera.get_pos();
+        if params.relative_to_cam  {
+            let half_width = Vector2::new(sprite.width / 2.0, sprite.height / 2.0);
+            let pos_centered = params.pos - half_width;
+            if params.pixel_perfect {
+
+                let dif_vec = Vector2::new(
+                    ((SCREEN_WIDTH as f32 / cam_scale) - (RES_WIDTH as f32)) / 2.0,
+                    ((SCREEN_HEIGHT as f32 / cam_scale) - (RES_HEIGHT as f32)) / 2.0,
+                );
+                params.pos = pos_centered - cam_pos - dif_vec;
+            }
+            else {
+                params.scale = params.scale * cam_scale;
+
+                let pos_cam_adjusted = (pos_centered - cam_pos) * cam_scale;
+
+                params.pos = pos_cam_adjusted;
+            }
+        }
+        sprite.draw(params, &self.asset_m);
     }
 
-    pub fn draw_frame_to_cam(&mut self,  canvas: &mut WindowCanvas, sprite: &Sprite, pos: Vector2, scale: Vector2, frame: i32, angle: f64) {
-        let cam_scale = self.camera.scale;
+    // pub fn draw_frame_to_cam(&mut self,  canvas: &mut WindowCanvas, sprite: &Sprite, pos: Vector2, scale: Vector2, frame: i32, angle: f64) {
+    //     let cam_scale = self.camera.scale;
 
-        let half_width = Vector2::new(sprite.width / 2.0, sprite.height / 2.0);
-        let pos_centered = pos - half_width;
+    //     let half_width = Vector2::new(sprite.width / 2.0, sprite.height / 2.0);
+    //     let pos_centered = pos - half_width;
 
-        let pos_cam_adjusted = (pos_centered - self.camera.get_pos()) * cam_scale;
+    //     let pos_cam_adjusted = (pos_centered - self.camera.get_pos()) * cam_scale;
 
-        sprite.draw_frame_angle(canvas, &self.asset_m, &pos_cam_adjusted, scale * cam_scale, frame, angle);
-    }
+    //     sprite.draw_frame_angle(canvas, &self.asset_m, &pos_cam_adjusted, scale * cam_scale, frame, angle);
+    // }
 
-    pub fn draw_to_cam(&mut self, canvas: &mut WindowCanvas, sprite: &Sprite, pos: Vector2, scale: Vector2, angle: f64) {
-        self.draw_frame_to_cam(canvas, sprite, pos, scale, sprite.frame, angle);
-        // let cam_scale = self.camera.scale;
-        // let adjusted_pos = (pos - self.camera.get_pos()) * cam_scale;
-        // sprite.draw(self, &adjusted_pos, scale * cam_scale);
-    }
+    // pub fn draw_to_cam(&mut self, canvas: &mut WindowCanvas, sprite: &Sprite, pos: Vector2, scale: Vector2, angle: f64) {
+    //     self.draw_frame_to_cam(canvas, sprite, pos, scale, sprite.frame, angle);
+    //     // let cam_scale = self.camera.scale;
+    //     // let adjusted_pos = (pos - self.camera.get_pos()) * cam_scale;
+    //     // sprite.draw(self, &adjusted_pos, scale * cam_scale);
+    // }
     
     pub fn render_text(&mut self, canvas: &mut WindowCanvas, text: &mut TextObject) {
 
@@ -94,45 +125,69 @@ impl Renderer {
         }
         if let Some(texture) = self.asset_m.text_texture_set.get(id) {
             
-            let cam_scale = self.camera.scale;
-            let x_len = (text.content().len() as f32 * text.size as f32 * cam_scale).round() as u32;
-            let y_len = (text.size as f32 * 2.0 * cam_scale).round() as u32;
 
-            if text.is_relative_to_camera() {
-                canvas.set_draw_color(Color::WHITE);
+            let cam_scale = self.camera.scale;
+            let x_len = text.content().len() as f32 * text.size as f32;
+            let y_len = text.size as f32 * 2.0;
+            // let x_len = (text.content().len() as f32 * text.size as f32 * cam_scale).round() as u32;
+            // let y_len = (text.size as f32 * 2.0 * cam_scale).round() as u32;
+            let dest_rect = if text.is_relative_to_camera() {
                 let pos_cam_adjusted = (text.pos() - self.camera.get_pos()) * self.camera.scale;
-                let dest_rect = Rect::new(
+                Rect::new(
                      pos_cam_adjusted.x.round() as i32,
                      pos_cam_adjusted.y.round() as i32,
-                     x_len,
-                     y_len
-                 );
-                let _ = canvas.copy_ex( texture, None, dest_rect, 0.0, None, false, false, );
-                return;
-            }
-
-            let pos_cam_adjusted = text.pos() * self.camera.scale;
+                     (x_len * cam_scale).round() as u32,
+                     (y_len * cam_scale).round() as u32
+                 )
+                // let _ = canvas.copy_ex( texture, None, dest_rect, 0.0, None, false, false, );
+                // return;
+            } else {
+                let pos_cam_adjusted = text.pos();
+                Rect::new(
+                     pos_cam_adjusted.x.round() as i32,
+                     pos_cam_adjusted.y.round() as i32,
+                     x_len.round() as u32,
+                     y_len.round() as u32
+                )
+            };
 
             canvas.set_draw_color(Color::WHITE);
-            let dest_rect = Rect::new(
-                 pos_cam_adjusted.x.round() as i32,
-                 pos_cam_adjusted.y.round() as i32,
-                 x_len,
-                 y_len
-            );
             let _ = canvas.copy_ex( texture, None, dest_rect, 0.0, None, false, false, );
         }
     }
 
     pub fn render_geometry<'a>(
         &mut self,
-        canvas: &mut WindowCanvas,
-        vertices: &[Vertex],
+        // canvas: &mut WindowCanvas,
+        mut params: GeometryParams,
+        vertices: &mut [Vertex],
         texture_id: TextureId,
         indices: impl Into<VertexIndices<'a>>,
     ) -> Result<(), String> {
         let texture = self.asset_m.get_texture(texture_id);
-        canvas.render_geometry(vertices, None, indices)
+        let cam_scale = self.camera.scale;
+        let cam_pos = self.camera.get_pos();
+        
+        let dif_vec = Vector2::new(
+            ((SCREEN_WIDTH as f32 / cam_scale) - (RES_WIDTH as f32)) / 2.0,
+            ((SCREEN_HEIGHT as f32 / cam_scale) - (RES_HEIGHT as f32)) / 2.0,
+        );
+
+        for v in vertices.iter_mut() {
+            if params.relative_to_cam {
+                if params.pixel_perfect {
+                    let adjustment = cam_pos + dif_vec;
+                    v.position -= FPoint::new(adjustment.x, adjustment.y);
+                }
+                else {
+                    v.position = FPoint::new(
+                        (v.position.x - cam_pos.x) * cam_scale, 
+                        (v.position.y - cam_pos.y) * cam_scale, 
+                    );
+                }
+            }
+        }
+        params.canvas.render_geometry(&vertices, None, indices)
     }
 
     pub fn delete_text(&mut self, text: &TextObject) {
