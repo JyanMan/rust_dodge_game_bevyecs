@@ -1,5 +1,5 @@
-pub const RES_WIDTH: u32 = 320;
-pub const RES_HEIGHT: u32 = 180;
+pub const RES_WIDTH: u32 = 1280;
+pub const RES_HEIGHT: u32 = 720;
 pub const SCREEN_WIDTH: i32 = 1280;
 pub const SCREEN_HEIGHT: i32 = 720;
 pub const TILE_SIZE: i32 = 8;

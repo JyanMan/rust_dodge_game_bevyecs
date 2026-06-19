@@ -50,7 +50,7 @@ pub fn sprites_draw(
         // renderer.draw_to_cam(canvas, sprite, trans.pos, new_scale, angle_deg);
         renderer.draw_sprite(DrawParams {
             canvas, pos: trans.pos, scale: new_scale, angle: angle_deg, frame: None,
-            relative_to_cam: true, pixel_perfect: false
+            relative_to_cam: true, pixel_perfect: true
         }, sprite);
     }
 }

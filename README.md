@@ -1,6 +1,4 @@
 ## TODO
-* change the weapon attack where the normal attack requires no sprite animation
-  - just the sword raw swingin...
 * make dodge so that lerping is purely a slow return of gravity but player can still move left and right
   - basically lerping is no longer a lone state... idk how you're gonna handle this with
     the current statemachine setup.

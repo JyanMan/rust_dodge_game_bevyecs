@@ -13,6 +13,10 @@ use crate::resources::*;
 use crate::components::{ Vector2, Sprite, TextObject };
 use crate::config::*;
 
+pub enum DrawCommand {
+    Sprite(TextureId, )
+}
+
 pub struct DrawParams<'a> {
     pub canvas: &'a mut WindowCanvas,
     // pub asset_m: &'a AssetManager,
@@ -76,7 +80,7 @@ impl Renderer {
                 params.pos = pos_centered - cam_pos - dif_vec;
             }
             else {
-                params.scale = params.scale * cam_scale;
+                params.scale *= cam_scale;
 
                 let pos_cam_adjusted = (pos_centered - cam_pos) * cam_scale;
 
@@ -129,25 +133,25 @@ impl Renderer {
             let cam_scale = self.camera.scale;
             let x_len = text.content().len() as f32 * text.size as f32;
             let y_len = text.size as f32 * 2.0;
-            // let x_len = (text.content().len() as f32 * text.size as f32 * cam_scale).round() as u32;
-            // let y_len = (text.size as f32 * 2.0 * cam_scale).round() as u32;
+            // let x_len = (text.content().len() as f32 * text.size as f32 * cam_scale).floor() as u32;
+            // let y_len = (text.size as f32 * 2.0 * cam_scale).floor() as u32;
             let dest_rect = if text.is_relative_to_camera() {
                 let pos_cam_adjusted = (text.pos() - self.camera.get_pos()) * self.camera.scale;
                 Rect::new(
-                     pos_cam_adjusted.x.round() as i32,
-                     pos_cam_adjusted.y.round() as i32,
-                     (x_len * cam_scale).round() as u32,
-                     (y_len * cam_scale).round() as u32
+                     pos_cam_adjusted.x.floor() as i32,
+                     pos_cam_adjusted.y.floor() as i32,
+                     (x_len * cam_scale).floor() as u32,
+                     (y_len * cam_scale).floor() as u32
                  )
                 // let _ = canvas.copy_ex( texture, None, dest_rect, 0.0, None, false, false, );
                 // return;
             } else {
                 let pos_cam_adjusted = text.pos();
                 Rect::new(
-                     pos_cam_adjusted.x.round() as i32,
-                     pos_cam_adjusted.y.round() as i32,
-                     x_len.round() as u32,
-                     y_len.round() as u32
+                     pos_cam_adjusted.x.floor() as i32,
+                     pos_cam_adjusted.y.floor() as i32,
+                     x_len.floor() as u32,
+                     y_len.floor() as u32
                 )
             };
 
@@ -159,7 +163,7 @@ impl Renderer {
     pub fn render_geometry<'a>(
         &mut self,
         // canvas: &mut WindowCanvas,
-        mut params: GeometryParams,
+        params: GeometryParams,
         vertices: &mut [Vertex],
         texture_id: TextureId,
         indices: impl Into<VertexIndices<'a>>,
@@ -177,17 +181,17 @@ impl Renderer {
             if params.relative_to_cam {
                 if params.pixel_perfect {
                     let adjustment = cam_pos + dif_vec;
-                    v.position -= FPoint::new(adjustment.x, adjustment.y);
+                    v.position -= FPoint::new(adjustment.x.floor(), adjustment.y.floor());
                 }
                 else {
                     v.position = FPoint::new(
-                        (v.position.x - cam_pos.x) * cam_scale, 
-                        (v.position.y - cam_pos.y) * cam_scale, 
+                        ((v.position.x - cam_pos.x) * cam_scale), 
+                        ((v.position.y - cam_pos.y) * cam_scale), 
                     );
                 }
             }
         }
-        params.canvas.render_geometry(&vertices, None, indices)
+        params.canvas.render_geometry(vertices, None, indices)
     }
 
     pub fn delete_text(&mut self, text: &TextObject) {

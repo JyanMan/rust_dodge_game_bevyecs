@@ -17,16 +17,16 @@ pub fn spawn(commands: &mut Commands, pos: Transform, dir: Vector2) {
             let ang_rad = (rng_y).atan2(rng_x) + (dir.y).atan2(dir.x);
 
             let ran_dir = Vector2::new(ang_rad.cos(), ang_rad.sin()).normalize();
-            // sys::particle::spawn(
-            //     world,
-            //     pos,
-            //     ran_dir,
-            //     ran_speed,
-            //     0.2,
-            //     TextureId::BloodParticle,
-            //     true,
-            //     0.5
-            // );       
+            sys::particle::spawn(
+                world,
+                pos,
+                ran_dir,
+                ran_speed,
+                0.2,
+                TextureId::BloodParticle,
+                true,
+                0.5
+            );       
         }
     });
 }

@@ -19,14 +19,14 @@ static CANVAS: StaticCell<Canvas<sdl2::video::Window>> = StaticCell::new();
 static TTF_CTX: StaticCell<Sdl2TtfContext> = StaticCell::new();
 static T_CREATOR: StaticCell<TextureCreator<WindowContext>> = StaticCell::new();
 
-#[derive(ScheduleLabel, Clone, Debug, PartialEq, Eq, Hash, Default)]
-pub struct Render;
+// #[derive(ScheduleLabel, Clone, Debug, PartialEq, Eq, Hash, Default)]
+// pub struct Render;
 
-#[derive(ScheduleLabel, Clone, Debug, PartialEq, Eq, Hash, Default)]
-pub struct PostRender;
+// #[derive(ScheduleLabel, Clone, Debug, PartialEq, Eq, Hash, Default)]
+// pub struct PostRender;
 
-#[derive(ScheduleLabel, Clone, Debug, PartialEq, Eq, Hash, Default)]
-pub struct PreRender;
+// #[derive(ScheduleLabel, Clone, Debug, PartialEq, Eq, Hash, Default)]
+// pub struct PreRender;
 
 #[derive(ScheduleLabel, Clone, Debug, PartialEq, Eq, Hash, Default)]
 pub struct Input;
@@ -37,9 +37,9 @@ pub struct SDLInit;
 impl Plugin for SDLInit {
     fn build(&self, app: &mut App) {
 
-        app.init_schedule(PreRender);
-        app.init_schedule(Render);
-        app.init_schedule(PostRender);
+        // app.init_schedule(PreRender);
+        // app.init_schedule(Render);
+        // app.init_schedule(PostRender);
 
         app.init_schedule(Input);
 
@@ -88,14 +88,14 @@ pub fn custom_runner(mut app: App) -> AppExit {
     let mut last_time = timer_subsystem.performance_counter() as f32;
     let mut curr_time;
 
-    // let canvas_static: &'static mut WindowCanvas = CANVAS.init(canvas);
-
     let t_creator = T_CREATOR.init(canvas.texture_creator());
-    let mut render_target = t_creator
+
+    // low resolution canvas
+    let mut pixelated_canvas = t_creator
         .create_texture_target(PixelFormatEnum::RGBA8888, RES_WIDTH, RES_HEIGHT)
         .unwrap();
-    render_target.set_scale_mode(sdl2::render::ScaleMode::Nearest);
-    render_target.set_blend_mode(BlendMode::Blend);
+    pixelated_canvas.set_scale_mode(sdl2::render::ScaleMode::Nearest);
+    pixelated_canvas.set_blend_mode(BlendMode::Blend);
 
     
     // canvas_static.set_logical_size(320, 180).unwrap();
@@ -104,11 +104,6 @@ pub fn custom_runner(mut app: App) -> AppExit {
         TTF_CTX.init(ttf_ctx),
         Camera::new(),
     ));
-    // let mut renderer = Renderer::new(
-    //     t_creator,
-    //     TTF_CTX.init(ttf_ctx),
-    //     Camera::new(),
-    // );
     app.insert_non_send_resource(sdl_context.event_pump().unwrap());
     // app.insert_non_send_resource(AssetManager::new(t_creator, TTF_CTX.init(ttf_ctx)));
 
@@ -122,10 +117,6 @@ pub fn custom_runner(mut app: App) -> AppExit {
     let mut trans_list = bevy_ecs::storage::SparseSet::new();
 
     let window_pixel_ratio = RES_WIDTH as f32 / SCREEN_WIDTH as f32;
-
-    // let player_e = sys::entity::player::spawn(app.world_mut(), &mut renderer);
-    // // sys::weapon::steel_sword::spawn(world, player_e);
-    // sys::entity::health::player::health_bar_spawn(app.world_mut(), &mut renderer);
 
     loop {
         curr_time = timer_subsystem.performance_counter() as f32;
@@ -152,28 +143,25 @@ pub fn custom_runner(mut app: App) -> AppExit {
         canvas.clear();
 
         let world = app.world_mut();
-        canvas.with_texture_canvas(&mut render_target, |texture_canvas| {
+        canvas.with_texture_canvas(&mut pixelated_canvas, |texture_canvas| {
             texture_canvas.set_draw_color(Color::RGBA(0, 0, 0, 0));
             texture_canvas.clear();
             
+            sys::world::chunks::draw(world, texture_canvas);
+            sys::render::sprites_draw(world, texture_canvas);
             sys::render::proc_anim_edges(world, texture_canvas, &mut trans_list);
         }).unwrap();
-        sys::world::chunks::draw(world, &mut canvas);
-        sys::render::sprites_draw(world, &mut canvas);
+        sys::debug::render_all_obb(world, &mut canvas);
         sys::render::texts_draw(world, &mut canvas);
         sys::render::health_bar_draw(world, &mut canvas);
         sys::render::dodge_stamina_draw(world, &mut canvas);
-        sys::debug::render_all_obb(world, &mut canvas);
 
-        // canvas.copy(&render_target, None, Some(Rect::new(
-        //     (SCREEN_WIDTH as f32 / 2.5) as i32, (SCREEN_HEIGHT as f32 / 2.5) as i32,
-        //     SCREEN_WIDTH as u32 / 4, SCREEN_HEIGHT as u32 / 4
-        // ))).unwrap();
+        // ADJUST SCALE AND POSITION OF PIXELATED_CANVAS
         let renderer = world.get_non_send_resource::<Renderer>().unwrap();
         let cam_scale = renderer.camera.scale;
         let screen_center = Vector2::new(HALF_WIDTH_F, HALF_HEIGHT_F);
         let res_center = Vector2::new(RES_WIDTH as f32 / 2.0, RES_HEIGHT as f32 / 2.0) * cam_scale;
-        canvas.copy(&render_target, None, Some(Rect::new(
+        canvas.copy(&pixelated_canvas, None, Some(Rect::new(
             // (SCREEN_WIDTH as f32 / (cam_scale*0.5)) as i32, (SCREEN_HEIGHT as f32 / (cam_scale * 0.5)) as i32,
             // -screen_center.x as i32, -screen_center.y as i32,
             (screen_center.x - res_center.x) as i32,
@@ -190,12 +178,6 @@ pub fn custom_runner(mut app: App) -> AppExit {
         // sys::debug::render_all_obb(world, &mut canvas);
         // sys::render::proc_anim_edges(world, &mut canvas, &mut trans_list);
         canvas.present();
-
-
-
-        app.world_mut().run_schedule(PreRender);
-        app.world_mut().run_schedule(Render);
-        app.world_mut().run_schedule(PostRender);
 
         if let Some(exit) = app.should_exit() {
             return exit;

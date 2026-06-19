@@ -5,7 +5,6 @@ use crate::sys;
 use crate::config::RENDER_DISTANCE;
 use crate::components::Vector2;
 use crate::resources::EntityQuadMap;
-use crate::plugins::sdl_plugin::Render;
 
 pub struct WorldPlugin;
 

@@ -84,10 +84,10 @@ impl Sprite {
         );
 
         let dest_rect = Rect::new(
-            pos.x.round() as i32,         
-            pos.y.round() as i32,
-            (self.width * scale_x).round() as u32, // scale
-            (self.height * scale_y).round() as u32 // scale
+            pos.x.floor() as i32,         
+            pos.y.floor() as i32,
+            (self.width * scale_x).floor() as u32, // scale
+            (self.height * scale_y).floor() as u32 // scale
         );
 
         let texture = asset_m.get_texture(self.texture_id);

@@ -36,16 +36,16 @@ impl ops::Add<Point> for Point {
     }
 }
 
-impl ops::Mul<f32> for Point {
-    type Output = Point;
+// impl ops::Mul<f32> for Point {
+//     type Output = Point;
 
-    fn mul(self, scale: f32) -> Point {
-        Point {
-            x: self.x * (scale as i32),
-            y: self.y * (scale as i32)
-        }
-    }
-}
+//     fn mul(self, scale: f32) -> Point {
+//         Point {
+//             x: self.x * (scale.floor() as i32),
+//             y: self.y * (scale.floor() as i32)
+//         }
+//     }
+// }
 #[inline(always)]
 pub fn world_to_cell(world_pos: &Vector2) -> Point {
      Point {
