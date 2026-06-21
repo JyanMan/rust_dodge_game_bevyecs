@@ -159,15 +159,21 @@ pub fn custom_runner(mut app: App) -> AppExit {
         // ADJUST SCALE AND POSITION OF PIXELATED_CANVAS
         let renderer = world.get_non_send_resource::<Renderer>().unwrap();
         let cam_scale = renderer.camera.scale;
+        let cam_lerped_pos = renderer.camera.get_lerped_pos();
+        let cam_pos = renderer.camera.get_pos();
+
+
+        let lerped_pos = (cam_lerped_pos - cam_pos) * cam_scale;
+
         let screen_center = Vector2::new(HALF_WIDTH_F, HALF_HEIGHT_F);
         let res_center = Vector2::new(RES_WIDTH as f32 / 2.0, RES_HEIGHT as f32 / 2.0) * cam_scale;
         canvas.copy(&pixelated_canvas, None, Some(Rect::new(
             // (SCREEN_WIDTH as f32 / (cam_scale*0.5)) as i32, (SCREEN_HEIGHT as f32 / (cam_scale * 0.5)) as i32,
             // -screen_center.x as i32, -screen_center.y as i32,
-            (screen_center.x - res_center.x) as i32,
-            (screen_center.y - res_center.y) as i32,
-            (SCREEN_WIDTH as f32 * cam_scale * window_pixel_ratio as f32) as u32,
-            (SCREEN_HEIGHT as f32 * cam_scale * window_pixel_ratio as f32) as u32
+            (screen_center.x - res_center.x - lerped_pos.x) as i32,
+            (screen_center.y - res_center.y - lerped_pos.y) as i32,
+            (RES_WIDTH as f32 * cam_scale) as u32,
+            (RES_HEIGHT as f32 * cam_scale) as u32
         ))).unwrap();
         // let world = app.world_mut();
         // sys::world::chunks::draw(world, &mut canvas);

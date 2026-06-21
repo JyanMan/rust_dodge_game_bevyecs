@@ -7,6 +7,7 @@ use crate::config::*;
 #[derive(Resource, Default)]
 pub struct Camera {
    target_pos: Vector2,
+   lerped_pos: Vector2,
    pos: Vector2,
    pub scale: f32,
    interp: f32
@@ -17,7 +18,8 @@ impl Camera {
         Self {
             pos: Vector2::new(0.0, 0.0),
             target_pos: Vector2::new(0.0, 0.0),
-            scale: 3.0,
+            lerped_pos: Vector2::new(0.0, 0.0),
+            scale: 4.0,
             interp: 0.1,
         }
     }
@@ -28,12 +30,14 @@ impl Camera {
     }
 
     pub fn update(&mut self) {
-        self.pos = lerp_pos(&self.pos, &self.target_pos, self.interp);
-        // self.pos = self.target_pos;
+        self.lerped_pos = lerp_pos(&self.lerped_pos, &self.target_pos, self.interp);
+        self.pos = self.target_pos;
     }
     pub fn get_pos(&self) -> Vector2 {
         self.pos
     }
+    pub fn get_lerped_pos(&self) -> Vector2 { self.lerped_pos }
+
     pub fn get_scale(&self) -> f32 {
         self.scale
     }
