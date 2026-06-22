@@ -105,13 +105,18 @@ pub fn sprites_draw(
             sprite.scale.y * trans.scale.y,  
         );
         // renderer.draw_to_cam(canvas, sprite, trans.pos, new_scale, angle_deg);
-        draw_list.draw(DrawCommand::Sprite(SpriteParams {
-            pos: trans.pos, scale: new_scale, angle: angle_deg, frame: sprite.frame,
-            relative_to_cam: true, pixel_perfect: true,
-            flip_x: sprite.flip_x, flip_y: sprite.flip_y, texture_id: sprite.texture_id,
-            hor: sprite.hor, vert: sprite.vert,
-            width: sprite.width, height: sprite.height
-        }), DrawLayer::Pixelated);
+        draw_list.draw(DrawCommand::Sprite(
+            SpriteParams::new(sprite, trans.pos, true, true)
+                .scale(new_scale)
+                .angle(angle_deg)
+        ), DrawLayer::Pixelated);
+        // draw_list.draw(DrawCommand::Sprite(SpriteParams {
+        //     pos: trans.pos, scale: new_scale, angle: angle_deg, frame: sprite.frame,
+        //     relative_to_cam: true, pixel_perfect: true,
+        //     flip_x: sprite.flip_x, flip_y: sprite.flip_y, texture_id: sprite.texture_id,
+        //     hor: sprite.hor, vert: sprite.vert,
+        //     width: sprite.width, height: sprite.height
+        // }), DrawLayer::Pixelated);
     }
 }
 

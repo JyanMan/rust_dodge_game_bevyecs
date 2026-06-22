@@ -47,7 +47,7 @@ impl Tile {
             area_m.remove_tile(&self.tile_pos);
         }
 
-        self.tile_pos = new_tile_pos.clone();
+        self.tile_pos = new_tile_pos;
         self.world_pos = tile_to_world(&new_tile_pos);
         self.tile_type = tile_type;
 
@@ -56,13 +56,18 @@ impl Tile {
     }
 
     pub fn draw(&self, draw_list: &mut DrawList, sprite: &Sprite) {
-        draw_list.draw(DrawCommand::Sprite( SpriteParams {
-            pos: self.world_pos, scale: Vector2::new(1.0, 1.0),
-            angle: 0.0, relative_to_cam: true, pixel_perfect: true, frame: self.tile_type as u32,
-            flip_x: sprite.flip_x, flip_y: sprite.flip_y, texture_id: sprite.texture_id,
-            hor: sprite.hor, vert: sprite.vert,
-            width: sprite.width, height: sprite.width
-        } ), DrawLayer::Pixelated);
+        draw_list.draw(DrawCommand::Sprite(
+            SpriteParams::new(sprite, self.world_pos, true, true)
+                .frame(self.tile_type as u32)
+                .scale(Vector2::new(1.0, 1.0))
+        ), DrawLayer::Pixelated);
+        // draw_list.draw(DrawCommand::Sprite( SpriteParams {
+        //     pos: self.world_pos, scale: Vector2::new(1.0, 1.0),
+        //     angle: 0.0, relative_to_cam: true, pixel_perfect: true, frame: self.tile_type as u32,
+        //     flip_x: sprite.flip_x, flip_y: sprite.flip_y, texture_id: sprite.texture_id,
+        //     hor: sprite.hor, vert: sprite.vert,
+        //     width: sprite.width, height: sprite.width
+        // } ), DrawLayer::Pixelated);
         // canvas, sprite, self.world_pos, Vector2::new(1.0, 1.0), self.tile_type as i32, 0.0
         // self.sprite.draw(canvas, &self.world_pos, self.tile_type as i32);
     }

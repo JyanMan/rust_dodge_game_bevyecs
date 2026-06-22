@@ -24,6 +24,36 @@ pub struct SpriteParams {
     pub vert: i32
 }
 
+impl SpriteParams {
+    pub fn new(
+        sprite: &Sprite,
+        pos: Vector2,
+        relative_to_cam: bool,
+        pixel_perfect: bool,
+
+    ) -> Self {
+        Self {
+            pos, scale: sprite.scale,
+            angle: sprite.angle, relative_to_cam, pixel_perfect, frame: sprite.frame,
+            flip_x: sprite.flip_x, flip_y: sprite.flip_y, texture_id: sprite.texture_id,
+            hor: sprite.hor, vert: sprite.vert,
+            width: sprite.width, height: sprite.width
+        }       
+    }
+    pub fn angle(mut self, angle: f64) -> Self {
+        self.angle = angle;
+        self
+    }
+    pub fn frame(mut self, frame: u32) -> Self {
+        self.frame = frame;
+        self
+    }
+    pub fn scale(mut self, scale: Vector2) -> Self {
+        self.scale = scale;
+        self
+    }
+}
+
 #[repr(usize)]
 pub enum DrawLayer {
     UI,
