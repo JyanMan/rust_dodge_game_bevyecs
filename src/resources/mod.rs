@@ -9,6 +9,7 @@ pub mod entity_quad_map;
 pub mod tag_registry;
 pub mod draw_buffer;
 pub mod draw_list;
+pub mod proc_anim;
 
 pub use camera::*;
 pub use chunk_manager::*;
@@ -19,6 +20,7 @@ pub use entity_quad_map::*;
 pub use tag_registry::*;
 pub use draw_buffer::*;
 pub use draw_list::*;
+pub use proc_anim::*;
 
 use bevy_ecs::prelude::*;
 use std::collections::HashSet;

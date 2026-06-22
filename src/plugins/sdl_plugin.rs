@@ -56,6 +56,11 @@ impl Plugin for SDLInit {
         app.add_systems(PreRender, (
             sys::world::chunks::draw,
             sys::render::sprites_draw.after(sys::world::chunks::draw),
+            sys::render::proc_anim_edges.after(sys::render::sprites_draw),
+            // sys::debug::render_all_obb,
+            // sys::render::texts_draw,
+            // sys::render::health_bar_draw,
+            // sys::render::dodge_stamina_draw,
         ));
         app.add_systems(Render, flush_draw);
         
@@ -116,6 +121,7 @@ pub fn custom_runner(mut app: App) -> AppExit {
     app.insert_non_send_resource(canvas);
     app.insert_non_send_resource(PixelatedCanvas(pixelated_canvas));
     app.insert_non_send_resource(AssetManager::new(t_creator, TTF_CTX.init(ttf_ctx)));
+    // app.insert_non_send_resource(t_creator);
     app.insert_resource(Camera::new());
     app.init_resource::<DrawList>();
     // app.insert_non_send_resource(AssetManager::new(t_creator, TTF_CTX.init(ttf_ctx)));
@@ -177,13 +183,12 @@ fn flush_draw(
 
         for draw_cmd in draw_list.get_list(DrawLayer::Pixelated).unwrap().drain(..) {
             draw_cmd.draw(texture_canvas, &asset_m, &camera);
-            // let _ draw_cmd;
         }
         
-        // sys::world::chunks::draw(world, texture_canvas);
-        // sys::render::sprites_draw(world, texture_canvas);
-        // sys::render::proc_anim_edges(world, texture_canvas, &mut trans_list);
     }).unwrap();
+    for draw_cmd in draw_list.get_list(DrawLayer::UI).unwrap().drain(..) {
+        draw_cmd.draw(&mut canvas, &asset_m, &camera);
+    }
     // sys::debug::render_all_obb(world, &mut canvas);
     // sys::render::texts_draw(world, &mut canvas);
     // sys::render::health_bar_draw(world, &mut canvas);

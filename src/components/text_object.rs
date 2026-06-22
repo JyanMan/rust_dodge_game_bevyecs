@@ -2,7 +2,7 @@ use bevy_ecs::prelude::*;
 use crate::resources::TextId;
 use crate::components::*;
 
-#[derive(Component)]
+#[derive(Component, Clone)]
 pub struct TextObject {
     pub new: bool,
     relative_to_camera: bool,

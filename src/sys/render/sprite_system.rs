@@ -110,13 +110,6 @@ pub fn sprites_draw(
                 .scale(new_scale)
                 .angle(angle_deg)
         ), DrawLayer::Pixelated);
-        // draw_list.draw(DrawCommand::Sprite(SpriteParams {
-        //     pos: trans.pos, scale: new_scale, angle: angle_deg, frame: sprite.frame,
-        //     relative_to_cam: true, pixel_perfect: true,
-        //     flip_x: sprite.flip_x, flip_y: sprite.flip_y, texture_id: sprite.texture_id,
-        //     hor: sprite.hor, vert: sprite.vert,
-        //     width: sprite.width, height: sprite.height
-        // }), DrawLayer::Pixelated);
     }
 }
 
@@ -140,13 +133,11 @@ pub fn sprites_draw(
 
 pub fn texts_draw(
     
-    world: &mut World,
-    canvas: &mut WindowCanvas,
-    // renderer: &mut Renderer
-    // mut query: Query<(&mut TextObject, &Transform)>,
-    // mut renderer: NonSendMut<Renderer>
+    // world: &mut World,
+    // canvas: &mut WindowCanvas,
+    mut query: Query<(&mut TextObject, &Transform)>,
+    mut draw_list: ResMut<DrawList>
 ) {
-    //TODO 
     // let mut state: SystemState<(
     //     Query<(&mut TextObject, &Transform)>,
     //     NonSendMut<Renderer>
@@ -154,10 +145,10 @@ pub fn texts_draw(
 
     // let (mut query, mut renderer) = state.get_mut(world);
 
-    // for (mut text, trans) in &mut query {
-    //     text.set_pos(trans.pos);
-    //     renderer.render_text(canvas, &mut text);
-    // }
+    for (mut text, trans) in &mut query {
+        text.set_pos(trans.pos);
+        draw_list.draw(DrawCommand::Text(text.clone()), DrawLayer::UI);
+    }
 }
 
 pub fn dodge_stamina_draw(

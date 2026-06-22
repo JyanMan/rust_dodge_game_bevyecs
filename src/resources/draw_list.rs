@@ -64,6 +64,8 @@ pub enum DrawLayer {
 
 pub enum DrawCommand {
     Sprite(SpriteParams),
+    Geometry(GeometryParams),
+    Text(TextObject),
 }
 
 impl DrawCommand {
@@ -140,6 +142,84 @@ impl DrawCommand {
                     flip_y,
                 );
             }
+            DrawCommand::Geometry(mut params) => {
+                // TODO not None
+                let texture = asset_m.get_texture(params.texture_id);
+                let cam_scale = camera.scale;
+                let cam_pos = camera.get_pos();
+    
+                let dif_vec = Vector2::new(
+                    ((SCREEN_WIDTH as f32 / cam_scale) - (RES_WIDTH as f32)) / 2.0,
+                    ((SCREEN_HEIGHT as f32 / cam_scale) - (RES_HEIGHT as f32)) / 2.0,
+                );
+
+                for v in params.vertices.iter_mut() {
+                    if params.relative_to_cam {
+                        if params.pixel_perfect {
+                            let adjustment = cam_pos + dif_vec;
+                            v.position -= FPoint::new(adjustment.x.floor(), adjustment.y.floor());
+                        }
+                        else {
+                            v.position = FPoint::new(
+                                (v.position.x - cam_pos.x) * cam_scale, 
+                                (v.position.y - cam_pos.y) * cam_scale, 
+                            );
+                        }
+                    }
+                }
+                canvas.render_geometry(&params.vertices, None, VertexIndices::Sequential).unwrap();
+            }
+            DrawCommand::Text(text) => {
+                
+                // if text.new {
+                //     text.set_id(asset_m.text_texture_set.len()); 
+                // }
+
+                // let id = text.id();
+        
+                // if text.changed() {
+                //     text.mark_unchanged();
+                //     let part_render = asset_m.fonts_map.get(&FontId::OpenSansBold)
+                //         .unwrap().render(text.content()); 
+                //     let surface = part_render.solid(Color::RGB(255, 255, 255)).unwrap();
+                //     let t_creator: &'static TextureCreator<WindowContext> = unsafe {
+                //         &*(t_creator as *const TextureCreator<WindowContext>)
+                //     }; 
+                //     let new_texture = t_creator.create_texture_from_surface(surface).unwrap(); 
+                //     asset_m.text_texture_set.insert(id, new_texture);
+                // }
+                // if let Some(texture) = asset_m.text_texture_set.get(id) {
+            
+
+                //     let cam_scale = camera.scale;
+                //     let x_len = text.content().len() as f32 * text.size as f32;
+                //     let y_len = text.size as f32 * 2.0;
+                //     // let x_len = (text.content().len() as f32 * text.size as f32 * cam_scale).floor() as u32;
+                //     // let y_len = (text.size as f32 * 2.0 * cam_scale).floor() as u32;
+                //     let dest_rect = if text.is_relative_to_camera() {
+                //         let pos_cam_adjusted = (text.pos() - camera.get_pos()) * camera.scale;
+                //         Rect::new(
+                //              pos_cam_adjusted.x.floor() as i32,
+                //              pos_cam_adjusted.y.floor() as i32,
+                //              (x_len * cam_scale).floor() as u32,
+                //              (y_len * cam_scale).floor() as u32
+                //          )
+                //         // let _ = canvas.copy_ex( texture, None, dest_rect, 0.0, None, false, false, );
+                //         // return;
+                //     } else {
+                //         let pos_cam_adjusted = text.pos();
+                //         Rect::new(
+                //              pos_cam_adjusted.x.floor() as i32,
+                //              pos_cam_adjusted.y.floor() as i32,
+                //              x_len.floor() as u32,
+                //              y_len.floor() as u32
+                //         )
+                //     };
+
+                //     canvas.set_draw_color(Color::WHITE);
+                //     let _ = canvas.copy_ex( texture, None, dest_rect, 0.0, None, false, false, );
+                // }
+            }
         }
     }
 }
@@ -155,29 +235,44 @@ impl DrawCommand {
 //     pub pixel_perfect: bool, 
 // }
 
-pub struct GeometryParams<'a> {
-    pub canvas: &'a mut WindowCanvas,
+
+pub struct GeometryParams {
     pub relative_to_cam: bool,
     pub pixel_perfect: bool, 
+    pub vertices: Vec<Vertex>, 
+    pub texture_id: TextureId,
+}
+
+impl GeometryParams {
+    pub fn new(relative_to_cam: bool, pixel_perfect: bool, vertices: Vec<Vertex>, texture_id: TextureId) -> Self {
+        Self {
+            relative_to_cam, pixel_perfect, vertices, texture_id
+        }
+    }
 }
 
 #[derive(Resource)]
-pub struct DrawList(Vec<VecDeque<DrawCommand>>);
+pub struct DrawList {
+    list: Vec<VecDeque<DrawCommand>>,
+}
 impl Default for DrawList {
     fn default() -> Self {
         let mut list = Vec::new();
         for _ in 0..DrawLayer::COUNT as usize {
             list.push(VecDeque::new());
         }
-        Self(list)
+        Self{
+            list,
+        }
     }
 }
+
 impl DrawList {
     pub fn draw(&mut self, cmd: DrawCommand, layer: DrawLayer) {
-        self.0[layer as usize].push_back(cmd);
+        self.list[layer as usize].push_back(cmd);
     }
     pub fn get_list(&mut self, layer: DrawLayer) -> Option<&mut VecDeque<DrawCommand>> {
-        self.0.get_mut(layer as usize)
+        self.list.get_mut(layer as usize)
     }
 }
 
