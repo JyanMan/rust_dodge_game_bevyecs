@@ -1,7 +1,6 @@
 use bevy_ecs::prelude::*;
 use crate::components::*;
 use crate::resources::*;
-use crate::core::renderer::*;
 use rand::*;
 
 pub fn spawn(commands: &mut Commands, start_pos: Vector2, damage: i32) {
@@ -32,19 +31,20 @@ pub fn update(
     }
 }
 
-pub fn despawn_update(
-    query: Query<(Entity, &DamageCounterTimer, &TextObject)>,
-    mut renderer: NonSendMut<Renderer>,
-    mut commands: Commands
-) {
-   let mut temp_vec: Vec<Entity> = vec![];
-   for (e, timer, text) in &query {
-       if timer.0 < 0.0 {
-           renderer.delete_text(text);
-           temp_vec.push(e);
-       }
-   }
-   for e in temp_vec.iter() {
-      commands.entity(*e).despawn();
-   }
-}
+// TODO
+// pub fn despawn_update(
+//     query: Query<(Entity, &DamageCounterTimer, &TextObject)>,
+//     mut renderer: NonSendMut<Renderer>,
+//     mut commands: Commands
+// ) {
+//    let mut temp_vec: Vec<Entity> = vec![];
+//    for (e, timer, text) in &query {
+//        if timer.0 < 0.0 {
+//            renderer.delete_text(text);
+//            temp_vec.push(e);
+//        }
+//    }
+//    for e in temp_vec.iter() {
+//       commands.entity(*e).despawn();
+//    }
+// }

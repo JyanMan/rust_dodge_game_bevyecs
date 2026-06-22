@@ -3,7 +3,6 @@ use sdl2::pixels::Color;
 use sdl2::render::*;
 use bevy_ecs::prelude::*;
 
-use crate::core::renderer::*;
 use crate::components::Vector2;
 
 #[derive(Component, Debug, Copy, Clone, Default)]
@@ -28,17 +27,18 @@ impl Area {
         }
     }
 
-    pub fn draw(&self, canvas: &mut WindowCanvas, renderer: &mut Renderer) {
-        let cam_pos = renderer.camera.get_pos();
-        let cam_scale = renderer.camera.scale;
-        canvas.set_draw_color(Color::RED);
-        let _ = canvas.draw_rect(Rect::new(
-            (self.x - cam_pos.x) as i32 * cam_scale as i32, 
-            (self.y - cam_pos.y) as i32 * cam_scale as i32, 
-            self.w as u32 * cam_scale as u32, 
-            self.h as u32 * cam_scale as u32,
-        ));
-    }
+    // TODO
+    // pub fn draw(&self, canvas: &mut WindowCanvas, renderer: &mut Renderer) {
+    //     let cam_pos = renderer.camera.get_pos();
+    //     let cam_scale = renderer.camera.scale;
+    //     canvas.set_draw_color(Color::RED);
+    //     let _ = canvas.draw_rect(Rect::new(
+    //         (self.x - cam_pos.x) as i32 * cam_scale as i32, 
+    //         (self.y - cam_pos.y) as i32 * cam_scale as i32, 
+    //         self.w as u32 * cam_scale as u32, 
+    //         self.h as u32 * cam_scale as u32,
+    //     ));
+    // }
 
     pub fn update_pos(&mut self, x: f32, y: f32) {
         // center pos by subtracting half bounds

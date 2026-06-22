@@ -1,10 +1,9 @@
 use sdl2::render::*;
 
-use crate::core::renderer::*;
 use crate::math_helper::*;
 use crate::components::Vector2;
 use crate::components::sprite::*;
-use crate::resources::area_manager::*;
+use crate::resources::*;
 
 #[repr(i32)]
 #[derive(Copy, Clone, Debug, Default)]
@@ -56,14 +55,15 @@ impl Tile {
         // self.area.y = self.world_pos.y;
     }
 
-    pub fn draw(&self, canvas: &mut WindowCanvas, renderer: &mut Renderer, sprite: &Sprite) {
-        renderer.draw_sprite(
-            DrawParams {
-                canvas, pos: self.world_pos, scale: Vector2::new(1.0, 1.0),
-                angle: 0.0, relative_to_cam: true, pixel_perfect: true, frame: Some(self.tile_type as u32)
-            }, sprite
-            // canvas, sprite, self.world_pos, Vector2::new(1.0, 1.0), self.tile_type as i32, 0.0
-        );
+    pub fn draw(&self, draw_list: &mut DrawList, sprite: &Sprite) {
+        draw_list.draw(DrawCommand::Sprite( SpriteParams {
+            pos: self.world_pos, scale: Vector2::new(1.0, 1.0),
+            angle: 0.0, relative_to_cam: true, pixel_perfect: true, frame: self.tile_type as u32,
+            flip_x: sprite.flip_x, flip_y: sprite.flip_y, texture_id: sprite.texture_id,
+            hor: sprite.hor, vert: sprite.vert,
+            width: sprite.width, height: sprite.width
+        } ), DrawLayer::Pixelated);
+        // canvas, sprite, self.world_pos, Vector2::new(1.0, 1.0), self.tile_type as i32, 0.0
         // self.sprite.draw(canvas, &self.world_pos, self.tile_type as i32);
     }
 }

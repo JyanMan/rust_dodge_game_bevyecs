@@ -19,7 +19,7 @@ impl Camera {
             pos: Vector2::new(0.0, 0.0),
             target_pos: Vector2::new(0.0, 0.0),
             lerped_pos: Vector2::new(0.0, 0.0),
-            scale: 4.0,
+            scale: 3.0,
             interp: 0.1,
         }
     }

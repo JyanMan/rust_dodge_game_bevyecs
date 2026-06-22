@@ -11,7 +11,6 @@ mod bundles;
 
 use bevy_app::prelude::*;
 use crate::plugins::*;
-use crate::core::renderer::*;
 
 pub fn main() {
     App::new()

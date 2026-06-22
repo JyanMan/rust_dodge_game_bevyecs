@@ -1,7 +1,6 @@
 use rand::*;
 use bevy_ecs::prelude::*;
 use std::any::TypeId;
-use crate::core::renderer::*;
 use crate::components::*;
 // use crate::ecs::ecs::*;
 use crate::resources::*;
@@ -46,8 +45,8 @@ struct ZombieBundle {
 }
 
 pub fn spawn(world: &mut World, speed: f32) -> Entity {
-    let renderer = world.get_non_send_resource::<Renderer>().unwrap();
-    let mut sprite = Sprite::new(&renderer.asset_m, TextureId::Zombie);
+    let asset_m = world.get_non_send_resource::<AssetManager>().unwrap();
+    let mut sprite = Sprite::new(&asset_m, TextureId::Zombie);
     sprite.set_sprite_sheet(4, 4);
 
     let mut area = Area::new(

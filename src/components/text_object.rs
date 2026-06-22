@@ -1,6 +1,5 @@
 use bevy_ecs::prelude::*;
 use crate::resources::TextId;
-use crate::core::Renderer;
 use crate::components::*;
 
 #[derive(Component)]

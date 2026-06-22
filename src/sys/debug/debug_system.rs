@@ -5,52 +5,54 @@ use sdl2::render::*;
 use sdl2::pixels::Color;
 use sdl2::rect::*;
 
-use crate::core::renderer::*;
 use crate::components::*;
 use crate::resources::AreaManager;
 
-pub fn draw_entity_areas(
-    // query: Query<&Area>,
-    world: &mut World,
-    canvas: &mut WindowCanvas,
-    renderer: &mut Renderer
-) {
+// TODO
+// pub fn draw_entity_areas(
+//     // query: Query<&Area>,
+//     world: &mut World,
+//     canvas: &mut WindowCanvas,
+//     renderer: &mut Renderer
+// ) {
 
-    for area in world.query::<&Area>().iter(world) {
-        area.draw(canvas, renderer);
-    }
-}
+//     for area in world.query::<&Area>().iter(world) {
+//         area.draw(canvas, renderer);
+//     }
+// }
 
-pub fn render_all_obb(
-    world: &mut World,
-    canvas: &mut WindowCanvas,
-    // renderer: &mut Renderer
-) {
-    let mut state: SystemState<(
-        Query<&OBB>,
-        NonSendMut<Renderer>
-    )> = SystemState::new(world);
+// TODO
+// pub fn render_all_obb(
+//     world: &mut World,
+//     canvas: &mut WindowCanvas,
+//     // renderer: &mut Renderer
+// ) {
+//     let mut state: SystemState<(
+//         Query<&OBB>,
+//         NonSendMut<Renderer>
+//     )> = SystemState::new(world);
 
-    let (query, mut renderer) = state.get_mut(world);
+//     let (query, mut renderer) = state.get_mut(world);
 
 
-    for obb in &query {
-        if obb.disabled {
-            continue;
-        }
-        obb.draw(canvas, &mut renderer);
-    }
-}
+//     for obb in &query {
+//         if obb.disabled {
+//             continue;
+//         }
+//         obb.draw(canvas, &mut renderer);
+//     }
+// }
 
-pub fn draw_tile_areas(
-    // mut area_m: AreaManager>,
-    world: &mut World,
-    canvas: &mut WindowCanvas,
-    renderer: &mut Renderer
-) {
-    let mut area_m = world.get_resource_mut::<AreaManager>().unwrap();
-    area_m.draw_tile_areas(canvas, renderer);
-}
+// TODO
+// pub fn draw_tile_areas(
+//     // mut area_m: AreaManager>,
+//     world: &mut World,
+//     canvas: &mut WindowCanvas,
+//     renderer: &mut Renderer
+// ) {
+//     let mut area_m = world.get_resource_mut::<AreaManager>().unwrap();
+//     area_m.draw_tile_areas(canvas, renderer);
+// }
 
 // fn draw_point(renderer: &mut Renderer, pos: Vector2) {
 //     let cam_pos = renderer.camera.get_pos();

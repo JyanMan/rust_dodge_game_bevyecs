@@ -8,12 +8,12 @@ pub fn update_sprites(
     mut player_q: Query<&mut DodgeStamina>,
     mut dodge_q: Query<(&Dodge, &mut Sprite)>,
     mut commands: Commands,
-    renderer: NonSend<Renderer>
+    asset_m: NonSend<AssetManager>
 ) {
     for mut dodge_stam in &mut player_q {
         if dodge_stam.dodge_entities.is_empty() {
             for i in 0..dodge_stam.max_stack {
-                let mut sprite = Sprite::new( &renderer.asset_m, TextureId::DodgeStamina);
+                let mut sprite = Sprite::new( &asset_m, TextureId::DodgeStamina);
                 sprite.scale *= 3.0;
                 let trans =  Transform::new(
                     (i as f32) * (sprite.width * 0.35),
@@ -49,7 +49,6 @@ pub fn timer(
     mut query: Query<&mut DodgeStamina>,
     dt: Res<DeltaTime>,
     mut commands: Commands,
-    renderer: NonSend<Renderer>
 ) {
     for mut dodge_stam in &mut query {
 

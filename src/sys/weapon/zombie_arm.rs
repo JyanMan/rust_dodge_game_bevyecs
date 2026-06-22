@@ -2,7 +2,6 @@ use bevy_ecs::prelude::*;
 use std::f64::consts::PI;
 use std::any::TypeId;
 
-use crate::core::renderer::*;
 use crate::resources::asset_manager::*;
 use crate::components::*;
 use crate::components::states::*;
@@ -20,7 +19,7 @@ struct ZombieArmBundle {
 
 pub fn spawn(world: &mut World, entity_owner: Entity) -> Entity {
 
-    let renderer = world.get_non_send_resource::<Renderer>().unwrap();
+    let asset_m = world.get_non_send_resource::<AssetManager>().unwrap();
     let owner_ref = world.entity(entity_owner);
     // let owner_tag = owner_ref.get::<EntityTagContainer>().unwrap();
     // let entity_tag_container = EntityTagContainer(match owner_tag.0 {
@@ -29,7 +28,7 @@ pub fn spawn(world: &mut World, entity_owner: Entity) -> Entity {
     //     _ => EntityTag::Weapon,
     // });
     
-    let mut sprite = Sprite::new(&renderer.asset_m, TextureId::ZombieArm);
+    let mut sprite = Sprite::new(&asset_m, TextureId::ZombieArm);
     sprite.set_sprite_sheet(2, 2);
     sprite.visible = true;
 

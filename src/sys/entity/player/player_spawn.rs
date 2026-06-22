@@ -1,6 +1,5 @@
 use std::any::TypeId;
 use bevy_ecs::prelude::*;
-use crate::core::renderer::*;
 use crate::components::entity::{ WalkerData, WalkerState };
 use crate::components::*;
 use crate::resources::asset_manager::*;
@@ -28,8 +27,8 @@ struct PlayerBundle {
 
 
 pub fn spawn(world: &mut World) -> Entity {
-    let renderer = world.get_non_send_resource::<Renderer>().unwrap();
-    let mut sprite = Sprite::new(&renderer.asset_m, TextureId::Player);
+    let asset_m = world.get_non_send_resource::<AssetManager>().unwrap();
+    let mut sprite = Sprite::new(&asset_m, TextureId::Player);
     sprite.set_sprite_sheet(6, 6);
 
     let mut area = Area::new(

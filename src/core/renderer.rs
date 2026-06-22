@@ -10,7 +10,7 @@ use std::collections::VecDeque;
 use static_cell::StaticCell;
 
 use crate::resources::*;
-use crate::components::{ Vector2, Sprite, TextObject };
+use crate::components::*;
 use crate::config::*;
 
 pub struct SpriteParams {
@@ -125,6 +125,9 @@ pub struct GeometryParams<'a> {
     pub relative_to_cam: bool,
     pub pixel_perfect: bool, 
 }
+
+#[derive(Resource)]
+pub struct DrawList(pub VecDeque<DrawCommand>);
 
 pub struct Renderer {
     pub asset_m: AssetManager,

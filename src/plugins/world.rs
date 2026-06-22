@@ -30,7 +30,8 @@ impl Plugin for WorldPlugin {
 
         app.add_systems(Update, (
             sys::world::damage_counter::update,
-            sys::world::damage_counter::despawn_update,
+            // TODO
+            // sys::world::damage_counter::despawn_update,
         ));
 
         // app.add_systems(Render, (

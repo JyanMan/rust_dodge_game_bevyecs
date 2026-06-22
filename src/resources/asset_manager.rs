@@ -38,12 +38,6 @@ pub enum FontId {
     OpenSansBold
 }
 
-/// this is not accessed directly, it is retrieved via the renderer
-/// to access it, get the renderer with
-/// ```
-/// let renderer = world.get_non_send_resource::<Renderer>().unwrap();
-/// renderer.asset_m...
-/// ```
 pub struct AssetManager {
     pub fonts_map: HashMap<FontId, Rc<Font<'static, 'static>>>,
     pub text_texture_set: SparseSet<TextId, Texture<'static>, VecStorage<TextId>>,

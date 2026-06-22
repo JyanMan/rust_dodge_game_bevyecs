@@ -3,7 +3,6 @@ use sdl2::pixels::Color;
 use bevy_ecs::prelude::*;
 use sdl2::render::*;
 
-use crate::core::renderer::*;
 use crate::components::Vector2;
 use crate::resources::asset_manager::*;
 
@@ -11,11 +10,11 @@ use crate::resources::asset_manager::*;
 #[component(storage = "Table")]
 pub struct Sprite {
     // texture: Option<Rc<Texture<'static>>>,
-    texture_id: TextureId,
+    pub texture_id: TextureId,
     pub visible: bool,
     pub scale: Vector2,
-    hor: i32,
-    vert: i32,
+    pub hor: i32,
+    pub vert: i32,
     pub angle: f64,
     pub px_h: i32,
     pub px_w: i32,
@@ -60,48 +59,48 @@ impl Sprite {
     //     self.draw_frame_angle(params);
     // }
 
-    pub fn draw(&self, params: DrawParams, asset_m: &AssetManager) {
+    // pub fn draw(&self, params: DrawParams, asset_m: &AssetManager) {
 
-        let scale = params.scale;
-        let pos = params.pos;
-        // let asset_m = params.asset_m;
-        let canvas = params.canvas;
-        let angle = params.angle;
-        let frame = if let Some(frame) = params.frame {
-            frame
-        } else { self.frame };
+    //     let scale = params.scale;
+    //     let pos = params.pos;
+    //     // let asset_m = params.asset_m;
+    //     let canvas = params.canvas;
+    //     let angle = params.angle;
+    //     let frame = if let Some(frame) = params.frame {
+    //         frame
+    //     } else { self.frame };
 
-        let scale_x = scale.x.abs();
-        let scale_y = scale.y.abs();
+    //     let scale_x = scale.x.abs();
+    //     let scale_y = scale.y.abs();
 
-        let flip_x = if scale.x >= 0.0 {self.flip_x} else {!self.flip_x};
-        let flip_y = if scale.y >= 0.0 {self.flip_y} else {!self.flip_y};
+    //     let flip_x = if scale.x >= 0.0 {self.flip_x} else {!self.flip_x};
+    //     let flip_y = if scale.y >= 0.0 {self.flip_y} else {!self.flip_y};
 
-        let frame_x: i32 = self.width as i32 * (frame as i32 % self.hor);
-        let frame_y: i32 = self.height as i32 * (frame as i32 / self.hor);
-        let src_rect = Rect::new(
-             frame_x, frame_y, self.width as u32, self.height as u32 
-        );
+    //     let frame_x: i32 = self.width as i32 * (frame as i32 % self.hor);
+    //     let frame_y: i32 = self.height as i32 * (frame as i32 / self.hor);
+    //     let src_rect = Rect::new(
+    //          frame_x, frame_y, self.width as u32, self.height as u32 
+    //     );
 
-        let dest_rect = Rect::new(
-            pos.x.floor() as i32,         
-            pos.y.floor() as i32,
-            (self.width * scale_x).floor() as u32, // scale
-            (self.height * scale_y).floor() as u32 // scale
-        );
+    //     let dest_rect = Rect::new(
+    //         pos.x.floor() as i32,         
+    //         pos.y.floor() as i32,
+    //         (self.width * scale_x).floor() as u32, // scale
+    //         (self.height * scale_y).floor() as u32 // scale
+    //     );
 
-        let texture = asset_m.get_texture(self.texture_id);
+    //     let texture = asset_m.get_texture(self.texture_id);
 
-        canvas.set_draw_color(Color::WHITE);
-        let _ = canvas.copy_ex(
-            texture,
-            src_rect,
-            dest_rect,
-            angle,
-            None,
-            flip_x,
-            flip_y,
-        );
-    }
+    //     canvas.set_draw_color(Color::WHITE);
+    //     let _ = canvas.copy_ex(
+    //         texture,
+    //         src_rect,
+    //         dest_rect,
+    //         angle,
+    //         None,
+    //         flip_x,
+    //         flip_y,
+    //     );
+    // }
 }
 

@@ -196,28 +196,29 @@ impl EntityQuadMap {
     }
 
     /* debug purposes */
-    pub fn draw_occupied_cells(&self, canvas: &mut WindowCanvas, renderer: &mut Renderer) {
-        use sdl2::pixels::Color;
-        use sdl2::rect::*;
+    // TODO
+    // pub fn draw_occupied_cells(&self, canvas: &mut WindowCanvas, renderer: &mut Renderer) {
+    //     use sdl2::pixels::Color;
+    //     use sdl2::rect::*;
 
-        for (point, index) in self.cells_map.iter() {
-            let cell = self.cells_arr.get(*index).unwrap();
-            if cell.entities.data().is_empty() {
-                continue;
-            }
-            let world_pos = cell_to_world(point);
-            let cam_adjusted_pos = renderer.get_camera_adjusted_pos(world_pos);
-            let cam_scale = renderer.camera.scale.round() as i32;
-            let cell_rect = Rect::new(
-                cam_adjusted_pos.x.round() as i32,
-                cam_adjusted_pos.y.round() as i32,
-                (CELL_SIZE * cam_scale) as u32,
-                (CELL_SIZE * cam_scale) as u32,
-            );
-            canvas.set_draw_color(Color::RGB(255, 0, 0));
-            let _ = canvas.draw_rect(cell_rect);
-            // println!("entity_quad_map.rs: drawn at point: {} {}", point.x, point.y);
-        }
-    }
+    //     for (point, index) in self.cells_map.iter() {
+    //         let cell = self.cells_arr.get(*index).unwrap();
+    //         if cell.entities.data().is_empty() {
+    //             continue;
+    //         }
+    //         let world_pos = cell_to_world(point);
+    //         let cam_adjusted_pos = renderer.get_camera_adjusted_pos(world_pos);
+    //         let cam_scale = renderer.camera.scale.round() as i32;
+    //         let cell_rect = Rect::new(
+    //             cam_adjusted_pos.x.round() as i32,
+    //             cam_adjusted_pos.y.round() as i32,
+    //             (CELL_SIZE * cam_scale) as u32,
+    //             (CELL_SIZE * cam_scale) as u32,
+    //         );
+    //         canvas.set_draw_color(Color::RGB(255, 0, 0));
+    //         let _ = canvas.draw_rect(cell_rect);
+    //         // println!("entity_quad_map.rs: drawn at point: {} {}", point.x, point.y);
+    //     }
+    // }
 }
 

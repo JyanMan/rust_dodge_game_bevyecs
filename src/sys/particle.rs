@@ -1,8 +1,7 @@
 use bevy_ecs::prelude::*;
 use crate::components::*;
 use crate::resources::DeltaTime;
-use crate::resources::asset_manager::TextureId;
-use crate::core::Renderer;
+use crate::resources::asset_manager::*;
 
 pub fn spawn(
     world: &mut World,
@@ -16,9 +15,9 @@ pub fn spawn(
 ) -> Entity {
 
     let init_vec = dir * speed;
-    let renderer = world.get_non_send_resource::<Renderer>().expect(" asset manager non send resource was not found ");
+    let asset_m = world.get_non_send_resource::<AssetManager>().expect(" asset manager non send resource was not found ");
     let mut sprite = Sprite::new(
-        &renderer.asset_m,
+        &asset_m,
         texture
     );
     sprite.scale = Vector2::new(scale, scale);

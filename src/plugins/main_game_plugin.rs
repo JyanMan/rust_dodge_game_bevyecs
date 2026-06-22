@@ -65,7 +65,7 @@ pub fn init_spawn(world: &mut World) {
     let player_e = sys::entity::player::spawn(world);
     sys::weapon::steel_sword::spawn(world, player_e);
     sys::entity::health::player::health_bar_spawn(world);
-    sys::entity::zombie::mass_spawn(world);
+    // sys::entity::zombie::mass_spawn(world);
 }
 
 

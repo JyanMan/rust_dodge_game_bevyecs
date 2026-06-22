@@ -3,8 +3,8 @@ use sdl2::render::*;
 use std::collections::HashMap;
 use bevy_ecs::prelude::*;
 use crate::components::Vector2;
-use crate::core::renderer::*;
 use crate::components::sprite::*;
+use crate::resources::*; 
 use crate::resources::chunk::*; 
 use crate::resources::asset_manager::*;
 use crate::resources::area_manager::*;
@@ -111,9 +111,9 @@ impl ChunkManager {
         }
     }
 
-    pub fn draw(&mut self, canvas: &mut WindowCanvas, renderer: &mut Renderer) {
+    pub fn draw(&mut self, draw_list: &mut DrawList) {
         for chunk in self.chunks_arr.iter_mut() {
-            chunk.draw(canvas, renderer, &self.sprite);
+            chunk.draw(draw_list, &self.sprite);
         }
     }
 }

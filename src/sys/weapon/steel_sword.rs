@@ -2,7 +2,6 @@ use bevy_ecs::prelude::*;
 use bevy_ecs::storage::SparseSet;
 use std::f32::consts::PI;
 
-use crate::core::renderer::*;
 use crate::resources::asset_manager::*;
 use crate::components::*;
 use crate::components::states::*;
@@ -24,9 +23,9 @@ struct SteelSwordBundle {
 // TODO: HeldBy shouldn't be set on spawn, it should be set dynamically if someone's holding the weapon
 pub fn spawn(world: &mut World, entity_owner: Entity) -> Entity {
 
-    let renderer = world.get_non_send_resource::<Renderer>().unwrap();
+    let asset_m = world.get_non_send_resource::<AssetManager>().unwrap();
     
-    let mut sprite = Sprite::new(&renderer.asset_m, TextureId::SteelSword);
+    let mut sprite = Sprite::new(&asset_m, TextureId::SteelSword);
     // sprite.set_sprite_sheet(4, 2);
     sprite.visible = true;
 

@@ -7,7 +7,6 @@ use bevy_ecs::storage::SparseSet;
 use std::any::TypeId;
 
 use crate::components::*;
-use crate::core::Renderer;
 
 // #[derive(PartialEq, Eq, Clone, Debug)]
 // #[allow(unused)]
@@ -147,33 +146,34 @@ impl OBB {
         }
     }
 
-    #[allow(unused)]
-    pub fn draw(&self, canvas: &mut WindowCanvas, renderer: &mut Renderer) {
-        let cam_pos = renderer.camera.get_pos();
-        let cam_scale = renderer.camera.get_scale();
-        for i in 0..1 {
-            let a = (self.vertices[(i+1) % 4] - cam_pos)
-                * cam_scale;
-            let b = (self.vertices[i] - cam_pos)
-                * cam_scale;
-            canvas.set_draw_color(Color::RGB(0, 255, 0));
-            let _ = canvas.draw_line(
-                Point::new(a.x.round() as i32, a.y.round() as i32), 
-                Point::new(b.x.round() as i32, b.y.round() as i32)
-            );
-        }
-        for i in 1..4 {
-            let a = (self.vertices[(i+1) % 4] - cam_pos)
-                * cam_scale;
-            let b = (self.vertices[i] - cam_pos)
-                * cam_scale;
-            canvas.set_draw_color(Color::RGB(255, 0, 0));
-            let _ = canvas.draw_line(
-                Point::new(a.x.round() as i32, a.y.round() as i32), 
-                Point::new(b.x.round() as i32, b.y.round() as i32)
-            );
-        }
-    }
+    // #[allow(unused)]
+    // TODO
+    // pub fn draw(&self, canvas: &mut WindowCanvas, renderer: &mut Renderer) {
+    //     let cam_pos = renderer.camera.get_pos();
+    //     let cam_scale = renderer.camera.get_scale();
+    //     for i in 0..1 {
+    //         let a = (self.vertices[(i+1) % 4] - cam_pos)
+    //             * cam_scale;
+    //         let b = (self.vertices[i] - cam_pos)
+    //             * cam_scale;
+    //         canvas.set_draw_color(Color::RGB(0, 255, 0));
+    //         let _ = canvas.draw_line(
+    //             Point::new(a.x.round() as i32, a.y.round() as i32), 
+    //             Point::new(b.x.round() as i32, b.y.round() as i32)
+    //         );
+    //     }
+    //     for i in 1..4 {
+    //         let a = (self.vertices[(i+1) % 4] - cam_pos)
+    //             * cam_scale;
+    //         let b = (self.vertices[i] - cam_pos)
+    //             * cam_scale;
+    //         canvas.set_draw_color(Color::RGB(255, 0, 0));
+    //         let _ = canvas.draw_line(
+    //             Point::new(a.x.round() as i32, a.y.round() as i32), 
+    //             Point::new(b.x.round() as i32, b.y.round() as i32)
+    //         );
+    //     }
+    // }
 
     pub fn rotate_around(&mut self, center: Vector2) {
         use std::f32::consts::PI;

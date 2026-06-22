@@ -13,14 +13,14 @@ pub mod player {
     use crate::core::*;
     use crate::sys;
     pub fn health_bar_spawn(world: &mut World) {
-        let renderer = world.get_non_send_resource::<Renderer>().unwrap();
+        let asset_m = world.get_non_send_resource::<AssetManager>().unwrap();
 
-        let mut sprite_health= Sprite::new(&renderer.asset_m, TextureId::HealthBar);
+        let mut sprite_health= Sprite::new(&asset_m, TextureId::HealthBar);
         sprite_health.set_sprite_sheet(1, 2);
         sprite_health.frame = 0;
         sprite_health.scale *= 3.0;
 
-        let mut sprite_health_clear = Sprite::new(&renderer.asset_m, TextureId::HealthBar);
+        let mut sprite_health_clear = Sprite::new(&asset_m, TextureId::HealthBar);
         sprite_health_clear.set_sprite_sheet(1, 2);
         sprite_health_clear.frame = 1;
         sprite_health_clear.scale *= 3.0;
