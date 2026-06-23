@@ -36,6 +36,16 @@ impl Plugin for MainGame {
             sys::anim::update_all,
             sys::entity::status::damage_over_time,
         ));
+
+        app.add_systems(PreRender, (
+            sys::world::chunks::draw,
+            sys::render::sprites_draw,
+            sys::render::proc_anim_edges,
+            // sys::debug::render_all_obb,
+            // sys::render::texts_draw,
+            // sys::render::health_bar_draw,
+            // sys::render::dodge_stamina_draw,
+        ));
         // app.add_systems(Render, (
         //     sys::render::sprites_draw,
         //     sys::render::texts_draw.after(sys::render::sprites_draw),

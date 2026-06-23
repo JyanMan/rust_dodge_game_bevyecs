@@ -56,11 +56,14 @@ impl Tile {
     }
 
     pub fn draw(&self, draw_list: &mut DrawList, sprite: &Sprite) {
-        draw_list.draw(DrawCommand::Sprite(
-            SpriteParams::new(sprite, self.world_pos, true, true)
-                .frame(self.tile_type as u32)
-                .scale(Vector2::new(1.0, 1.0))
-        ), DrawLayer::Pixelated);
+        draw_list.draw(Draw {
+            cmd: DrawCommand::Sprite(
+                SpriteParams::new(sprite, self.world_pos)
+                    .frame(self.tile_type as u32)
+                    .scale(Vector2::new(1.0, 1.0))
+            ),
+            kind: DrawKind::Both
+        }, 0);
         // draw_list.draw(DrawCommand::Sprite( SpriteParams {
         //     pos: self.world_pos, scale: Vector2::new(1.0, 1.0),
         //     angle: 0.0, relative_to_cam: true, pixel_perfect: true, frame: self.tile_type as u32,

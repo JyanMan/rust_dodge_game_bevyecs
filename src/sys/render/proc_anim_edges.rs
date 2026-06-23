@@ -74,26 +74,15 @@ pub fn proc_anim_edges(
                 tex_coord: FPoint::new(0.0, 0.0)
             })
         }
-        // println!("points_len {}, indices len {}, vertices len: {}", trian.points.len(), trian.indices.len(), vertices.len());
         if points.len() % 3 == 0 && !points.is_empty() {
 
-            draw_list.draw(DrawCommand::Geometry(GeometryParams::new(
-                true, true, points, TextureId::BloodParticle
-            )), DrawLayer::Pixelated);
-            // renderer.render_geometry(
-            //     GeometryParams {
-            //         canvas,
-            //         relative_to_cam: true,
-            //         pixel_perfect: true
-            //     },
-            //     &mut points,
-            //     TextureId::BloodParticle, VertexIndices::Sequential
-            // ).unwrap();
-            // renderer.render_geometry(
-            //     GeometryParams,
-            //     &mut points,
-            //     TextureId::BloodParticle, VertexIndices::Sequential
-            // ).unwrap();
+            draw_list.draw(Draw {
+                cmd: DrawCommand::Geometry(GeometryParams::new(
+                    points,
+                    TextureId::BloodParticle
+                )),
+                kind: DrawKind::Both
+            }, 2);
         }
     }
 }

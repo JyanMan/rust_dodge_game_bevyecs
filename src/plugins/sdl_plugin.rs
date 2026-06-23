@@ -53,15 +53,6 @@ impl Plugin for SDLInit {
 
         // override main schedules
          
-        app.add_systems(PreRender, (
-            sys::world::chunks::draw,
-            sys::render::sprites_draw.after(sys::world::chunks::draw),
-            sys::render::proc_anim_edges.after(sys::render::sprites_draw),
-            // sys::debug::render_all_obb,
-            // sys::render::texts_draw,
-            // sys::render::health_bar_draw,
-            // sys::render::dodge_stamina_draw,
-        ));
         app.add_systems(Render, flush_draw);
         
         // app.add_systems(PreRender, set_background);
@@ -71,6 +62,7 @@ impl Plugin for SDLInit {
 }
 
 struct PixelatedCanvas<'a>(pub Texture<'a>);
+struct CameraCanvas<'a>(pub Texture<'a>);
 
 pub fn custom_runner(mut app: App) -> AppExit {
 
@@ -110,6 +102,12 @@ pub fn custom_runner(mut app: App) -> AppExit {
     pixelated_canvas.set_scale_mode(sdl2::render::ScaleMode::Nearest);
     pixelated_canvas.set_blend_mode(BlendMode::Blend);
 
+    let mut normal_canvas = t_creator
+        .create_texture_target(PixelFormatEnum::RGBA8888, SCREEN_WIDTH as u32, SCREEN_HEIGHT as u32)
+        .unwrap();
+    normal_canvas.set_scale_mode(sdl2::render::ScaleMode::Nearest);
+    normal_canvas.set_blend_mode(BlendMode::Blend);
+
     
     // canvas_static.set_logical_size(320, 180).unwrap();
     // app.insert_non_send_resource( Renderer::new(
@@ -120,6 +118,7 @@ pub fn custom_runner(mut app: App) -> AppExit {
     app.insert_non_send_resource(sdl_context.event_pump().unwrap());
     app.insert_non_send_resource(canvas);
     app.insert_non_send_resource(PixelatedCanvas(pixelated_canvas));
+    app.insert_non_send_resource(CameraCanvas(normal_canvas));
     app.insert_non_send_resource(AssetManager::new(t_creator, TTF_CTX.init(ttf_ctx)));
     // app.insert_non_send_resource(t_creator);
     app.insert_resource(Camera::new());
@@ -169,6 +168,7 @@ pub fn custom_runner(mut app: App) -> AppExit {
 fn flush_draw(
     mut canvas: NonSendMut<WindowCanvas>,
     mut pixelated_canvas: NonSendMut<PixelatedCanvas>,
+    mut camera_canvas : NonSendMut<CameraCanvas>,
     mut draw_list: ResMut<DrawList>,
     asset_m: NonSend<AssetManager>,
     camera: Res<Camera>,
@@ -181,12 +181,19 @@ fn flush_draw(
         texture_canvas.set_draw_color(Color::RGBA(0, 0, 0, 0));
         texture_canvas.clear();
 
-        for draw_cmd in draw_list.get_list(DrawLayer::Pixelated).unwrap().drain(..) {
+        for draw_cmd in draw_list.drain(DrawKind::Both) {
             draw_cmd.draw(texture_canvas, &asset_m, &camera);
         }
-        
     }).unwrap();
-    for draw_cmd in draw_list.get_list(DrawLayer::UI).unwrap().drain(..) {
+    canvas.with_texture_canvas(&mut camera_canvas.0, |texture_canvas| {
+        texture_canvas.set_draw_color(Color::RGBA(0, 0, 0, 0));
+        texture_canvas.clear();
+
+        for draw_cmd in draw_list.drain(DrawKind::RelativeToCam) {
+            draw_cmd.draw(texture_canvas, &asset_m, &camera);
+        }
+    }).unwrap();
+    for draw_cmd in draw_list.drain(DrawKind::None) {
         draw_cmd.draw(&mut canvas, &asset_m, &camera);
     }
     // sys::debug::render_all_obb(world, &mut canvas);
@@ -211,6 +218,14 @@ fn flush_draw(
         (screen_center.y - res_center.y - lerped_pos.y) as i32,
         (RES_WIDTH as f32 * cam_scale) as u32,
         (RES_HEIGHT as f32 * cam_scale) as u32
+    ))).unwrap();
+    canvas.copy(&camera_canvas.0, None, Some(Rect::new(
+        // (SCREEN_WIDTH as f32 / (cam_scale*0.5)) as i32, (SCREEN_HEIGHT as f32 / (cam_scale * 0.5)) as i32,
+        // -screen_center.x as i32, -screen_center.y as i32,
+        (-lerped_pos.x) as i32,
+        (-lerped_pos.y) as i32,
+        (SCREEN_WIDTH as f32) as u32,
+        (SCREEN_HEIGHT as f32) as u32
     ))).unwrap();
     // let world = app.world_mut();
     // sys::world::chunks::draw(world, &mut canvas);

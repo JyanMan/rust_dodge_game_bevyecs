@@ -105,11 +105,14 @@ pub fn sprites_draw(
             sprite.scale.y * trans.scale.y,  
         );
         // renderer.draw_to_cam(canvas, sprite, trans.pos, new_scale, angle_deg);
-        draw_list.draw(DrawCommand::Sprite(
-            SpriteParams::new(sprite, trans.pos, true, true)
-                .scale(new_scale)
-                .angle(angle_deg)
-        ), DrawLayer::Pixelated);
+        draw_list.draw(Draw {
+            cmd: DrawCommand::Sprite(
+                SpriteParams::new(sprite, trans.pos)
+                    .scale(new_scale)
+                    .angle(angle_deg)
+            ),
+            kind: DrawKind::Both
+        }, 1);
     }
 }
 
@@ -138,6 +141,7 @@ pub fn texts_draw(
     mut query: Query<(&mut TextObject, &Transform)>,
     mut draw_list: ResMut<DrawList>
 ) {
+    // TODO
     // let mut state: SystemState<(
     //     Query<(&mut TextObject, &Transform)>,
     //     NonSendMut<Renderer>
@@ -145,10 +149,10 @@ pub fn texts_draw(
 
     // let (mut query, mut renderer) = state.get_mut(world);
 
-    for (mut text, trans) in &mut query {
-        text.set_pos(trans.pos);
-        draw_list.draw(DrawCommand::Text(text.clone()), DrawLayer::UI);
-    }
+    // for (mut text, trans) in &mut query {
+    //     text.set_pos(trans.pos);
+    //     draw_list.draw(DrawCommand::Text(text.clone()), DrawLayer::UI);
+    // }
 }
 
 pub fn dodge_stamina_draw(

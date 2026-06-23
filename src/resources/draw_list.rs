@@ -3,6 +3,7 @@ use bevy_ecs::prelude::*;
 use sdl2::pixels::*;
 use sdl2::rect::*;
 use std::collections::VecDeque;
+use bevy_ecs::storage::SparseSet;
 
 use crate::resources::*;
 use crate::components::*;
@@ -15,8 +16,6 @@ pub struct SpriteParams {
     pub scale: Vector2,
     pub angle: f64,
     pub frame: u32,
-    pub relative_to_cam: bool,
-    pub pixel_perfect: bool, 
     pub flip_x: bool,
     pub flip_y: bool,
     pub texture_id: TextureId,
@@ -28,13 +27,11 @@ impl SpriteParams {
     pub fn new(
         sprite: &Sprite,
         pos: Vector2,
-        relative_to_cam: bool,
-        pixel_perfect: bool,
 
     ) -> Self {
         Self {
             pos, scale: sprite.scale,
-            angle: sprite.angle, relative_to_cam, pixel_perfect, frame: sprite.frame,
+            angle: sprite.angle, frame: sprite.frame,
             flip_x: sprite.flip_x, flip_y: sprite.flip_y, texture_id: sprite.texture_id,
             hor: sprite.hor, vert: sprite.vert,
             width: sprite.width, height: sprite.width
@@ -54,12 +51,19 @@ impl SpriteParams {
     }
 }
 
+#[derive(Clone)]
 #[repr(usize)]
-pub enum DrawLayer {
-    UI,
-    Normal,
+pub enum DrawKind {
     Pixelated,
+    RelativeToCam,
+    Both,
+    None,
     COUNT
+}
+
+pub struct Draw {
+    pub cmd: DrawCommand,
+    pub kind: DrawKind
 }
 
 pub enum DrawCommand {
@@ -68,32 +72,60 @@ pub enum DrawCommand {
     Text(TextObject),
 }
 
-impl DrawCommand {
-    fn draw_sprite_params(params: &mut SpriteParams, camera: &Camera) {
+impl Draw {
+    fn draw_sprite_params(kind: &DrawKind, params: &mut SpriteParams, camera: &Camera) {
         let cam_scale = camera.scale;
         let cam_pos = camera.get_pos();
-        if params.relative_to_cam  {
-            let half_width = Vector2::new(params.width / 2.0, params.height / 2.0);
-            let pos_centered = params.pos - half_width;
-            if params.pixel_perfect {
-
-                let dif_vec = Vector2::new(
-                    ((SCREEN_WIDTH as f32 / cam_scale) - (RES_WIDTH as f32)) / 2.0,
-                    ((SCREEN_HEIGHT as f32 / cam_scale) - (RES_HEIGHT as f32)) / 2.0,
-                );
-                params.pos = pos_centered - cam_pos - dif_vec;
-            }
-            else {
+        match kind {
+            DrawKind::Pixelated => {
+                
+            }            
+            DrawKind::RelativeToCam => {
+                let half_width = Vector2::new(params.width / 2.0, params.height / 2.0);
+                let pos_centered = params.pos - half_width;
                 params.scale *= cam_scale;
 
                 let pos_cam_adjusted = (pos_centered - cam_pos) * cam_scale;
 
                 params.pos = pos_cam_adjusted;
             }
+            DrawKind::Both => {
+                let half_width = Vector2::new(params.width / 2.0, params.height / 2.0);
+                let pos_centered = params.pos - half_width;
+                let dif_vec = Vector2::new(
+                    ((SCREEN_WIDTH as f32 / cam_scale) - (RES_WIDTH as f32)) / 2.0,
+                    ((SCREEN_HEIGHT as f32 / cam_scale) - (RES_HEIGHT as f32)) / 2.0,
+                );
+                params.pos = pos_centered - cam_pos - dif_vec;
+            },
+            _ => {
+                
+            }
         }
+        // let cam_scale = camera.scale;
+        // let cam_pos = camera.get_pos();
+        // if params.relative_to_cam  {
+        //     let half_width = Vector2::new(params.width / 2.0, params.height / 2.0);
+        //     let pos_centered = params.pos - half_width;
+        //     if params.pixel_perfect {
+
+        //         let dif_vec = Vector2::new(
+        //             ((SCREEN_WIDTH as f32 / cam_scale) - (RES_WIDTH as f32)) / 2.0,
+        //             ((SCREEN_HEIGHT as f32 / cam_scale) - (RES_HEIGHT as f32)) / 2.0,
+        //         );
+        //         params.pos = pos_centered - cam_pos - dif_vec;
+        //     }
+        //     else {
+        //         params.scale *= cam_scale;
+
+        //         let pos_cam_adjusted = (pos_centered - cam_pos) * cam_scale;
+
+        //         params.pos = pos_cam_adjusted;
+        //     }
+        // }
     }
     pub fn draw(self, canvas: &mut WindowCanvas, asset_m: &AssetManager, camera: &Camera) {
-        match self {
+        match self.cmd {
             DrawCommand::Sprite(mut params) => {
 
 
@@ -101,7 +133,7 @@ impl DrawCommand {
                 // let height = texture.query().height;
 
 
-                Self::draw_sprite_params(&mut params, camera);
+                Self::draw_sprite_params(&self.kind, &mut params, camera);
                 
                 let width = params.width;
                 let height = params.height;
@@ -154,18 +186,34 @@ impl DrawCommand {
                 );
 
                 for v in params.vertices.iter_mut() {
-                    if params.relative_to_cam {
-                        if params.pixel_perfect {
-                            let adjustment = cam_pos + dif_vec;
-                            v.position -= FPoint::new(adjustment.x.floor(), adjustment.y.floor());
-                        }
-                        else {
+                    match self.kind {
+                        DrawKind::Pixelated => {
+                            
+                        },
+                        DrawKind::RelativeToCam => {
                             v.position = FPoint::new(
                                 (v.position.x - cam_pos.x) * cam_scale, 
                                 (v.position.y - cam_pos.y) * cam_scale, 
                             );
-                        }
+                        },
+                        DrawKind::Both => {
+                            let adjustment = cam_pos + dif_vec;
+                            v.position -= FPoint::new(adjustment.x.floor(), adjustment.y.floor());
+                        },
+                        _ => {}
                     }
+                    // if params.relative_to_cam {
+                    //     if params.pixel_perfect {
+                    //         let adjustment = cam_pos + dif_vec;
+                    //         v.position -= FPoint::new(adjustment.x.floor(), adjustment.y.floor());
+                    //     }
+                    //     else {
+                    //         v.position = FPoint::new(
+                    //             (v.position.x - cam_pos.x) * cam_scale, 
+                    //             (v.position.y - cam_pos.y) * cam_scale, 
+                    //         );
+                    //     }
+                    // }
                 }
                 canvas.render_geometry(&params.vertices, None, VertexIndices::Sequential).unwrap();
             }
@@ -237,42 +285,89 @@ impl DrawCommand {
 
 
 pub struct GeometryParams {
-    pub relative_to_cam: bool,
-    pub pixel_perfect: bool, 
     pub vertices: Vec<Vertex>, 
     pub texture_id: TextureId,
 }
 
 impl GeometryParams {
-    pub fn new(relative_to_cam: bool, pixel_perfect: bool, vertices: Vec<Vertex>, texture_id: TextureId) -> Self {
+    pub fn new(vertices: Vec<Vertex>, texture_id: TextureId) -> Self {
         Self {
-            relative_to_cam, pixel_perfect, vertices, texture_id
+            vertices, texture_id
         }
     }
 }
 
+
+pub struct DrawDrain<'a> {
+    curr_kind: usize,
+    next: bool,
+    sorted_indices: &'a mut Vec<usize>,
+    draw_set: &'a mut SparseSet<usize, Vec<Draw>>
+}
+impl <'a> DrawDrain <'a> {
+    pub fn drain(draw_set: &'a mut SparseSet<usize, Vec<Draw>>, indices: &'a mut Vec<usize>) -> Self {
+        indices.sort_by(|a, b| b.cmp(a));
+        Self {
+            draw_set,
+            sorted_indices: indices,
+            curr_kind: 0,
+            next: true,
+        }
+    }
+}
+impl <'a>Iterator for DrawDrain<'a> {
+    type Item = Draw;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        loop {
+            if self.next {
+                self.next = false;
+                self.curr_kind  = self.sorted_indices.pop()?;
+            }
+            let queue = self.draw_set.get_mut(self.curr_kind).expect("should have the next z_index");
+            if let Some(draw) = queue.pop() {
+                return Some(draw);
+            }
+            else {
+                self.next = true;
+                continue;            
+            }
+        }
+    }
+}
+
+#[allow(clippy::type_complexity)]
 #[derive(Resource)]
 pub struct DrawList {
-    list: Vec<VecDeque<DrawCommand>>,
+    list: Vec<(SparseSet<usize, Vec<Draw>>, Vec<usize>)>
+    // pixelated: Vec<VecDeque<Draw>>,
+    // cam_relative: Vec<VecDeque<Draw>>,
+    // both: Vec<VecDeque<Draw>>,
+    // none: Vec<VecDeque<Draw>>,
 }
 impl Default for DrawList {
     fn default() -> Self {
         let mut list = Vec::new();
-        for _ in 0..DrawLayer::COUNT as usize {
-            list.push(VecDeque::new());
+        for _ in 0..DrawKind::COUNT as usize {
+            list.push((SparseSet::new(), Vec::new()));
         }
-        Self{
-            list,
+        Self {
+            list 
         }
     }
 }
 
 impl DrawList {
-    pub fn draw(&mut self, cmd: DrawCommand, layer: DrawLayer) {
-        self.list[layer as usize].push_back(cmd);
+    pub fn draw(&mut self, draw: Draw, z_index: usize) {
+        let idx = draw.kind.clone() as usize;
+        let (set, indices) = self.list.get_mut(idx).unwrap(); 
+        set.get_or_insert_with(z_index, Vec::new).push(draw);
+        indices.push(z_index);
     }
-    pub fn get_list(&mut self, layer: DrawLayer) -> Option<&mut VecDeque<DrawCommand>> {
-        self.list.get_mut(layer as usize)
+    pub fn drain<'a>(&'a mut self, kind: DrawKind) -> DrawDrain<'a> {
+        let idx = kind as usize;
+        let (set, indices) = self.list.get_mut(idx).unwrap(); 
+        DrawDrain::drain(set, indices)
     }
 }
 

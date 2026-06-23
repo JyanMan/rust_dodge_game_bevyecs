@@ -25,7 +25,7 @@ pub fn spawn(world: &mut World, entity_owner: Entity) -> Entity {
 
     let asset_m = world.get_non_send_resource::<AssetManager>().unwrap();
     
-    let mut sprite = Sprite::new(&asset_m, TextureId::SteelSword);
+    let mut sprite = Sprite::new(asset_m, TextureId::SteelSword);
     // sprite.set_sprite_sheet(4, 2);
     sprite.visible = true;
 
